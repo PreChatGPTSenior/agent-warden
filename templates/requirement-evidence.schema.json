@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-evidence.schema.json",
+  "title": "Current scenario ownership evidence (pending only)",
+  "description": "A revision-bound ownership record. It never proves scenario completion or application acceptance. Independently admitted completion evidence is not implemented by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "namespace",
+    "id",
+    "requirement",
+    "source",
+    "source_sha256",
+    "scenario_sha256",
+    "owners",
+    "state",
+    "completion_authority",
+    "check_coverage"
+  ],
+  "properties": {
+    "namespace": {
+      "enum": [
+        "application",
+        "maintenance"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^openspec/(changes/[^/]+/specs/[^/]+|specs/[^/]+)/spec\\.md$"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "scenario_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "owners": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task",
+          "checks"
+        ],
+        "properties": {
+          "task": {
+            "type": "string",
+            "pattern": "^T[0-9]{4}-[0-9]{3}$"
+          },
+          "checks": {
+            "type": "array",
+            "minItems": 0,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "state": {
+      "const": "OWNED_NOT_PROVEN"
+    },
+    "completion_authority": {
+      "const": "NONE"
+    },
+    "check_coverage": {
+      "enum": [
+        "BOUND_DECLARATIONS",
+        "UNBOUND_PENDING"
+      ]
+    }
+  }
+}

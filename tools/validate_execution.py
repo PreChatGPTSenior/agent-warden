@@ -6,11 +6,16 @@ from execution.core import ROOT,Blocked,safe,identity,json_read
 from execution.check_selection import checked_root
 from execution.model_policy import validate as validate_models
 from execution.budgets import validate as validate_budgets
+from execution.requirements import validate_mapping
 
-def validate(all_tasks=None,*,candidate_root=ROOT,candidate=None):
+def validate(all_tasks=None,*,candidate_root=ROOT,candidate=None,traceability_only=False,namespace=None):
  root=checked_root(candidate_root)
+ if all_tasks is not None and all_tasks!=json_read(safe(root,'execution/tasks.json'))['tasks']:raise Blocked('Effective task override differs from traceability mapping tasks')
+ traceability=validate_mapping(root,namespace=namespace)
+ if traceability_only:return traceability
  ts=all_tasks if all_tasks is not None else json_read(safe(root,'execution/tasks.json'))['tasks'];by={t['id']:t for t in ts}
  if len(ts)!=len(by):raise Blocked('Duplicate task ID')
+ if traceability['baseline_mapping']=='UNAVAILABLE_EXTERNAL':raise Blocked('Missing immutable baseline; application-package qualification blocked')
  baseline=json.loads(safe(root,'product-baseline/specification.json').read_text())
  requirements={r['id'] for s in baseline['sections'] for r in s['requirements']};acceptance={a['id'] for a in baseline['acceptance']};requirements.add('AI001')
  covered=set();scenarios=set();seen=set();remaining=set(by)
@@ -44,8 +49,8 @@ def validate(all_tasks=None,*,candidate_root=ROOT,candidate=None):
  validate_budgets(json_read(safe(root,'execution/agent-budgets.json')))
  observed=identity(root)
  if candidate is not None and observed!=candidate:raise Blocked('Candidate changed during package validation')
- return {'status':'PASS','candidate':observed,'candidate_root':str(root),'tasks':len(ts),'changes':len({t['change'] for t in ts}),'requirements':len(requirements),'acceptance_scenarios':len(acceptance),'meaning':'Execution package structure verified; application implementation and acceptance NOT_RUN'}
+ return {'status':'PASS','candidate':observed,'candidate_root':str(root),'tasks':len(ts),'changes':len({t['change'] for t in ts}),'requirements':len(requirements),'acceptance_scenarios':len(acceptance),'traceability':traceability,'meaning':'Execution package structure verified; application implementation and acceptance NOT_RUN'}
 if __name__=='__main__':
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--candidate-root',type=Path,default=ROOT);parser.add_argument('--candidate');args=parser.parse_args()
- try:print(json.dumps(validate(candidate_root=args.candidate_root,candidate=args.candidate),indent=2))
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--candidate-root',type=Path,default=ROOT);parser.add_argument('--candidate');parser.add_argument('--traceability-only',action='store_true');parser.add_argument('--namespace',choices=['application','maintenance']);args=parser.parse_args()
+ try:print(json.dumps(validate(candidate_root=args.candidate_root,candidate=args.candidate,traceability_only=args.traceability_only,namespace=args.namespace),indent=2))
  except (Blocked,OSError,KeyError,ValueError) as e:print(json.dumps({'status':'FAIL','reason':str(e)}));sys.exit(1)

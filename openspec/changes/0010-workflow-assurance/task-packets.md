@@ -347,3 +347,61 @@ and `CommandJournalTest.test_precache_interruption_or_stall_does_not_admit_comma
 to the prior 34-case set (36 total). First demonstrate the normal pre-cache failure.
 Include bounded stalled finalization and interrupted/capture-failed outcomes as
 negative subcases. Freeze after focused green and hand off for independent review.
+
+## T0010-010 Agent Warden exact offline dispatch
+
+Base: accepted T0010-009 commit 9ac6577. Original scope remains unchanged.
+Bind `RequirementTraceabilityTest` methods in test_requirement_traceability.py:
+`test_current_requirement_not_in_baseline`, `test_added_changed_retired_and_duplicate_scenarios`,
+`test_stale_spec_digest`, `test_unresolved_task`, `test_ownership_is_not_completion`,
+`test_maintenance_application_namespaces`, `test_complete_current_mapping`,
+`test_immutable_baseline_unchanged`, `test_unsafe_or_missing_source_rejected`,
+`test_package_validator_enforces_current_mapping`.
+These ten methods may contain subcases for every specified negative variant.
+Use installed offline guards, clean environment, disposable fixtures and exact selectors.
+
+The extracted project intentionally lacks product-baseline/specification.json.
+Do not fabricate or rewrite an immutable source to turn the inherited application
+package green. Represent current OpenSpec and its namespaces explicitly; report
+missing external legacy baseline as a clear blocked qualification when relevant.
+Current maintenance traceability must be independently testable without asserting
+application acceptance. Existing OpenSpec/application task documents are read-only
+inputs; stable source anchors and digests may be represented by the new registry.
+Report any necessary scope amendment before edits. Test-first behavioral red, minimal
+implementation, focused green, frozen hashes/handoff, independent high review, then
+coordinator acceptance. No new dependency, runtime execution or live provider.
+
+## T0010-010 review-1 check-binding repair
+
+Independent probes reproduce two P2 gaps: selector-only snapshots ignore adapter
+changes and maintenance packet labels do not bind actual check/work declarations;
+validate(all_tasks=...) can validate a different task set than reported ownership.
+Repair only the original five T0010-010 files. Add exact regression methods
+`RequirementTraceabilityTest.test_check_execution_semantics_are_bound`,
+`RequirementTraceabilityTest.test_maintenance_packet_change_or_deletion_is_stale`,
+and `RequirementTraceabilityTest.test_task_override_matches_traceability_owners`
+to the prior ten methods (13 total). Use real disposable inputs with positive
+controls; no paid/live calls or dependency additions.
+
+Bind complete check execution semantics, resolve real maintenance packet/source
+anchors and digests, and either reject inconsistent task overrides or validate
+against exactly their supplied effective task set. Task progress may change without
+invalidating ownership; changed work/check content must invalidate stale mapping.
+Do not invent a check selector or mark completion based on placeholders. Existing
+source task/packet docs remain read dependencies. If source lacks a concrete
+check packet, report it explicitly as unbound/pending without claiming validated
+check coverage. Any necessary scope change requires coordinator amendment first.
+
+## T0010-010 review-2 declaration-shape repair
+
+Two remaining P2 cases were reproduced: readiness kind invents a check token when
+its actual checks array is empty; dictionary-shaped owner.checks passes set/length
+validation despite the array schema. Original five-file scope only. Add exact
+`RequirementTraceabilityTest.test_readiness_without_checks_is_unbound` and
+`RequirementTraceabilityTest.test_malformed_check_declarations_rejected` (15 total).
+The latter includes non-array owner checks, owners and source check collections,
+non-string check identifiers and missing/malformed declaration fields. Preserve
+positive empty actual checks as UNBOUND_PENDING, not fabricated executable coverage.
+Reject malformed registry/source structures before claiming a valid map; no new
+library. Rerun the fifteen focused methods after a behavioral red demonstration,
+freeze source/evidence hashes and return for independent review.

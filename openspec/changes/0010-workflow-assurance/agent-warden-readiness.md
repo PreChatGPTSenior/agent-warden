@@ -47,3 +47,14 @@ GitHub access is reserved for T0010-020 publication; tests deny network and prov
 executables. No notifications to external people or services are authorized.
 
 Overall: OFFLINE_SUBSCRIPTION_BATCH_READY, LIVE_EXECUTION_BLOCKED.
+
+## T0010-010 recheck after accepted base 9ac6577
+
+Python3.14.8 observed; sandbox-exec and ps present; disposable write/read probe PASS;
+2.65GiB free; fixture guards present; both production budgets remain0.00.
+Weekly Codex quota48%used/52%remaining at dispatch. No application service dependency;
+those services remain NOT CHECKED/NOT STARTED. Original 009–020 batch fixture
+prerequisites remain applicable. Missing external legacy product baseline is known
+and must be reported blocked for application-package qualification; it does not
+block implementing/testing the current OpenSpec validator on disposable fixtures.
+Overall READY for the exact ten T0010-010 offline methods; live execution BLOCKED.
