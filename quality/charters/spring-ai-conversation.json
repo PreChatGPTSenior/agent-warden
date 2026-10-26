@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "change": "0006-spring-ai-conversation",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A18",
+      "requirements": [
+        "R036",
+        "R037",
+        "R038"
+      ],
+      "title": "Chat lifecycle and ownership",
+      "given": "Two browser sessions and an owned conversation with saved turns",
+      "when": "Send Unicode/IME input, navigate/collapse pending work, reload, access a foreign UUID and advance TTL",
+      "then": "One pair per turn; original context retained; reload restores saved history only; foreign access returns 404; completed-turn-only 24-hour retention; no automatic resend",
+      "method": "Redis integration and Playwright conversation charter"
+    },
+    {
+      "id": "A19",
+      "requirements": [
+        "R039",
+        "R040",
+        "R056"
+      ],
+      "title": "Capability isolation and controls",
+      "given": "Healthy history with unavailable provider, occupied model slot and enough session quota",
+      "when": "Read/replay history, send new work, exhaust quota, race same/different conversations and lose a lease",
+      "then": "History survives provider-only outage; unsafe send blocked; healthy busy vs outage codes differ; stale worker cannot commit or release another permit; unknown model usage remains charged",
+      "method": "Real Redis/PostgreSQL guards and controlled provider tests"
+    },
+    {
+      "id": "A22",
+      "requirements": [
+        "R037",
+        "R038",
+        "R044"
+      ],
+      "title": "New and clear conversation",
+      "given": "Owned saved history and an active turn in another tab",
+      "when": "Start new conversation; clear active then idle history; lose cookie and try the old UUID",
+      "then": "Quotas unchanged; active clear returns 409; idle clear removes only owned transcript; a new UUID used; cookie loss never transfers retained ownership",
+      "method": "Redis session tests and browser multi-tab charter"
+    },
+    {
+      "id": "A23",
+      "requirements": [
+        "R046",
+        "R047",
+        "R048"
+      ],
+      "title": "Exact requests and references",
+      "given": "A dated multi-type fixture and last selection order",
+      "when": "Ask explicit all available, vague intent, missing-year date, now only small, second stone and new search",
+      "then": "Explicit all honored; vague/year ambiguity clarified; inherited constraints correct; ordinals stable; no arbitrary name/ID interpretation or status leak",
+      "method": "Fixed-query interpretation and deterministic execution tests"
+    },
+    {
+      "id": "A24",
+      "requirements": [
+        "R049",
+        "R050",
+        "R051"
+      ],
+      "title": "Semantic evidence and late changes",
+      "given": "Fixture with card support, type-only support, contradiction, missing vectors and more than five matches",
+      "when": "Search mixed wishes, then delete/reserve/change a selected stone before commit",
+      "then": "Hard filters precede limits; contradiction veto holds; bounded ranking/counts truthful; partial list not padded; one all-lost refresh maximum; no fabricated individual color",
+      "method": "Controlled semantic integration and real-model qualification"
+    },
+    {
+      "id": "A25",
+      "requirements": [
+        "R052",
+        "R053",
+        "R057",
+        "R058"
+      ],
+      "title": "Knowledge grounding and attribution",
+      "given": "Versioned factual and fictional passages including the source qualification",
+      "when": "Ask care, personality, ritual and a mixed selection question; open Sources",
+      "then": "Fiction explicitly labelled; individual claims supported; same-version citations resolve; no secret keys/scores; missing evidence acknowledged; deleted projection does not break retained citations",
+      "method": "Source parsing, independent answer rubric and browser disclosure checks"
+    },
+    {
+      "id": "A26",
+      "requirements": [
+        "R054",
+        "R055",
+        "R056"
+      ],
+      "title": "Model bounds and valid fallback",
+      "given": "A checked selection and a knowledge-only turn under constrained budget/time",
+      "when": "Force malformed output, late provider failure, limit exhaustion and unknown usage",
+      "then": "Counters never reset; current input not truncated; only checked selection may template; knowledge failure remains error; no partial pair or unsafe late commit; reservations settle only reliable usage",
+      "method": "Controlled model/ledger tests and fixed-set assessment"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

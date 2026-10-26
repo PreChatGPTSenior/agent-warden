@@ -1,0 +1,19 @@
+# Teaching template for a clean, separately authorized application checkout.
+# Never run this scanner against the restricted original repository.
+# Supply SONAR_HOST_URL and a project-scoped SONAR_TOKEN through the environment.
+sonar.projectKey=stone-shelter-application
+sonar.sourceEncoding=UTF-8
+sonar.sources=stone-shelter-api/src/main/java,stone-shelter-ui/src
+sonar.tests=stone-shelter-api/src/test/java
+sonar.exclusions=**/engineering-log/**,**/node_modules/**,**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+sonar.scm.disabled=true
+sonar.java.source=23
+# These directories must exist after an authorized compilation step.
+sonar.java.binaries=stone-shelter-api/target/classes
+sonar.java.test.binaries=stone-shelter-api/target/test-classes
+# Stage the current candidate's reports here and translate paths to this checkout.
+sonar.java.checkstyle.reportPaths=.quality-reports/checkstyle.xml
+sonar.java.pmd.reportPaths=.quality-reports/pmd.xml
+sonar.eslint.reportPaths=.quality-reports/eslint.json
+sonar.qualitygate.wait=true
+sonar.qualitygate.timeout=300

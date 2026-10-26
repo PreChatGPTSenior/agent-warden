@@ -1,0 +1,15 @@
+# Optional standalone Codex profile example; the orchestrator supplies its own flags.
+# Copy to ~/.codex/stone-openrouter.config.toml only when configuring your machine.
+# Replace the absolute helper path. Never run the helper manually or capture its stdout.
+model = "openai/gpt-6.1-sol"
+model_provider = "stone_openrouter"
+model_reasoning_effort = "medium"
+
+[model_providers.stone_openrouter]
+name = "Stone Shelter OpenRouter"
+base_url = "https://openrouter.ai/api/v1"
+wire_api = "responses"
+
+[model_providers.stone_openrouter.auth]
+command = "python3"
+args = ["/absolute/path/to/stone-shelter-spec/tools/provider_key.py", "OPENROUTER_API_KEY"]

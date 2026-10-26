@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Stone Shelter proposed baseline"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.github.io/schema/ruleset_2_0_0.xsd">
+  <description>Proposed, source-only rules. Semantic architecture remains an ArchUnit responsibility.</description>
+  <rule ref="category/java/errorprone.xml/EmptyCatchBlock" />
+  <rule ref="category/java/errorprone.xml/AvoidCatchingGenericException" />
+  <rule ref="category/java/errorprone.xml/BrokenNullCheck" />
+  <rule ref="category/java/errorprone.xml/CloseResource" />
+  <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
+  <rule ref="category/java/bestpractices.xml/PreserveStackTrace" />
+  <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
+  <rule ref="category/java/bestpractices.xml/OnDemandImport">
+    <properties>
+      <property name="allowStaticImportsFrom" value="" />
+      <property name="allowTypeImportsFrom" value="" />
+    </properties>
+  </rule>
+
+  <rule name="StoneRecordMaxFourComponents" language="java"
+        message="Records may declare at most four components; use a mutable class for larger DTOs."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Constitution 18: count declared record components, including nested records.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //RecordDeclaration[count(RecordComponentList/RecordComponent) > 4]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneDtoPackage" language="java"
+        message="Request and Response types belong in lab.stoneshelter.shared."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Constitution 11: checks conventionally named concrete DTO declarations.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@SimpleName, '(Request|Response)$')]
+        [not(matches(@PackageName, '^lab\.stoneshelter\.shared(\.|$)'))]
+      | //RecordDeclaration[matches(@SimpleName, '(Request|Response)$')]
+        [not(matches(@PackageName, '^lab\.stoneshelter\.shared(\.|$)'))]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneLargeDtoPrivateFields" language="java"
+        message="Large shared DTOs must use private instance fields."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Constitution 18: direct declared fields of shared classes; static fields excluded.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.shared(\.|$)')]
+        [count(ClassBody/FieldDeclaration[@Static = false()]/VariableDeclarator) > 4]
+        /ClassBody/FieldDeclaration[@Static = false()][@Visibility != 'private']
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneLargeDtoNoArgConstructor" language="java"
+        message="Large shared DTOs need an accessible no-argument constructor."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Accepts an implicit default constructor or an explicit public zero-argument constructor.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.shared(\.|$)')]
+        [count(ClassBody/FieldDeclaration[@Static = false()]/VariableDeclarator) > 4]
+        [ClassBody/ConstructorDeclaration]
+        [not(ClassBody/ConstructorDeclaration[@Arity = 0][@Visibility = 'public'])]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneLargeDtoAccessors" language="java"
+        message="Each large DTO field needs public instance getter and setter declarations."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Checks declared accessor names/arity/non-void getter/void setter, not their bodies or exact types.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.shared(\.|$)')]
+        [count(ClassBody/FieldDeclaration[@Static = false()]/VariableDeclarator) > 4]
+        /ClassBody/FieldDeclaration[@Static = false()]/VariableDeclarator/VariableId[
+          let $suffix := concat(upper-case(substring(@Name, 1, 1)), substring(@Name, 2)),
+              $body := ../../..
+          return not($body/MethodDeclaration[@Visibility = 'public'][@Static = false()]
+            [@Arity = 0][@Void = false()]
+            [@Name = concat('get', $suffix)
+             or (@Name = concat('is', $suffix) and PrimitiveType[@Kind = 'boolean'])])
+            or not($body/MethodDeclaration[@Visibility = 'public'][@Static = false()]
+              [@Arity = 1][@Void = true()][@Name = concat('set', $suffix)])
+        ]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneMapperName" language="java"
+        message="Concrete mappers use FullSourceTypeToFullTargetTypeMapper names."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Enforces the naming shape; semantic source/target correspondence requires type-aware review.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.mappers(\.|$)')]
+        [not(@SimpleName = ('AbstractEntityMapper', 'AbstractDtoMapper'))]
+        [not(matches(@SimpleName, '^[A-Z][A-Za-z0-9]*To[A-Z][A-Za-z0-9]*Mapper$'))]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneEntityMapperBase" language="java"
+        message="Entity-target mappers must directly extend AbstractEntityMapper."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Checks direct syntactic inheritance; null-source behavior is verified by application tests.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.mappers\.entities(\.|$)')]
+        [@SimpleName != 'AbstractEntityMapper']
+        [not(ExtendsList/ClassType[@SimpleName = 'AbstractEntityMapper'])]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneDtoMapperBase" language="java"
+        message="DTO-target mappers must directly extend AbstractDtoMapper."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Checks direct syntactic inheritance; technical null handling remains a tested invariant.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.mappers\.dtos(\.|$)')]
+        [@SimpleName != 'AbstractDtoMapper']
+        [not(ExtendsList/ClassType[@SimpleName = 'AbstractDtoMapper'])]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneMapperReturnsValue" language="java"
+        message="toDto and toEntity transformations must return the resulting object."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Checks conversion method return declarations; result use and protected hook semantics require review.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //CompilationUnit[matches(@PackageName, '^lab\.stoneshelter\.mappers(\.|$)')]
+        //MethodDeclaration[@Name = ('toDto', 'toEntity')][@Void = true()]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneEntityUpdateOrder" language="java"
+        message="The two-argument toEntity overload must take the entity first."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Checks concrete entity-named parameter types; generic base methods are excluded.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //ClassDeclaration[matches(@PackageName, '^lab\.stoneshelter\.mappers\.entities(\.|$)')]
+        [@SimpleName != 'AbstractEntityMapper']/ClassBody/MethodDeclaration[@Name = 'toEntity'][@Arity = 2]
+        [not(FormalParameters/FormalParameter[1]/ClassType[matches(@SimpleName, 'Entity$')])]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneLayerImports" language="java"
+        message="This explicit import crosses a Stone Shelter layer boundary."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Explicit import checks only; fully qualified, same-package and transitive dependencies need ArchUnit.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //CompilationUnit[matches(@PackageName, '^lab\.stoneshelter\.controllers(\.|$)')]
+        /ImportDeclaration[matches(@ImportedName, '^lab\.stoneshelter\.(repositories|entities|mappers|criteria)(\.|$)')]
+      | //CompilationUnit[matches(@PackageName, '^lab\.stoneshelter\.(services|exceptions)(\.|$)')]
+        /ImportDeclaration[matches(@ImportedName, '^(org\.springframework\.(http|web)|jakarta\.persistence\.(criteria|EntityManager)|org\.springframework\.data\.jpa\.domain|lab\.stoneshelter\.(controllers|handlers))(\.|$)')]
+      | //CompilationUnit[matches(@PackageName, '^lab\.stoneshelter\.(repositories|entities|enums|criteria)(\.|$)')]
+        /ImportDeclaration[matches(@ImportedName, '^lab\.stoneshelter\.shared(\.|$)')]
+    ]]></value></property></properties>
+  </rule>
+
+  <rule name="StoneControllerConstruction" language="java"
+        message="Controllers must delegate structured object construction and mapping."
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>Detects direct construction of conventionally named DTO/entity/criteria types in controllers.</description>
+    <priority>2</priority>
+    <properties><property name="xpath"><value><![CDATA[
+      //CompilationUnit[matches(@PackageName, '^lab\.stoneshelter\.controllers(\.|$)')]
+        //ConstructorCall[ClassType[matches(@SimpleName, '(Entity|Request|Response|Criteria)$')]]
+    ]]></value></property></properties>
+  </rule>
+</ruleset>

@@ -1,0 +1,8 @@
+schema: spec-driven
+context: |
+  Agent Warden: independent agent workflow coordination tooling.
+  This is an extracted compatibility baseline, not a qualified live service.
+  Changes 0001-0008 and execution/tasks.json are inherited Stone Shelter examples.
+  Changes 0009-0010 describe the extracted tooling and its unfinished work.
+  Change 0011 records extraction. Read README.md and AGENTS.md before work.
+  Keep both provider budgets at zero. Never launch providers without authorization.

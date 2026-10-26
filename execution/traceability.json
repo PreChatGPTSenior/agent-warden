@@ -1,0 +1,1125 @@
+{
+  "requirements": {
+    "R001": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A01"
+      ]
+    },
+    "R002": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A01"
+      ]
+    },
+    "R003": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-006",
+        "T0001-007"
+      ],
+      "acceptance": [
+        "A01"
+      ]
+    },
+    "R004": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A01"
+      ]
+    },
+    "R005": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0001-008",
+        "T0002-002"
+      ],
+      "acceptance": [
+        "A02"
+      ]
+    },
+    "R006": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0001-008",
+        "T0002-002",
+        "T0003-003"
+      ],
+      "acceptance": [
+        "A02"
+      ]
+    },
+    "R007": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-002",
+        "T0003-003"
+      ],
+      "acceptance": [
+        "A02"
+      ]
+    },
+    "R008": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0001-008",
+        "T0002-002",
+        "T0003-005",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A03"
+      ]
+    },
+    "R009": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0001-008",
+        "T0002-002",
+        "T0002-004"
+      ],
+      "acceptance": [
+        "A02"
+      ]
+    },
+    "R010": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A04"
+      ]
+    },
+    "R011": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-002",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A05"
+      ]
+    },
+    "R012": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-002",
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A05",
+        "A06"
+      ]
+    },
+    "R013": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A06"
+      ]
+    },
+    "R014": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-002",
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A05"
+      ]
+    },
+    "R015": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A04",
+        "A06"
+      ]
+    },
+    "R016": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-003",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A07",
+        "A08"
+      ]
+    },
+    "R017": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-003",
+        "T0002-005",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A07"
+      ]
+    },
+    "R018": {
+      "change": "0002-catalog-details",
+      "tasks": [
+        "T0002-002",
+        "T0002-004",
+        "T0002-005"
+      ],
+      "acceptance": [
+        "A08"
+      ]
+    },
+    "R019": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-002",
+        "T0003-007",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A09"
+      ]
+    },
+    "R020": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-002",
+        "T0003-003",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A09",
+        "A10"
+      ]
+    },
+    "R021": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-004",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A11"
+      ]
+    },
+    "R022": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-004",
+        "T0003-005",
+        "T0003-006",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A11",
+        "A12"
+      ]
+    },
+    "R023": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-002",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A09",
+        "A13"
+      ]
+    },
+    "R024": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-004",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A11"
+      ]
+    },
+    "R025": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-006",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A12"
+      ]
+    },
+    "R026": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-006",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A12"
+      ]
+    },
+    "R027": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-003",
+        "T0003-006",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A12"
+      ]
+    },
+    "R028": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-005",
+        "T0003-006",
+        "T0003-007"
+      ],
+      "acceptance": [
+        "A03"
+      ]
+    },
+    "R029": {
+      "change": "0003-stone-management",
+      "tasks": [
+        "T0003-003",
+        "T0003-006",
+        "T0003-007",
+        "T0004-002",
+        "T0004-006",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A10",
+        "A17"
+      ]
+    },
+    "R030": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-002",
+        "T0004-004",
+        "T0004-006"
+      ],
+      "acceptance": [
+        "A14"
+      ]
+    },
+    "R031": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-002",
+        "T0004-004",
+        "T0004-006"
+      ],
+      "acceptance": [
+        "A14"
+      ]
+    },
+    "R032": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-002",
+        "T0004-004",
+        "T0004-006"
+      ],
+      "acceptance": [
+        "A14",
+        "A17"
+      ]
+    },
+    "R033": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-002",
+        "T0004-003",
+        "T0004-005",
+        "T0004-006"
+      ],
+      "acceptance": [
+        "A15"
+      ]
+    },
+    "R034": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-002",
+        "T0004-003",
+        "T0004-005",
+        "T0004-006"
+      ],
+      "acceptance": [
+        "A15",
+        "A16"
+      ]
+    },
+    "R035": {
+      "change": "0004-adoption-lifecycle",
+      "tasks": [
+        "T0004-003",
+        "T0004-005",
+        "T0004-006",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A16"
+      ]
+    },
+    "R036": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-006",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A18"
+      ]
+    },
+    "R037": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-003",
+        "T0006-006",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A18",
+        "A22"
+      ]
+    },
+    "R038": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-003",
+        "T0006-006",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A18",
+        "A22"
+      ]
+    },
+    "R039": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-002",
+        "T0006-003"
+      ],
+      "acceptance": [
+        "A19"
+      ]
+    },
+    "R040": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-002",
+        "T0006-003"
+      ],
+      "acceptance": [
+        "A19"
+      ]
+    },
+    "R041": {
+      "change": "0007-streaming-browser",
+      "tasks": [
+        "T0007-002",
+        "T0007-003",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A20"
+      ]
+    },
+    "R042": {
+      "change": "0007-streaming-browser",
+      "tasks": [
+        "T0007-002",
+        "T0007-003",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A21"
+      ]
+    },
+    "R043": {
+      "change": "0007-streaming-browser",
+      "tasks": [
+        "T0007-002",
+        "T0007-003",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A20",
+        "A21"
+      ]
+    },
+    "R044": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-003",
+        "T0006-006",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A22"
+      ]
+    },
+    "R045": {
+      "change": "0007-streaming-browser",
+      "tasks": [
+        "T0006-006",
+        "T0007-003",
+        "T0007-004"
+      ],
+      "acceptance": [
+        "A07",
+        "A21"
+      ]
+    },
+    "R046": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-004"
+      ],
+      "acceptance": [
+        "A23"
+      ]
+    },
+    "R047": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-004"
+      ],
+      "acceptance": [
+        "A23"
+      ]
+    },
+    "R048": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-004"
+      ],
+      "acceptance": [
+        "A23"
+      ]
+    },
+    "R049": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0005-002",
+        "T0006-005",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A24"
+      ]
+    },
+    "R050": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-005",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A24"
+      ]
+    },
+    "R051": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-005",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A24"
+      ]
+    },
+    "R052": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-005",
+        "T0006-006",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A25",
+        "A36"
+      ]
+    },
+    "R053": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-005",
+        "T0006-006",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A25",
+        "A36"
+      ]
+    },
+    "R054": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-002",
+        "T0006-005",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A26"
+      ]
+    },
+    "R055": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-005",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A26"
+      ]
+    },
+    "R056": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0006-002",
+        "T0008-002"
+      ],
+      "acceptance": [
+        "A19",
+        "A26"
+      ]
+    },
+    "R057": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-002",
+        "T0005-003"
+      ],
+      "acceptance": [
+        "A25",
+        "A27"
+      ]
+    },
+    "R058": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-002",
+        "T0005-003",
+        "T0006-005"
+      ],
+      "acceptance": [
+        "A25",
+        "A27"
+      ]
+    },
+    "R059": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-003"
+      ],
+      "acceptance": [
+        "A27"
+      ]
+    },
+    "R060": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0003-003",
+        "T0005-002",
+        "T0005-004"
+      ],
+      "acceptance": [
+        "A28"
+      ]
+    },
+    "R061": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-004"
+      ],
+      "acceptance": [
+        "A28"
+      ]
+    },
+    "R062": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-005"
+      ],
+      "acceptance": [
+        "A29"
+      ]
+    },
+    "R063": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-006",
+        "T0005-007"
+      ],
+      "acceptance": [
+        "A30"
+      ]
+    },
+    "R064": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-006",
+        "T0005-007"
+      ],
+      "acceptance": [
+        "A30"
+      ]
+    },
+    "R065": {
+      "change": "0005-reliable-indexing",
+      "tasks": [
+        "T0005-005",
+        "T0005-006",
+        "T0005-007"
+      ],
+      "acceptance": [
+        "A29",
+        "A30"
+      ]
+    },
+    "R066": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-006",
+        "T0001-008",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A31"
+      ]
+    },
+    "R067": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-006",
+        "T0001-007",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A31"
+      ]
+    },
+    "R068": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-006",
+        "T0001-007",
+        "T0004-003",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A16",
+        "A31"
+      ]
+    },
+    "R069": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-008",
+        "T0008-003"
+      ],
+      "acceptance": [
+        "A31"
+      ]
+    },
+    "R082": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-008"
+      ],
+      "acceptance": [
+        "A13",
+        "A20",
+        "A31"
+      ]
+    },
+    "R083": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-008"
+      ],
+      "acceptance": [
+        "A05",
+        "A17",
+        "A31"
+      ]
+    },
+    "R084": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-008",
+        "T0004-002",
+        "T0004-003"
+      ],
+      "acceptance": [
+        "A15",
+        "A31"
+      ]
+    },
+    "R070": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-004",
+        "T0002-005",
+        "T0007-004",
+        "T0008-004"
+      ],
+      "acceptance": [
+        "A07"
+      ]
+    },
+    "R071": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-004"
+      ],
+      "acceptance": [
+        "A32"
+      ]
+    },
+    "R072": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-003"
+      ],
+      "acceptance": [
+        "A33"
+      ]
+    },
+    "R073": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-002",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A33"
+      ]
+    },
+    "R074": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-001",
+        "T0001-005",
+        "T0002-001",
+        "T0003-001",
+        "T0004-001",
+        "T0005-001",
+        "T0006-001",
+        "T0007-001",
+        "T0008-001",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A34"
+      ]
+    },
+    "R075": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-001",
+        "T0001-005",
+        "T0002-001",
+        "T0003-001",
+        "T0004-001",
+        "T0005-001",
+        "T0006-001",
+        "T0007-001",
+        "T0008-001",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A34"
+      ]
+    },
+    "R076": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-003",
+        "T0001-004",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A33"
+      ]
+    },
+    "R077": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A35"
+      ]
+    },
+    "R078": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A35"
+      ]
+    },
+    "R079": {
+      "change": "0007-streaming-browser",
+      "tasks": [
+        "T0007-004",
+        "T0008-004",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A35"
+      ]
+    },
+    "R080": {
+      "change": "0008-release-qualification",
+      "tasks": [
+        "T0008-002",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A36"
+      ]
+    },
+    "R081": {
+      "change": "0001-foundation",
+      "tasks": [
+        "T0001-005",
+        "T0005-007",
+        "T0008-003",
+        "T0008-004",
+        "T0008-005"
+      ],
+      "acceptance": [
+        "A32"
+      ]
+    },
+    "AI001": {
+      "change": "0006-spring-ai-conversation",
+      "tasks": [
+        "T0005-002",
+        "T0006-002",
+        "T0006-005"
+      ],
+      "acceptance": [
+        "A24",
+        "A25",
+        "A26",
+        "A33"
+      ]
+    }
+  },
+  "acceptance": {
+    "A01": [
+      "T0001-006",
+      "T0001-007",
+      "T0008-005"
+    ],
+    "A02": [
+      "T0001-008",
+      "T0002-002",
+      "T0003-003"
+    ],
+    "A03": [
+      "T0001-008",
+      "T0003-005",
+      "T0003-006",
+      "T0008-003"
+    ],
+    "A04": [
+      "T0002-003",
+      "T0002-005"
+    ],
+    "A05": [
+      "T0002-002",
+      "T0002-003",
+      "T0002-005"
+    ],
+    "A06": [
+      "T0002-003",
+      "T0002-005"
+    ],
+    "A07": [
+      "T0002-003",
+      "T0002-005",
+      "T0007-004",
+      "T0008-004"
+    ],
+    "A08": [
+      "T0002-002",
+      "T0002-004",
+      "T0002-005"
+    ],
+    "A09": [
+      "T0003-002",
+      "T0003-007",
+      "T0008-003"
+    ],
+    "A10": [
+      "T0003-003",
+      "T0003-007"
+    ],
+    "A11": [
+      "T0003-004",
+      "T0003-005",
+      "T0003-007"
+    ],
+    "A12": [
+      "T0003-006",
+      "T0003-007"
+    ],
+    "A13": [
+      "T0001-008",
+      "T0002-004",
+      "T0003-006",
+      "T0003-007"
+    ],
+    "A14": [
+      "T0004-002",
+      "T0004-004",
+      "T0004-006"
+    ],
+    "A15": [
+      "T0004-002",
+      "T0004-003",
+      "T0004-005",
+      "T0004-006"
+    ],
+    "A16": [
+      "T0004-003",
+      "T0004-005",
+      "T0004-006",
+      "T0008-003"
+    ],
+    "A17": [
+      "T0001-008",
+      "T0003-003",
+      "T0003-006",
+      "T0003-007",
+      "T0004-002",
+      "T0004-004",
+      "T0004-006",
+      "T0008-003"
+    ],
+    "A18": [
+      "T0006-003",
+      "T0006-006",
+      "T0007-004"
+    ],
+    "A19": [
+      "T0006-002",
+      "T0006-003"
+    ],
+    "A20": [
+      "T0007-002",
+      "T0007-003",
+      "T0007-004"
+    ],
+    "A21": [
+      "T0007-002",
+      "T0007-003",
+      "T0007-004"
+    ],
+    "A22": [
+      "T0006-003",
+      "T0006-006",
+      "T0007-004"
+    ],
+    "A23": [
+      "T0006-004"
+    ],
+    "A24": [
+      "T0005-002",
+      "T0006-005",
+      "T0008-002"
+    ],
+    "A25": [
+      "T0005-002",
+      "T0005-003",
+      "T0006-005",
+      "T0006-006",
+      "T0008-002"
+    ],
+    "A26": [
+      "T0006-002",
+      "T0006-005",
+      "T0008-002"
+    ],
+    "A27": [
+      "T0005-002",
+      "T0005-003"
+    ],
+    "A28": [
+      "T0005-004"
+    ],
+    "A29": [
+      "T0005-005"
+    ],
+    "A30": [
+      "T0005-006",
+      "T0005-007"
+    ],
+    "A31": [
+      "T0001-006",
+      "T0001-007",
+      "T0001-008",
+      "T0008-003",
+      "T0008-005"
+    ],
+    "A32": [
+      "T0008-003",
+      "T0008-004",
+      "T0008-005"
+    ],
+    "A33": [
+      "T0001-002",
+      "T0001-003",
+      "T0001-004",
+      "T0008-005"
+    ],
+    "A34": [
+      "T0001-001",
+      "T0001-005",
+      "T0002-001",
+      "T0003-001",
+      "T0004-001",
+      "T0005-001",
+      "T0006-001",
+      "T0007-001",
+      "T0008-001",
+      "T0008-005"
+    ],
+    "A35": [
+      "T0008-005"
+    ],
+    "A36": [
+      "T0008-002",
+      "T0008-005"
+    ]
+  }
+}

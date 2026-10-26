@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "change": "0007-streaming-browser",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A07",
+      "requirements": [
+        "R016",
+        "R017",
+        "R045",
+        "R070"
+      ],
+      "title": "Responsive layout and focus",
+      "given": "Catalog/detail with chat open and filters/adoption modal available",
+      "when": "Exercise 320, 768 and 1440 px widths, 200% zoom, keyboard navigation and Escape and reduced motion",
+      "then": "No horizontal overflow or hidden focus; modal traps only when appropriate; chat respects inert background; cards and controls remain readable",
+      "method": "Playwright plus screen-reader inspection"
+    },
+    {
+      "id": "A18",
+      "requirements": [
+        "R036",
+        "R037",
+        "R038"
+      ],
+      "title": "Chat lifecycle and ownership",
+      "given": "Two browser sessions and an owned conversation with saved turns",
+      "when": "Send Unicode/IME input, navigate/collapse pending work, reload, access a foreign UUID and advance TTL",
+      "then": "One pair per turn; original context retained; reload restores saved history only; foreign access returns 404; completed-turn-only 24-hour retention; no automatic resend",
+      "method": "Redis integration and Playwright conversation charter"
+    },
+    {
+      "id": "A20",
+      "requirements": [
+        "R041",
+        "R043",
+        "R082"
+      ],
+      "title": "SSE contract",
+      "given": "A valid turn and saved replay",
+      "when": "Split network chunks within UTF-8/lines, inspect every event and saturate stream capacity",
+      "then": "Contiguous identity/sequence and exact delta equality; no text before commit; replay started/completed only; four slots bounded; a fifth returns 503 without model call",
+      "method": "Real Servlet HTTP transport and parser tests"
+    },
+    {
+      "id": "A21",
+      "requirements": [
+        "R042",
+        "R043",
+        "R045"
+      ],
+      "title": "Interrupted stream and reconciliation",
+      "given": "A stream has started, a second has deltas, a third has completed",
+      "when": "Disconnect at each boundary, corrupt sequence, drop commit acknowledgement and fail post-completion history sync",
+      "then": "Incomplete text has no links; authoritative recovery deduplicates; completed answer remains confirmed; no automatic JSON fallback/mock/reconnect; actual permits/writers exit safely",
+      "method": "Fault-injected transport tests and Playwright recovery charter"
+    },
+    {
+      "id": "A22",
+      "requirements": [
+        "R037",
+        "R038",
+        "R044"
+      ],
+      "title": "New and clear conversation",
+      "given": "Owned saved history and an active turn in another tab",
+      "when": "Start new conversation; clear active then idle history; lose cookie and try the old UUID",
+      "then": "Quotas unchanged; active clear returns 409; idle clear removes only owned transcript; a new UUID used; cookie loss never transfers retained ownership",
+      "method": "Redis session tests and browser multi-tab charter"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

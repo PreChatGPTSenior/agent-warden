@@ -1,0 +1,21 @@
+{
+  "id": "TNNNN-NNN",
+  "change": "approved-change-directory",
+  "title": "Concrete implementation outcome",
+  "kind": "backend",
+  "status": "PLANNED",
+  "depends_on": [],
+  "requirements": [],
+  "acceptance": [],
+  "write_paths": [],
+  "exclusive_resources": [],
+  "checks": [],
+  "browser_required": true,
+  "browser_charter": "approved-charter-path",
+  "deliverables": [],
+  "environment": [],
+  "max_attempts": 2,
+  "timeout_seconds": 7200,
+  "read_first": [],
+  "completion": "Verified integrated candidate with all required independent gates"
+}

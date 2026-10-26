@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "change": "0008-release-qualification",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A01",
+      "requirements": [
+        "R001",
+        "R002",
+        "R003",
+        "R004"
+      ],
+      "title": "Scope and permissions",
+      "given": "A clean implementation checkout and the baseline",
+      "when": "Review the release scope and call each privileged route as visitor, volunteer and operator",
+      "then": "Only the role matrix grants access; no deferred capability is presented as delivered; generated contracts implement this baseline",
+      "method": "Document review and API authorization matrix"
+    },
+    {
+      "id": "A03",
+      "requirements": [
+        "R008",
+        "R028"
+      ],
+      "title": "Stale updates and deletion",
+      "given": "Two staff clients share an ETag and a separate stone has an active hold",
+      "when": "Save from both clients; omit If-Match; attempt deletion of held and free stones",
+      "then": "First save succeeds, stale requests return 412, missing preconditions return 428, active hold returns 409; valid delete hides the stone and preserves tombstone/cleanup intent",
+      "method": "PostgreSQL concurrent integration test"
+    },
+    {
+      "id": "A07",
+      "requirements": [
+        "R016",
+        "R017",
+        "R045",
+        "R070"
+      ],
+      "title": "Responsive layout and focus",
+      "given": "Catalog/detail with chat open and filters/adoption modal available",
+      "when": "Exercise 320, 768 and 1440 px widths, 200% zoom, keyboard navigation and Escape and reduced motion",
+      "then": "No horizontal overflow or hidden focus; modal traps only when appropriate; chat respects inert background; cards and controls remain readable",
+      "method": "Playwright plus screen-reader inspection"
+    },
+    {
+      "id": "A09",
+      "requirements": [
+        "R019",
+        "R020",
+        "R023"
+      ],
+      "title": "Upload validation and ownership",
+      "given": "Authorized staff plus a foreign staff session and visitors",
+      "when": "Upload supported files at 10 MiB and over, MIME/signature mismatch, corrupt/animated/oversized-pixel files and metadata-bearing image",
+      "then": "Only valid bounded decoded images accepted; metadata removed; private keys hidden; foreign draft returns 404; unauthorized upload returns 401/403",
+      "method": "File-security integration fixtures and authorization tests"
+    },
+    {
+      "id": "A16",
+      "requirements": [
+        "R034",
+        "R035",
+        "R068"
+      ],
+      "title": "Staff queue privacy and abuse",
+      "given": "Pending/terminal applications with synthetic contacts",
+      "when": "Use queue filters/actions; cross role boundaries; hit session/IP limits; advance retention clock",
+      "then": "Authorized private queue works; visitor cannot read contacts; 429 includes truthful delay; protection outage returns 503; terminal PII purged at 30 days and minimal audit removed at 90 days",
+      "method": "Staff browser charter, authorization and retention tests"
+    },
+    {
+      "id": "A17",
+      "requirements": [
+        "R029",
+        "R032",
+        "R083"
+      ],
+      "title": "Write uncertainty and replay window",
+      "given": "Saved create/application/reindex outcomes and retained key markers",
+      "when": "Retry identical/changed payloads before 72 hours and after 72 hours; simulate lost commit acknowledgement",
+      "then": "Original result replays without new work; changed/expired-used keys return 409; uncertainty reconciled before a new mutation; no assumed rollback",
+      "method": "Transactional idempotency fault tests"
+    },
+    {
+      "id": "A24",
+      "requirements": [
+        "R049",
+        "R050",
+        "R051"
+      ],
+      "title": "Semantic evidence and late changes",
+      "given": "Fixture with card support, type-only support, contradiction, missing vectors and more than five matches",
+      "when": "Search mixed wishes, then delete/reserve/change a selected stone before commit",
+      "then": "Hard filters precede limits; contradiction veto holds; bounded ranking/counts truthful; partial list not padded; one all-lost refresh maximum; no fabricated individual color",
+      "method": "Controlled semantic integration and real-model qualification"
+    },
+    {
+      "id": "A25",
+      "requirements": [
+        "R052",
+        "R053",
+        "R057",
+        "R058"
+      ],
+      "title": "Knowledge grounding and attribution",
+      "given": "Versioned factual and fictional passages including the source qualification",
+      "when": "Ask care, personality, ritual and a mixed selection question; open Sources",
+      "then": "Fiction explicitly labelled; individual claims supported; same-version citations resolve; no secret keys/scores; missing evidence acknowledged; deleted projection does not break retained citations",
+      "method": "Source parsing, independent answer rubric and browser disclosure checks"
+    },
+    {
+      "id": "A26",
+      "requirements": [
+        "R054",
+        "R055",
+        "R056"
+      ],
+      "title": "Model bounds and valid fallback",
+      "given": "A checked selection and a knowledge-only turn under constrained budget/time",
+      "when": "Force malformed output, late provider failure, limit exhaustion and unknown usage",
+      "then": "Counters never reset; current input not truncated; only checked selection may template; knowledge failure remains error; no partial pair or unsafe late commit; reservations settle only reliable usage",
+      "method": "Controlled model/ledger tests and fixed-set assessment"
+    },
+    {
+      "id": "A31",
+      "requirements": [
+        "R066",
+        "R067",
+        "R068",
+        "R069",
+        "R082",
+        "R083",
+        "R084"
+      ],
+      "title": "Generated contracts and security",
+      "given": "Generated OpenAPI JSON and YAML and every operation in section 10",
+      "when": "Compare schemas, headers, errors, roles, CSRF, Origin checks, ETags, session expiry and secret redaction",
+      "then": "Both formats are equivalent; all operations are documented; there is no competing handwritten contract; authorization and expiry are enforced; no secret or spoofed forwarded-IP identity is accepted",
+      "method": "Generated-contract and security boundary tests"
+    },
+    {
+      "id": "A32",
+      "requirements": [
+        "R071",
+        "R081"
+      ],
+      "title": "Service objectives and restoration",
+      "given": "Declared reference hardware and the specified isolated load fixture",
+      "when": "Run the stated read, write and indexing samples and restore a catalog/object backup into a new environment",
+      "then": "Targets are met or the gate fails with measurements; model timing is not reported as non-model latency; restored catalog and images agree; logs contain no contacts or secrets",
+      "method": "Bounded load qualification and disaster-recovery exercise"
+    },
+    {
+      "id": "A33",
+      "requirements": [
+        "R072",
+        "R073",
+        "R076"
+      ],
+      "title": "Static and architectural handoff",
+      "given": "A patch with known positive and negative DTO, layer and style fixtures",
+      "when": "Invoke the developer wrapper with valid code, a known violation, a missing report and an unapproved suppression",
+      "then": "Reports bind to exact content; violations or missing reports block handoff; semantic policies are not falsely claimed as PMD coverage; all relevant pins are verified",
+      "method": "Deterministic wrapper self-tests and architecture fixtures"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    },
+    {
+      "id": "A35",
+      "requirements": [
+        "R077",
+        "R078",
+        "R079"
+      ],
+      "title": "Swarm to final gate",
+      "given": "Matching developer, test and browser evidence with independent reviews",
+      "when": "Evaluate all-pass, review-rejected, browser-not-run, Sonar-failed, stale-content and mock-only cases",
+      "then": "Only all required passes for the same content allow DONE; every other case blocks with a concrete reason; no board connector exists; browser-agent execution is not labelled human testing",
+      "method": "Deterministic gate decision matrix and evidence review"
+    },
+    {
+      "id": "A36",
+      "requirements": [
+        "R080",
+        "R052",
+        "R053"
+      ],
+      "title": "Independent AI qualification",
+      "given": "A versioned 20-scenario, 28-turn fixture with revised source, fiction and broad-search oracles",
+      "when": "Collect original real-model results and controlled races under the declared quota",
+      "then": "All hard checks, at least 8/9 semantic and 10/12 ordinary-answer scenarios must pass; incomplete cases cannot pass; templates do not inflate quality; the source 2/9 and 0/12 results remain historical failures",
+      "method": "Fixed-set harness and independent acceptance review"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

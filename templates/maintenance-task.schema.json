@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Maintenance planning packet; not execution authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "mode",
+    "task_id",
+    "change",
+    "base_commit",
+    "depends_on",
+    "write_paths",
+    "roles",
+    "source_hashes",
+    "live_status",
+    "completion_authority",
+    "packet_sha256",
+    "batch_task_ids"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "mode": {
+      "const": "PLAN_ONLY"
+    },
+    "task_id": {
+      "enum": [
+        "T0010-001",
+        "T0010-002",
+        "T0010-003"
+      ]
+    },
+    "change": {
+      "const": "0010-workflow-assurance"
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40,64}$"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "write_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "object",
+          "required": [
+            "model",
+            "reasoning_effort",
+            "provider",
+            "selection_sha256",
+            "policy_sha256",
+            "role"
+          ],
+          "properties": {
+            "model": {
+              "const": "gpt-6.1-sol"
+            },
+            "reasoning_effort": {
+              "const": "medium"
+            },
+            "provider": {
+              "const": "openai"
+            },
+            "selection_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "role": {
+              "const": "developer"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "model",
+            "reasoning_effort",
+            "provider",
+            "selection_sha256",
+            "policy_sha256",
+            "role"
+          ],
+          "properties": {
+            "model": {
+              "const": "gpt-6.1-sol"
+            },
+            "reasoning_effort": {
+              "const": "high"
+            },
+            "provider": {
+              "const": "openai"
+            },
+            "selection_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "policy_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "role": {
+              "const": "code_review"
+            }
+          }
+        }
+      ]
+    },
+    "source_hashes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "live_status": {
+      "const": "BLOCKED_PENDING_INDEPENDENT_QUALIFICATION"
+    },
+    "completion_authority": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packet_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "batch_task_ids": {
+      "const": [
+        "T0010-001",
+        "T0010-002",
+        "T0010-003"
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Stone Catalog workflow fixture</title>
+<link rel="icon" href="data:,">
+<style>
+body { margin: 3rem auto; max-width: 50rem; font: 18px system-ui; color: #19352b; background: #f3f6f1; }
+main { padding: 2rem; border: 1px solid #bfd0c2; border-radius: 1rem; background: white; }
+input { padding: .6rem; font: inherit; margin: 1rem; }
+li { padding: .7rem; } small { color: #58655c; }
+</style>
+<main>
+<small>Synthetic workflow example — no application acceptance</small>
+<h1>Stone Catalog fixture</h1>
+<label>Search stones <input aria-label="Search stones" type="search"></label>
+<p data-testid="total">2 available stones</p>
+<ul aria-label="Available stones"></ul>
+<p data-testid="empty" hidden>No stones found</p>
+</main>
+<script>
+const stones = ['Granite', 'Marble'];
+const input = document.querySelector('input');
+function render() {
+  const matches = stones.filter(stone => stone.toLowerCase().includes(input.value.toLowerCase()));
+  document.querySelector('ul').replaceChildren(...matches.map(stone => {
+    const item = document.createElement('li');
+    item.textContent = stone;
+    return item;
+  }));
+  document.querySelector('[data-testid="empty"]').hidden = matches.length !== 0;
+}
+input.addEventListener('input', render);
+render();
+</script>
+</html>

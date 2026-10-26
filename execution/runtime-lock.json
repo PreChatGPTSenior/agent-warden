@@ -1,0 +1,23 @@
+{
+  "jdk": "23.0.2",
+  "python": "3.14.8",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "maven": "3.9.9",
+  "openspec": "1.14.3",
+  "spring_boot": "4.1.1",
+  "spring_ai": "2.0.1",
+  "spring_security": "Boot 4.1.1 dependency management; resolved exact version must be recorded by T0001-002",
+  "react": "19.3.0",
+  "typescript": "6.0.3",
+  "playwright": "1.64.1",
+  "ollama": "0.40.3",
+  "embedding_model": "qwen3-embedding:0.6b",
+  "chat_model": "qwen2.5:3b",
+  "qualification": "Pin model digest and image digests before application acceptance; no latest",
+  "approved_new_frameworks": [
+    "Spring Security (user approved 2026-10-24)"
+  ],
+  "codex_cli_qualified": "0.163.0-alpha.11.1",
+  "codex_policy": "Use the installed authenticated CLI; validate documented flags before adopting another version. This preinstalled desktop CLI is tooling, not a new application library."
+}

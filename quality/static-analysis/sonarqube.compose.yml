@@ -1,0 +1,55 @@
+name: stone-shelter-spec-sonar
+services:
+  database:
+    image: postgres:17.11@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: ${SONAR_DB_PASSWORD:?Use the private local environment file}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U sonar -d sonar"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  sonarqube:
+    image: sonarqube:26.10.0.133078-community@sha256:0b3408443fb6a311253de27941b10977c9b977fd53be2265947bfe14161308b8
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:19100:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://database:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: ${SONAR_DB_PASSWORD:?Use the private local environment file}
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+    ulimits:
+      nofile:
+        soft: 131072
+        hard: 131072
+      nproc: 8192
+    restart: unless-stopped
+  scanner:
+    profiles: [scan]
+    image: sonarsource/sonar-scanner-cli:12.3.0.4285_8.1.0@sha256:47956b669bf486bdad919e1cbd0533223515aa0b6d1d31763e5a3754942df6d7
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    environment:
+      SONAR_HOST_URL: http://sonarqube:9000
+      SONAR_TOKEN: ${SONAR_ANALYSIS_TOKEN:-}
+      SONAR_USER_HOME: /usr/src/.sonar
+      SCANNER_WORKDIR_PATH: /usr/src/.scannerwork
+    volumes:
+      - ../../.cache/static-analysis/sonarqube/scan:/usr/src
+    depends_on:
+      - sonarqube
+volumes:
+  postgres_data:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:

@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "change": "0002-catalog-details",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A02",
+      "requirements": [
+        "R005",
+        "R006",
+        "R007",
+        "R009"
+      ],
+      "title": "Domain boundaries",
+      "given": "Records with every enum and Unicode boundary fixture",
+      "when": "Create with valid values, at limit and one beyond; submit client status/date; read publicly",
+      "then": "Valid records persist with server AVAILABLE/UTC; invalid fields reject with 400; code-point counts match UI; no private fields appear",
+      "method": "DTO validation, API and mapper tests"
+    },
+    {
+      "id": "A04",
+      "requirements": [
+        "R010",
+        "R015"
+      ],
+      "title": "Routes and return state",
+      "given": "A filtered paginated catalog is scrolled down",
+      "when": "Open a detail, use Back/Forward and Back to catalog; refresh canonical/legacy/unknown routes",
+      "then": "Session catalog state restores; direct/reload defaults apply; canonical redirects replace history; missing record and unknown route are distinct",
+      "method": "Playwright API-mode navigation"
+    },
+    {
+      "id": "A05",
+      "requirements": [
+        "R011",
+        "R012",
+        "R014",
+        "R083"
+      ],
+      "title": "Filtering and counts",
+      "given": "A fixed catalog contains available/reserved/adopted stones across types, sizes and UTC day boundaries",
+      "when": "Apply two sizes, two types and From/To; sort all six ways; paginate; request non-AVAILABLE status",
+      "then": "OR/AND/half-open UTC rules, AVAILABLE invariant, exact total, deterministic ties and page bounds hold; no wrong-status card leaks",
+      "method": "Repository/API parameterized tests"
+    },
+    {
+      "id": "A06",
+      "requirements": [
+        "R012",
+        "R013",
+        "R015"
+      ],
+      "title": "Draft filters and chips",
+      "given": "Applied valid dates and several selected options exist",
+      "when": "Type an invalid date, filter option labels, remove hidden selections/date chip and Reset",
+      "then": "Invalid draft never replaces applied date; query does not search catalog; chips/counts share state; reset and focus behavior match requirements",
+      "method": "UI interaction tests and keyboard browser charter"
+    },
+    {
+      "id": "A07",
+      "requirements": [
+        "R016",
+        "R017",
+        "R045",
+        "R070"
+      ],
+      "title": "Responsive layout and focus",
+      "given": "Catalog/detail with chat open and filters/adoption modal available",
+      "when": "Exercise 320, 768 and 1440 px widths, 200% zoom, keyboard navigation and Escape and reduced motion",
+      "then": "No horizontal overflow or hidden focus; modal traps only when appropriate; chat respects inert background; cards and controls remain readable",
+      "method": "Playwright plus screen-reader inspection"
+    },
+    {
+      "id": "A08",
+      "requirements": [
+        "R016",
+        "R018"
+      ],
+      "title": "Loading errors and gallery",
+      "given": "Zero/one/many-photo stones and controlled response delays",
+      "when": "Load/retry failure, return successful empty result, select thumbnails, break an image and reverse request completion order",
+      "then": "States differ correctly; newest query wins; no fabricated thumbnails/retry loop; preview never changes cover; full biography remains readable",
+      "method": "Component tests and real browser checks"
+    },
+    {
+      "id": "A13",
+      "requirements": [
+        "R023",
+        "R082"
+      ],
+      "title": "URL expiry and contracts",
+      "given": "READY and PENDING photos with controllable signed-link expiry",
+      "when": "Read detail/draft, expire URL and refresh; inspect serialized representations",
+      "then": "Only READY has a URL; refresh bounded once; no permanent signed URL storage; response fields/enums/nullability conform to generated schema",
+      "method": "API contract tests and browser expiry case"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

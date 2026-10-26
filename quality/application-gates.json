@@ -1,0 +1,92 @@
+{
+  "status": "LEGACY_FIXTURE_REFERENCE_ONLY",
+  "profiles": {
+    "backend-bootstrap": {
+      "module": "stone-shelter-api",
+      "test_selectors": [
+        "BootstrapTest"
+      ],
+      "additional_checks": [
+        "PostgreSQL Testcontainers startup and health; container/compose acceptance separately"
+      ]
+    },
+    "backend-catalog": {
+      "module": "stone-shelter-api",
+      "test_selectors": [
+        "StoneCatalogControllerTest",
+        "MapperNullContractTest",
+        "ArchitectureTest"
+      ],
+      "additional_checks": [
+        "New Liquibase migration against PostgreSQL; no applied migration edits"
+      ]
+    },
+    "backend-openapi": {
+      "module": "stone-shelter-api",
+      "test_selectors": [
+        "OpenApiDocumentationTest"
+      ],
+      "additional_checks": [
+        "Repeat this class with openapi-verification profile when profile independence is changed"
+      ]
+    },
+    "frontend-bootstrap": {
+      "module": "stone-shelter-ui",
+      "test_selectors": [
+        "src/App/App.test.tsx"
+      ],
+      "additional_checks": [
+        "ESLint",
+        "TypeScript project build",
+        "Production build",
+        "Responsive/manual checks when relevant"
+      ]
+    }
+  },
+  "pre_review_static_gate": {
+    "required": true,
+    "command": "python3 tools/static_analysis.py handoff --packet <approved-packet.json>",
+    "required_result": "PASS with fresh candidate/config/report identities",
+    "java": [
+      "Checkstyle Google Java Style",
+      "PMD standard and Stone Shelter rules"
+    ],
+    "react": [
+      "ESLint TypeScript recommended and React Hooks"
+    ],
+    "unavailable_result": "BLOCKED; reviewers are not assigned"
+  },
+  "sonarqube_gate": {
+    "current_scope": "Dedicated local server and three synthetic learning files only",
+    "demo_command": "python3 tools/sonarqube_lab.py scan-demo --handoff <fresh-fixture-handoff.json>",
+    "required_result_when_selected": "Scanner exit 0 and server quality gate OK for the submitted analysis ID",
+    "application_status": "NOT_RUN; needs an authorized clean application checkout, compiled Java and selected test evidence",
+    "remote_ci_status": "NOT_CONFIGURED; hosted CI cannot reach the desktop loopback endpoint",
+    "does_not_replace": "Mandatory local static admission, independent review or application acceptance checks"
+  },
+  "runtime_gate": {
+    "required": true,
+    "command": "python3 tools/runtime_gate.py integration --packet <approved-runtime-packet.json>",
+    "phases": [
+      "before",
+      "during",
+      "after"
+    ],
+    "required_result": "PASS with fresh selected test and environment evidence; no skipped cases",
+    "unavailable_result": "BLOCKED; do not start or continue dependent stages"
+  },
+  "completion_gate": {
+    "sequence": [
+      "static PASS",
+      "monitored integration PASS",
+      "testing_review APPROVED",
+      "Playwright browser PASS",
+      "browser_review APPROVED",
+      "complete READY_FOR_DONE"
+    ],
+    "command": "Fixture only; actual application DONE is exclusively controlled by tools/orchestrate.py",
+    "fixture_done_allowed": false,
+    "board_action": "NONE; integration deferred"
+  },
+  "current_application_authority": "tools/orchestrate.py and execution/tasks.json"
+}

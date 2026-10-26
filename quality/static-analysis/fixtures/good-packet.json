@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "mode": "fixtures",
+  "task_ids": [
+    "SA-002",
+    "SA-003",
+    "SA-005"
+  ],
+  "source_root": ".",
+  "java_roots": [
+    "java/good"
+  ],
+  "react_roots": [
+    "react/good"
+  ]
+}

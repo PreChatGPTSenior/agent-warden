@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "default_preset": "gpt",
+  "preflight_ttl_seconds": 3600,
+  "preflight_timeout_seconds": 180,
+  "providers": {
+    "openai": {"kind": "builtin", "provider_id": "openai"},
+    "openrouter": {
+      "kind": "responses",
+      "base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY"
+    }
+  },
+  "profiles": {
+    "gpt-development": {"provider": "openai", "model": "gpt-6.1-sol", "reasoning_effort": "medium"},
+    "gpt-review": {"provider": "openai", "model": "gpt-6.1-sol", "reasoning_effort": "high"},
+    "router-gpt-development": {"provider": "openrouter", "model": "openai/gpt-6.1-sol", "reasoning_effort": "medium"},
+    "router-gpt-review": {"provider": "openrouter", "model": "openai/gpt-6.1-sol", "reasoning_effort": "high"},
+    "router-qwen-development": {"provider": "openrouter", "model": "qwen/qwen3-coder-next", "reasoning_effort": "none"},
+    "router-glm-review": {"provider": "openrouter", "model": "z-ai/glm-5.3-flash", "reasoning_effort": "high"},
+    "router-minimax-qa": {"provider": "openrouter", "model": "minimax/minimax-m3.1-flash", "reasoning_effort": "medium"}
+  },
+  "presets": {
+    "gpt": {
+      "developer": "gpt-development", "code_review": "gpt-review",
+      "test_engineer": "gpt-development", "test_review": "gpt-review",
+      "browser_planner": "gpt-development", "browser_review": "gpt-review"
+    },
+    "gpt-openrouter": {
+      "developer": "router-gpt-development", "code_review": "router-gpt-review",
+      "test_engineer": "router-gpt-development", "test_review": "router-gpt-review",
+      "browser_planner": "router-gpt-development", "browser_review": "router-gpt-review"
+    },
+    "mixed-openrouter": {
+      "developer": "router-qwen-development", "code_review": "router-glm-review",
+      "test_engineer": "router-minimax-qa", "test_review": "router-glm-review",
+      "browser_planner": "router-minimax-qa", "browser_review": "router-minimax-qa"
+    }
+  },
+  "ticket_overrides": {}
+}

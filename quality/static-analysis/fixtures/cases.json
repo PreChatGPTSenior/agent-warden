@@ -1,0 +1,71 @@
+{
+  "kind": "ANALYZER_FIXTURES_NOT_APPLICATION_TESTS",
+  "pmd_negative_cases": [
+    {
+      "file": "java/bad/lab/stoneshelter/shared/TooManyResponse.java",
+      "expected_pmd_rules": [
+        "StoneRecordMaxFourComponents"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/controllers/WrongResponse.java",
+      "expected_pmd_rules": [
+        "StoneDtoPackage"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/shared/LargeResponse.java",
+      "expected_pmd_rules": [
+        "StoneLargeDtoPrivateFields",
+        "StoneLargeDtoNoArgConstructor",
+        "StoneLargeDtoAccessors"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/mappers/entities/BadMapper.java",
+      "expected_pmd_rules": [
+        "StoneMapperName",
+        "StoneEntityMapperBase"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/mappers/dtos/SourceToTargetMapper.java",
+      "expected_pmd_rules": [
+        "StoneDtoMapperBase",
+        "StoneMapperReturnsValue"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/mappers/entities/RequestToStoneEntityMapper.java",
+      "expected_pmd_rules": [
+        "StoneEntityUpdateOrder"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/controllers/StoneController.java",
+      "expected_pmd_rules": [
+        "StoneLayerImports",
+        "StoneControllerConstruction"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/services/StoneService.java",
+      "expected_pmd_rules": [
+        "StoneLayerImports"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/demo/WildcardExample.java",
+      "expected_pmd_rules": [
+        "OnDemandImport"
+      ]
+    },
+    {
+      "file": "java/bad/lab/stoneshelter/demo/EmptyCatchExample.java",
+      "expected_pmd_rules": [
+        "EmptyCatchBlock"
+      ]
+    }
+  ],
+  "react_negative_rule": "react-hooks/rules-of-hooks"
+}

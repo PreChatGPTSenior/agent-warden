@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "node": "24.21.0",
+  "maven": "3.9.9",
+  "playwright": "1.64.1",
+  "maximum_timeout_seconds": 1800,
+  "maximum_poll_seconds": 10,
+  "profiles": {
+    "fixture": "fixture",
+    "backend-bootstrap": "maven",
+    "backend-catalog": "maven",
+    "backend-openapi": "maven",
+    "backend-openapi-alternate": "maven",
+    "frontend-bootstrap": "vitest"
+  }
+}

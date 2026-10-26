@@ -1,0 +1,14 @@
+{
+  "T0002-002": {
+    "roles": {
+      "developer": {"profile": "gpt-development", "reasoning_effort": "medium"},
+      "code_review": {"profile": "gpt-review", "reasoning_effort": "high"}
+    }
+  },
+  "T0002-003": {
+    "roles": {
+      "developer": {"profile": "router-minimax-qa", "reasoning_effort": "medium"},
+      "code_review": {"profile": "router-glm-review", "reasoning_effort": "high"}
+    }
+  }
+}

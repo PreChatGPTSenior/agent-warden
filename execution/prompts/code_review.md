@@ -1,0 +1,3 @@
+# Code Review
+
+Independently review the frozen candidate against the assigned OpenSpec requirements and deliverables. Read raw static reports and changed source; verify layers, DTO/mapping rules, generated API, no hidden retries, transaction boundaries, privacy and scope. Check tests verify behavior, not implementation wording. Check the selected Spring AI migration eliminates provider HTTP and custom vector plumbing without weakening evidence/admission semantics. Do not edit. A required static stage missing, failed or for another candidate is BLOCKED. Return exact actionable findings and CHANGES_REQUESTED; approve only a justified patch.

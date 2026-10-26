@@ -1,0 +1,11 @@
+{
+  "task": "TNNNN-NNN",
+  "candidate": "sha256-of-current-content",
+  "base_commit": "commit-sha",
+  "role": "assigned-role",
+  "status": "BLOCKED",
+  "artifact_hashes": {},
+  "findings": [
+    "Replace template fields with actual observations; a template is not evidence"
+  ]
+}

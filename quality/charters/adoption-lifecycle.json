@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "change": "0004-adoption-lifecycle",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A14",
+      "requirements": [
+        "R030",
+        "R031",
+        "R032"
+      ],
+      "title": "Application submission",
+      "given": "An AVAILABLE stone and two independent visitor sessions",
+      "when": "Open modal, test empty/Unicode limits, submit concurrently and fail a post-success refresh",
+      "then": "Exactly one 201/PENDING/RESERVED result and one 409; success retained on refresh error; modal shows correct stone and expiry; no PII public leak",
+      "method": "PostgreSQL race plus Playwright application charter"
+    },
+    {
+      "id": "A15",
+      "requirements": [
+        "R033",
+        "R034",
+        "R084"
+      ],
+      "title": "Lifecycle and expiry boundary",
+      "given": "PENDING application before its 72-hour boundary, with a fixed UTC clock",
+      "when": "Extend once, extend twice, complete before expiry, race cancel/complete, then apply at/after expiry on another stone",
+      "then": "One extension only; one compatible terminal transition; due hold becomes EXPIRED and AVAILABLE atomically; effective reads/search agree; new application can follow a cancelled/expired one",
+      "method": "Clock-controlled repository/service/API tests"
+    },
+    {
+      "id": "A16",
+      "requirements": [
+        "R034",
+        "R035",
+        "R068"
+      ],
+      "title": "Staff queue privacy and abuse",
+      "given": "Pending/terminal applications with synthetic contacts",
+      "when": "Use queue filters/actions; cross role boundaries; hit session/IP limits; advance retention clock",
+      "then": "Authorized private queue works; visitor cannot read contacts; 429 includes truthful delay; protection outage returns 503; terminal PII purged at 30 days and minimal audit removed at 90 days",
+      "method": "Staff browser charter, authorization and retention tests"
+    },
+    {
+      "id": "A17",
+      "requirements": [
+        "R029",
+        "R032",
+        "R083"
+      ],
+      "title": "Write uncertainty and replay window",
+      "given": "Saved create/application/reindex outcomes and retained key markers",
+      "when": "Retry identical/changed payloads before 72 hours and after 72 hours; simulate lost commit acknowledgement",
+      "then": "Original result replays without new work; changed/expired-used keys return 409; uncertainty reconciled before a new mutation; no assumed rollback",
+      "method": "Transactional idempotency fault tests"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

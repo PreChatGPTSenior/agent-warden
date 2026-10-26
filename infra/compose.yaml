@@ -1,0 +1,157 @@
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg18-trixie@sha256:78bf48b801e792f99e3ac62b5036fd3876e9be48afda16c1e331af1c75ceb2ff
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    volumes:
+      - postgres-data:/var/lib/postgresql
+  redis:
+    image: redis:8.2.10-alpine3.22
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  kafka:
+    image: apache/kafka:4.2.2
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID:-MkU3OEVBNTcwNTJENDM2Qk}
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:${KAFKA_EXTERNAL_PORT:-29092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_LOG_RETENTION_HOURS: ${KAFKA_LOG_RETENTION_HOURS:-168}
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_HEAP_OPTS: -Xms256m -Xmx512m
+    ports:
+      - "127.0.0.1:${KAFKA_EXTERNAL_PORT:-29092}:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null"]
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 12
+  minio:
+    image: ${COMPOSE_PROJECT_NAME:?}-minio:RELEASE.2025-04-22T22-12-26Z
+    build:
+      context: ./infra/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:${MINIO_PORT:?}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:?}:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  stone-shelter-api:
+    image: ${COMPOSE_PROJECT_NAME:?}-api:0.0.1
+    build:
+      context: ./stone-shelter-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:?Set POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:?Set POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: "6379"
+      SPRING_DATA_REDIS_DATABASE: ${SPRING_DATA_REDIS_DATABASE:-0}
+      REDIS_HEALTH_ENABLED: "true"
+      CHAT_MEMORY_TTL: ${CHAT_MEMORY_TTL:-PT24H}
+      CHAT_ALLOWED_ORIGINS: ${CHAT_ALLOWED_ORIGINS:-}
+      CHAT_TRUSTED_PROXIES: ${CHAT_TRUSTED_PROXIES:-}
+      CHAT_REDIS_TIMEOUT: ${CHAT_REDIS_TIMEOUT:-PT1S}
+      CHAT_TURN_DEADLINE: ${CHAT_TURN_DEADLINE:-PT120S}
+      CHAT_TURN_LEASE: ${CHAT_TURN_LEASE:-PT150S}
+      CHAT_TURN_RENEWAL: ${CHAT_TURN_RENEWAL:-PT30S}
+      CHAT_RATE_EXPIRY_GRACE: ${CHAT_RATE_EXPIRY_GRACE:-PT60S}
+      CHAT_SEND_SESSION_BURST: ${CHAT_SEND_SESSION_BURST:-3}
+      CHAT_SEND_SESSION_REFILL_PER_MINUTE: ${CHAT_SEND_SESSION_REFILL_PER_MINUTE:-10}
+      CHAT_SEND_IP_BURST: ${CHAT_SEND_IP_BURST:-10}
+      CHAT_SEND_IP_REFILL_PER_MINUTE: ${CHAT_SEND_IP_REFILL_PER_MINUTE:-60}
+      CHAT_HISTORY_SESSION_BURST: ${CHAT_HISTORY_SESSION_BURST:-5}
+      CHAT_HISTORY_SESSION_REFILL_PER_MINUTE: ${CHAT_HISTORY_SESSION_REFILL_PER_MINUTE:-30}
+      CHAT_HISTORY_IP_BURST: ${CHAT_HISTORY_IP_BURST:-20}
+      CHAT_HISTORY_IP_REFILL_PER_MINUTE: ${CHAT_HISTORY_IP_REFILL_PER_MINUTE:-120}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_AI_OLLAMA_BASE_URL: ${SPRING_AI_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      STONE_DOCUMENT_OLLAMA_BASE_URL: ${STONE_DOCUMENT_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      SPRING_AI_OLLAMA_CHAT_MODEL: ${SPRING_AI_OLLAMA_CHAT_MODEL:-qwen2.5:3b}
+      SPRING_AI_OLLAMA_INIT_PULL_MODEL_STRATEGY: never
+      SPRING_AI_MODEL_EMBEDDING: none
+      PHOTO_STORAGE_ENABLED: "true"
+      PHOTO_CLEANUP_CRON: ${PHOTO_CLEANUP_CRON:-0 0 3 * * *}
+      PHOTO_CLEANUP_ZONE: ${PHOTO_CLEANUP_ZONE:-UTC}
+      PHOTO_CLEANUP_BATCH_SIZE: ${PHOTO_CLEANUP_BATCH_SIZE:-100}
+      PHOTO_CLEANUP_MAX_OBJECTS: ${PHOTO_CLEANUP_MAX_OBJECTS:-1000}
+      PHOTO_CLEANUP_INTERVAL_MS: ${PHOTO_CLEANUP_INTERVAL_MS:-1000}
+      PHOTO_CLEANUP_MAX_DURATION: ${PHOTO_CLEANUP_MAX_DURATION:-PT30M}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_BROWSER_ENDPOINT: ${MINIO_BROWSER_ENDPOINT:?Set MINIO_BROWSER_ENDPOINT}
+      MINIO_BUCKET: ${MINIO_BUCKET:?Set MINIO_BUCKET}
+      MINIO_DRAFT_BUCKET: ${MINIO_DRAFT_BUCKET:?Set MINIO_DRAFT_BUCKET}
+      STONE_PHOTO_PLACEHOLDER_URL: ${STONE_PHOTO_PLACEHOLDER_URL:?Set STONE_PHOTO_PLACEHOLDER_URL}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${API_PORT:?}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
+  stone-shelter-ui:
+    image: ${COMPOSE_PROJECT_NAME:?}-ui:0.0.1
+    profiles: [frontend]
+    build:
+      context: ./stone-shelter-ui
+    environment:
+      API_PROXY_TARGET: http://stone-shelter-api:8080
+      VITE_API_BASE_URL: ""
+    depends_on:
+      stone-shelter-api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5173/stone-shelter/catalog').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      start_period: 10s
+      retries: 12
+volumes:
+  postgres-data:
+  minio-data:
+  kafka-data:

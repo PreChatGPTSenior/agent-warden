@@ -1,0 +1,9 @@
+{
+  "schema": 2,
+  "unit": "usd",
+  "pools": {
+    "codex": {"limit_usd": "0.00", "invocation_allowance_usd": "1.00"},
+    "openrouter": {"limit_usd": "0.00", "invocation_allowance_usd": "1.00"}
+  },
+  "prices": {}
+}

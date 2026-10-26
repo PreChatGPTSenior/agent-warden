@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "mode": "application",
+  "task_ids": [
+    "T0003-005"
+  ],
+  "source_root": "/absolute/path/to/approved-application-checkout",
+  "java_roots": [
+    "stone-shelter-api/src/main/java",
+    "stone-shelter-api/src/test/java"
+  ],
+  "react_roots": []
+}

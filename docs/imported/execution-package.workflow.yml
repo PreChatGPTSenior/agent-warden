@@ -1,0 +1,55 @@
+name: Execution package
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.8'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run check
+      - run: npm run check:specs
+        env:
+          OPENSPEC_TELEMETRY: '0'
+          DO_NOT_TRACK: '1'
+  maintenance-offline:
+    runs-on: macos-14
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.8'
+      - name: Qualify T0010-001–003 without providers
+        run: |
+          python3 - <<'PY'
+          import os
+          import subprocess
+          import sys
+          env = {key: os.environ[key] for key in ('PATH', 'TMPDIR', 'LANG', 'LC_ALL') if key in os.environ}
+          env.update(PYTHONPATH='tools:tools/tests', PYTHONDONTWRITEBYTECODE='1',
+                     GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null', GIT_TERMINAL_PROMPT='0')
+          with open('maintenance-offline.log', 'w') as log:
+              result = subprocess.run([
+                  sys.executable, 'tools/tests/workflow_assurance_fixtures.py',
+                  'test_maintenance_dispatch', 'test_agent_history', 'test_agent_workflow',
+                  'test_agent_budgets', 'test_agent_supervision', 'test_agent_models',
+              ], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=480)
+          print(open('maintenance-offline.log').read())
+          raise SystemExit(result.returncode)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maintenance-offline-evidence
+          path: maintenance-offline.log
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,15 @@
+{
+  "jdk": "23.0.2",
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "checkstyle": {
+    "version": "14.3.0",
+    "url": "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-14.3.0/checkstyle-14.3.0-all.jar",
+    "sha256": "754e218ab1fcabb1e1c5f8530e9d3aa37636806c22987bb279dd907a6ee749b2"
+  },
+  "pmd": {
+    "version": "7.28.0",
+    "url": "https://github.com/pmd/pmd/releases/download/pmd_releases/7.28.0/pmd-dist-7.28.0-bin.zip",
+    "sha256": "f974ba571f7bc01c73fffe11bade25fbc1f438698f9e9c00e416e8d65e9fbac2"
+  }
+}

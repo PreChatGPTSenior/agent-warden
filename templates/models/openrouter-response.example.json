@@ -1,0 +1,7 @@
+{
+  "model": "openai/gpt-6.1-sol",
+  "input": "Reply with READY. Do not use tools.",
+  "reasoning": {"effort": "medium"},
+  "max_output_tokens": 1024,
+  "stream": false
+}

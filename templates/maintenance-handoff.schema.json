@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Maintenance handoff; never task acceptance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "task_id",
+    "role",
+    "status",
+    "packet_sha256",
+    "candidate",
+    "session",
+    "receipt",
+    "receipt_sha256",
+    "selection",
+    "observed_models",
+    "usage",
+    "elapsed_seconds",
+    "result",
+    "live_qualification",
+    "handoff_sha256",
+    "attempt_id",
+    "workspace"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "task_id": {
+      "enum": [
+        "T0010-002",
+        "T0010-003"
+      ]
+    },
+    "role": {
+      "enum": [
+        "developer",
+        "code_review"
+      ]
+    },
+    "status": {
+      "enum": [
+        "DEVELOPED_NOT_REVIEWED",
+        "REVIEWED_NOT_ACCEPTED"
+      ]
+    },
+    "packet_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "candidate": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "session": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt": {
+      "type": "string",
+      "pattern": "^\\.execution/runs/"
+    },
+    "receipt_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "selection": {
+      "type": "object",
+      "required": [
+        "model",
+        "reasoning_effort",
+        "provider",
+        "selection_sha256",
+        "policy_sha256"
+      ],
+      "properties": {
+        "model": {
+          "const": "gpt-6.1-sol"
+        },
+        "reasoning_effort": {
+          "enum": [
+            "medium",
+            "high"
+          ]
+        },
+        "provider": {
+          "const": "openai"
+        },
+        "selection_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policy_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "observed_models": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "usage": {
+      "type": "object"
+    },
+    "elapsed_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "result": {
+      "type": "object"
+    },
+    "live_qualification": {
+      "const": "PENDING_INDEPENDENT_REVIEW"
+    },
+    "handoff_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attempt_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,95}$"
+    },
+    "workspace": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "role": {
+            "const": "developer"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "DEVELOPED_NOT_REVIEWED"
+          },
+          "selection": {
+            "properties": {
+              "reasoning_effort": {
+                "const": "medium"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "status": {
+            "const": "REVIEWED_NOT_ACCEPTED"
+          },
+          "selection": {
+            "properties": {
+              "reasoning_effort": {
+                "const": "high"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

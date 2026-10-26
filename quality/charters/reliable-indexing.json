@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "change": "0005-reliable-indexing",
+  "mode": "real-api",
+  "status": "NOT_RUN",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 740
+    },
+    {
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "isolation": "Use per-task stack and synthetic data only; do not send messages or contact real applicants",
+  "scenarios": [
+    {
+      "id": "A24",
+      "requirements": [
+        "R049",
+        "R050",
+        "R051"
+      ],
+      "title": "Semantic evidence and late changes",
+      "given": "Fixture with card support, type-only support, contradiction, missing vectors and more than five matches",
+      "when": "Search mixed wishes, then delete/reserve/change a selected stone before commit",
+      "then": "Hard filters precede limits; contradiction veto holds; bounded ranking/counts truthful; partial list not padded; one all-lost refresh maximum; no fabricated individual color",
+      "method": "Controlled semantic integration and real-model qualification"
+    },
+    {
+      "id": "A25",
+      "requirements": [
+        "R052",
+        "R053",
+        "R057",
+        "R058"
+      ],
+      "title": "Knowledge grounding and attribution",
+      "given": "Versioned factual and fictional passages including the source qualification",
+      "when": "Ask care, personality, ritual and a mixed selection question; open Sources",
+      "then": "Fiction explicitly labelled; individual claims supported; same-version citations resolve; no secret keys/scores; missing evidence acknowledged; deleted projection does not break retained citations",
+      "method": "Source parsing, independent answer rubric and browser disclosure checks"
+    },
+    {
+      "id": "A27",
+      "requirements": [
+        "R057",
+        "R058",
+        "R059"
+      ],
+      "title": "Atomic document replacement",
+      "given": "An indexed source and a new version with removed topics",
+      "when": "Import valid/oversized/malformed sources, fail embedding/commit acknowledgement, replay key after source overwrite and delete projection",
+      "then": "Old projection survives confirmed preparation failure; no partial publication; replay does not read/republish the new source; source versions/citations retained; forbidden paths never supplied",
+      "method": "MinIO/pgvector integration and operation-recovery tests"
+    },
+    {
+      "id": "A28",
+      "requirements": [
+        "R060",
+        "R061"
+      ],
+      "title": "Atomic business event and publisher",
+      "given": "A stone mutation with injected outbox failure and a broker outage",
+      "when": "Commit and roll back changes, reuse an event UUID with a changed payload, recover the broker and fail an event-specific route",
+      "then": "Business and outbox changes are atomic; changed payload is rejected; outage preserves the attempt budget; three event-specific failures lead to durable DLQ transfer; acknowledgement alone marks delivery; duplicate deliveries remain permitted",
+      "method": "PostgreSQL/Kafka integration tests"
+    },
+    {
+      "id": "A29",
+      "requirements": [
+        "R062",
+        "R065"
+      ],
+      "title": "Consumer restart and tombstones",
+      "given": "A version 2 deletion, an older update, a malformed record and a failed embedding",
+      "when": "Redeliver, reorder and restart processing; simulate dependency loss and occupied model capacity",
+      "then": "No deleted projection is resurrected; stale versions invoke no model; attempt counts survive restart; dependency outages wait; source offsets advance only after database commit or acknowledged DLQ transfer",
+      "method": "Kafka consumer integration and fault cases"
+    },
+    {
+      "id": "A30",
+      "requirements": [
+        "R063",
+        "R064",
+        "R065"
+      ],
+      "title": "End to end reindex",
+      "given": "Existing stones, an orphan projection and one active ALL job",
+      "when": "Create, update and delete stones during the job; restart; hold Kafka unavailable; supersede a target version and dead-letter one item",
+      "then": "Creation remains available; high-water-mark scope is finite; resume does not repeat completed items; ENQUEUED is not DONE; counts lead to SUCCEEDED or COMPLETED_WITH_ERRORS with item evidence",
+      "method": "Reindex job integration and operator status inspection"
+    },
+    {
+      "id": "A34",
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "title": "Environment loss during integration",
+      "given": "A requested batch with declared components and isolated endpoints",
+      "when": "Stop a required database, API or browser dependency between precheck and completion; change content after a passing run",
+      "then": "The batch starts only after every prerequisite passes; the watcher detects loss and marks BLOCKED_ENVIRONMENT; changed content invalidates evidence; original application data is untouched",
+      "method": "Readiness wrapper failure injection"
+    }
+  ],
+  "implementation": "Each browser-required ticket creates its own executable quality/e2e/<TASK-ID>/*.spec.ts suite for that ticket contribution; full scenarios are aggregated at release"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "mode": "application",
+  "profile": "backend-catalog",
+  "task_ids": [
+    "T0003-005"
+  ],
+  "static_packet": ".cache/static-analysis/application-packet.json",
+  "static_report": "REPLACE_WITH_FRESH_STATIC_REPORT",
+  "candidate_files": [
+    "stone-shelter-api/pom.xml",
+    "stone-shelter-api/mvnw",
+    "stone-shelter-api/.mvn/wrapper/maven-wrapper.properties",
+    "REPLACE_WITH_ALL_RELEVANT_CONFIGURATION_MIGRATION_AND_DEPLOYMENT_INPUTS"
+  ],
+  "selectors": [
+    "StoneCatalogControllerTest"
+  ],
+  "environment": {
+    "MAVEN_HOME": "REPLACE_WITH_PREPARED_MAVEN_HOME",
+    "DOCKER_HOST": "REPLACE_WITH_VERIFIED_DOCKER_ENDPOINT",
+    "BACKEND_HEALTH_URL": "REPLACE_WITH_APPROVED_HEALTH_ENDPOINT",
+    "UI_URL": "REPLACE_WITH_APPROVED_UI_URL",
+    "DEPLOYMENT_IDENTITY_URL": "REPLACE_WITH_APPROVED_DEPLOYMENT_METADATA_ENDPOINT"
+  },
+  "required_secrets": [],
+  "services": [
+    {
+      "name": "backend",
+      "stages": [
+        "browser"
+      ],
+      "url_env": "BACKEND_HEALTH_URL",
+      "expect_json": {
+        "status": "UP"
+      }
+    }
+  ],
+  "scenario_ids": [
+    "REPLACE_WITH_SELECTED_CANONICAL_SCENARIO_ID"
+  ],
+  "poll_seconds": 2,
+  "timeout_seconds": 600
+}

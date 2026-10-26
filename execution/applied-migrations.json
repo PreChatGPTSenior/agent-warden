@@ -1,0 +1,18 @@
+{
+  "paths": [
+    "stone-shelter-api/src/main/resources/db/changelog/0003-create-stone-table.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0006-create-stone-photo-tables.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0007-create-stone-reservation-table.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0008-create-stone-photo-drafts.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0014-enable-vector-extension.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0017-create-stone-document-index.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0018-create-stone-card-embedding.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0019-create-outbox-event.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0020-add-outbox-delivery.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0021-create-stone-index-source-version.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0022-create-stone-card-index-processing.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0023-create-stone-card-reindex-jobs.xml",
+    "stone-shelter-api/src/main/resources/db/changelog/0024-create-model-token-budget.xml"
+  ],
+  "rule": "Inherited migrations are immutable; add new uniquely numbered migrations."
+}

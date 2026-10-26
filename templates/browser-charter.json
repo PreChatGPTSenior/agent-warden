@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "scenarios": [
+    {
+      "id": "CATALOG-VISIBILITY",
+      "steps": [
+        {"action": "goto", "path": "/"},
+        {"action": "expect_visible", "target": {"role": "heading", "name": "Stone Catalog fixture"}},
+        {"action": "expect_count", "target": {"role": "listitem"}, "value": 2},
+        {"action": "expect_text", "target": {"test_id": "total"}, "value": "2 available stones"}
+      ]
+    },
+    {
+      "id": "CATALOG-SEARCH",
+      "steps": [
+        {"action": "goto", "path": "/"},
+        {"action": "fill", "target": {"label": "Search stones"}, "value": "gran"},
+        {"action": "expect_count", "target": {"role": "listitem"}, "value": 1},
+        {"action": "expect_text", "target": {"role": "listitem"}, "value": "Granite"},
+        {"action": "fill", "target": {"label": "Search stones"}, "value": "missing"},
+        {"action": "expect_text", "target": {"test_id": "empty"}, "value": "No stones found"},
+        {"action": "expect_count", "target": {"role": "listitem"}, "value": 0}
+      ]
+    }
+  ]
+}

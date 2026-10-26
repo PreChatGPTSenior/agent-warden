@@ -1,0 +1,1288 @@
+{
+  "schema": 1,
+  "source_repository": "https://github.com/PreChatGPTSenior/stone-shelter-spec",
+  "source_commit": "7fb0664acd24fff1f4f25540469b04c65d22a14d",
+  "source_branch": "codex/t0010-008-process-supervision",
+  "method": "Allowlisted tracked files copied from clean working tree; no source Git history imported",
+  "excluded": [
+    "application source directories",
+    "product-baseline",
+    "runtime state and traces",
+    "credentials and environment files",
+    "dependencies and build outputs",
+    "Git metadata and history",
+    "engineering-log (never accessed)"
+  ],
+  "files": [
+    {
+      "source": ".agents/skills/stone-browser-acceptance/SKILL.md",
+      "destination": ".agents/skills/stone-browser-acceptance/SKILL.md",
+      "sha256": "6721a7a835f796adf76cca0bbfc2f4c46e0412c73da1fe495697ff0f0511a5ac"
+    },
+    {
+      "source": ".agents/skills/stone-develop-ticket/SKILL.md",
+      "destination": ".agents/skills/stone-develop-ticket/SKILL.md",
+      "sha256": "3a86d89081110e12052af1c3a530079fafca7db3237350356cbb9d3a586ac6ce"
+    },
+    {
+      "source": ".agents/skills/stone-environment-readiness/SKILL.md",
+      "destination": ".agents/skills/stone-environment-readiness/SKILL.md",
+      "sha256": "27cc7e91431177e9f586b7711c598da4681516f7551ba35be6b387cc9e0c553c"
+    },
+    {
+      "source": ".agents/skills/stone-plan-batch/SKILL.md",
+      "destination": ".agents/skills/stone-plan-batch/SKILL.md",
+      "sha256": "b34e51929413c3b0b4c2f390722ff4337c0b81d3349c979c2a4994610af2d494"
+    },
+    {
+      "source": ".agents/skills/stone-review-ticket/SKILL.md",
+      "destination": ".agents/skills/stone-review-ticket/SKILL.md",
+      "sha256": "bf2aae95bd83d76226dd0c763eaea34c1702e8bad5b0b852870d0dc6b46ee258"
+    },
+    {
+      "source": ".agents/skills/stone-run-batch/SKILL.md",
+      "destination": ".agents/skills/stone-run-batch/SKILL.md",
+      "sha256": "aaf49fa9b2b9d7b5a45de6988b25149d0b6faa551246a2d0d46a99ba65d54a83"
+    },
+    {
+      "source": ".agents/skills/stone-test-ticket/SKILL.md",
+      "destination": ".agents/skills/stone-test-ticket/SKILL.md",
+      "sha256": "c48e2863afdb3ce3dbeadd1e880f71b7c6fd132208fa888a246cca3cd86d4816"
+    },
+    {
+      "source": ".github/workflows/execution-package.yml",
+      "destination": "docs/imported/execution-package.workflow.yml",
+      "sha256": "f941b79e68e5861d86c5aeaf14779a1b99faf84f877774f2a35a8ee9b7640e89"
+    },
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "dc480179ae88c10f689b900930166dd238e779d55a346477b75af006edf6aaa0"
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "docs/imported/stone-shelter-instructions.md",
+      "sha256": "14a15e117c56564d61ef4e4cea056335d682441abefdb431b19aee37caac16bf"
+    },
+    {
+      "source": "README.md",
+      "destination": "docs/imported/stone-shelter-readme.md",
+      "sha256": "4eedb318116d863df22334dbe3ddcc9574cd71a3781260a629f7ea746145178f"
+    },
+    {
+      "source": "START-HERE.md",
+      "destination": "docs/imported/stone-shelter-start-here.md",
+      "sha256": "a9bbe4ea6eb511493521afdcc51e82b6d551e1bebe1b96320efd33395bd378e4"
+    },
+    {
+      "source": "docs/adr/0001-execution-authority.md",
+      "destination": "docs/adr/0001-execution-authority.md",
+      "sha256": "cb55b72e53537b472680f1cf9a410651ef7f2c83bab4f10f9b2affb577a45fda"
+    },
+    {
+      "source": "docs/adr/0002-frameworks-and-gates.md",
+      "destination": "docs/adr/0002-frameworks-and-gates.md",
+      "sha256": "e62be0e90bcd1c4bf266fd087525b75e8a1b4414293cd990b1e770cbd15bbc0d"
+    },
+    {
+      "source": "docs/adr/0010-trusted-process-group-boundary.md",
+      "destination": "docs/adr/0010-trusted-process-group-boundary.md",
+      "sha256": "b0c1eaf28fa52ecd627e108872d16dd7c9d08993038993d76ffee92f98dc0082"
+    },
+    {
+      "source": "docs/architecture.md",
+      "destination": "docs/architecture.md",
+      "sha256": "7df8a33590d1f3592e5c18a6eb163f1899e2f37dbc0ced26b19489c7bff20740"
+    },
+    {
+      "source": "docs/contracts-and-data.md",
+      "destination": "docs/contracts-and-data.md",
+      "sha256": "2ba6c61dfbbb6be1a339ac60573643a440f3168f4e57d4d49cf342445c4efd0f"
+    },
+    {
+      "source": "docs/execution/agent-models.md",
+      "destination": "docs/execution/agent-models.md",
+      "sha256": "9a08d16e9a6bf44d220fcaf9984b0a6b90ae9ab49f46bbdb2655aebc246edc99"
+    },
+    {
+      "source": "docs/execution/commands-to-assets.md",
+      "destination": "docs/execution/commands-to-assets.md",
+      "sha256": "6d3d6a872f3268ccbfbaa3c12dea7d64afe75b4632ea17ce24637661b6052371"
+    },
+    {
+      "source": "docs/execution/handoffs.md",
+      "destination": "docs/execution/handoffs.md",
+      "sha256": "ac42bc6e27f260bce95b9ce4daee3ca983dc4d3f24cc73f354afc3fcb187e90f"
+    },
+    {
+      "source": "docs/execution/parallel-map.md",
+      "destination": "docs/execution/parallel-map.md",
+      "sha256": "187e1ebb02aaef3866d0f55e17888324713d32bce0a436a82437ab5ebfeb1751"
+    },
+    {
+      "source": "docs/execution/preparation-readiness.md",
+      "destination": "docs/execution/preparation-readiness.md",
+      "sha256": "4f185b01af3ba403556c0d32b2d434ad7cf702a621c48287225801671cca8245"
+    },
+    {
+      "source": "docs/execution/recovery-runbook.md",
+      "destination": "docs/execution/recovery-runbook.md",
+      "sha256": "c3f82955f04580479cfeadf97844562b209df7ec0e9a2298af51af10c8bb7d60"
+    },
+    {
+      "source": "docs/execution/repository-map.md",
+      "destination": "docs/execution/repository-map.md",
+      "sha256": "d9e476cdb4aae8cb8c47d4a2a6dd769263330de8103fd7315430e4eb62a92509"
+    },
+    {
+      "source": "docs/execution/test-environment-protocol.md",
+      "destination": "docs/execution/test-environment-protocol.md",
+      "sha256": "ade7ee398dee888c715f9a0f75f809a020ae8ea469e297f8355bac2352c49f43"
+    },
+    {
+      "source": "docs/execution/workflow-assurance.md",
+      "destination": "docs/execution/workflow-assurance.md",
+      "sha256": "0c166b029d4a470f26ce11264b4e61df332c3cfd22e2744fc4ac8b8fad7fb22a"
+    },
+    {
+      "source": "docs/out-of-scope-decisions.md",
+      "destination": "docs/out-of-scope-decisions.md",
+      "sha256": "94e4d38ee47fe049110a0ddd9090aa2221fcdc4d2618bb73ca56ead4548dfb76"
+    },
+    {
+      "source": "docs/quality-gates.md",
+      "destination": "docs/quality-gates.md",
+      "sha256": "6fdb2af01526f4deb7616292d541765cc67a3851db3ed3efc6464dc1467debc2"
+    },
+    {
+      "source": "docs/verification.md",
+      "destination": "docs/verification.md",
+      "sha256": "c6988e9a64094226c09ce2739b6ac9eddbd19281fbd28fb46fef8678f199331d"
+    },
+    {
+      "source": "environment-setup.md",
+      "destination": "environment-setup.md",
+      "sha256": "b569263f9f04d0050a89f0d6f5c4d9dccb39d6e7bb1c9b0a558e81cacd7b491d"
+    },
+    {
+      "source": "execution/agent-budgets.json",
+      "destination": "execution/agent-budgets.json",
+      "sha256": "636d51b617ec3bfc36084ebbddc194fcdfb39174188939b27e903feda52a091b"
+    },
+    {
+      "source": "execution/agent-models.json",
+      "destination": "execution/agent-models.json",
+      "sha256": "39e49eb17cde4652329956ec55a165763c0bdf8fe7b77627dc1145864a6da67e"
+    },
+    {
+      "source": "execution/applied-migrations.json",
+      "destination": "execution/applied-migrations.json",
+      "sha256": "1eeadef7862f353b1362f91e2fd11df36693eaa74c559422b03dd4867ed708c5"
+    },
+    {
+      "source": "execution/dependency-waves.json",
+      "destination": "execution/dependency-waves.json",
+      "sha256": "0d715cd7e7b34a36d79a0b87e59dd74b5128fc4f11142acea5927d8b5d79883a"
+    },
+    {
+      "source": "execution/prompts/browser_planner.md",
+      "destination": "execution/prompts/browser_planner.md",
+      "sha256": "ad74d1d147282602aecab33c9234a4e842d2d603a37818cef183480c8057b17f"
+    },
+    {
+      "source": "execution/prompts/browser_review.md",
+      "destination": "execution/prompts/browser_review.md",
+      "sha256": "a9721af269352b663326f761096259775c8f4b4ae61ca5ec5329b1be715f7902"
+    },
+    {
+      "source": "execution/prompts/code_review.md",
+      "destination": "execution/prompts/code_review.md",
+      "sha256": "81711234b611a8cf53b7d76883e448934de42b4065c7e965ba7bd483d55d1e00"
+    },
+    {
+      "source": "execution/prompts/developer.md",
+      "destination": "execution/prompts/developer.md",
+      "sha256": "c9930608eae59c9147f29d448e2a4b11cb8d7c6c3f385bbc9776f844a046235a"
+    },
+    {
+      "source": "execution/prompts/test_engineer.md",
+      "destination": "execution/prompts/test_engineer.md",
+      "sha256": "e684ebe4803a6ec40b74c41cfdfb6818b1647f854aa2eb3aebf2bf736259b68c"
+    },
+    {
+      "source": "execution/prompts/test_review.md",
+      "destination": "execution/prompts/test_review.md",
+      "sha256": "55a5fc8eb9a8f13c75bd7612648434bf5f39a9c84eb6356ad6c5ceab494a5012"
+    },
+    {
+      "source": "execution/runtime-lock.json",
+      "destination": "execution/runtime-lock.json",
+      "sha256": "475525e1223961db69452812600c63f2565044288eb7d56baade47673ce8449d"
+    },
+    {
+      "source": "execution/tasks.json",
+      "destination": "execution/tasks.json",
+      "sha256": "13657297141c83150f5debfabc5525ad3d16404dd439bf758be2dd73044d9654"
+    },
+    {
+      "source": "execution/tickets/T0001-001.md",
+      "destination": "execution/tickets/T0001-001.md",
+      "sha256": "969f2a62169d383a91389be750c9a37d9843b28c1285762513d002480a6057d0"
+    },
+    {
+      "source": "execution/tickets/T0001-002.md",
+      "destination": "execution/tickets/T0001-002.md",
+      "sha256": "e2a4a07cf1eedcc1994bae00ef7d540e06646d34bc17f528604401b23558bfec"
+    },
+    {
+      "source": "execution/tickets/T0001-003.md",
+      "destination": "execution/tickets/T0001-003.md",
+      "sha256": "f239aac3ef826d7f0aa7f2b736ca8588ddd2db6c3badd4b72e851b28acfd0a7b"
+    },
+    {
+      "source": "execution/tickets/T0001-004.md",
+      "destination": "execution/tickets/T0001-004.md",
+      "sha256": "a08cfa373af2c77e9af70c76e364dc77dfbe0249886c0990f246623c41b1c361"
+    },
+    {
+      "source": "execution/tickets/T0001-005.md",
+      "destination": "execution/tickets/T0001-005.md",
+      "sha256": "5c09b71cb9e1ee7d933d558e5d7b0ddc6a7f467a117a080ec0714b66fee699c4"
+    },
+    {
+      "source": "execution/tickets/T0001-006.md",
+      "destination": "execution/tickets/T0001-006.md",
+      "sha256": "ef7a0002302a5c159335105e5d7357b6e0e88844b16ac6e0c0488869e95911dc"
+    },
+    {
+      "source": "execution/tickets/T0001-007.md",
+      "destination": "execution/tickets/T0001-007.md",
+      "sha256": "ba94077131f6f1915252a06fd50acd942cdf3292e5abcebf0cea4201853be102"
+    },
+    {
+      "source": "execution/tickets/T0001-008.md",
+      "destination": "execution/tickets/T0001-008.md",
+      "sha256": "ae0bc0e1caf0892e88c1ae877c33f5d249ad9c6ce902cf580a239340c4788b82"
+    },
+    {
+      "source": "execution/tickets/T0002-001.md",
+      "destination": "execution/tickets/T0002-001.md",
+      "sha256": "c9e95b88eb2fd2f4b8b78bac385fcd2037022f7439fe3fe7904d822b9eebaee7"
+    },
+    {
+      "source": "execution/tickets/T0002-002.md",
+      "destination": "execution/tickets/T0002-002.md",
+      "sha256": "c77e5a5c9154d655a3584b619af697d4d7e096d202f83f4b360206ca08c05f7c"
+    },
+    {
+      "source": "execution/tickets/T0002-003.md",
+      "destination": "execution/tickets/T0002-003.md",
+      "sha256": "85db529c044c978be4f75455c16a02663b703df61cf44fdc121b08cb88a6e4d4"
+    },
+    {
+      "source": "execution/tickets/T0002-004.md",
+      "destination": "execution/tickets/T0002-004.md",
+      "sha256": "a73b7813a36ffd931f03da345a8b6b8f8d61da2f4093487b47f79d00b31bb848"
+    },
+    {
+      "source": "execution/tickets/T0002-005.md",
+      "destination": "execution/tickets/T0002-005.md",
+      "sha256": "d6abea8ca8caf56aa31ec40c57a072a96d845689874615d4d84325354d1ff215"
+    },
+    {
+      "source": "execution/tickets/T0003-001.md",
+      "destination": "execution/tickets/T0003-001.md",
+      "sha256": "814ced8d8ebf6ddf07b33fc7ed50425d8959a32cff0e5a84c73d2f82d10a108f"
+    },
+    {
+      "source": "execution/tickets/T0003-002.md",
+      "destination": "execution/tickets/T0003-002.md",
+      "sha256": "3c96c02a71503bd616ebae759cc3ea2964a5270604eeea5bc35b92eb93f9f347"
+    },
+    {
+      "source": "execution/tickets/T0003-003.md",
+      "destination": "execution/tickets/T0003-003.md",
+      "sha256": "657a30db5cb63f2e72a032d650fb26502ae326b1326b725908493ccf0e3f7daa"
+    },
+    {
+      "source": "execution/tickets/T0003-004.md",
+      "destination": "execution/tickets/T0003-004.md",
+      "sha256": "24558a4cb2905cbdca1d199b3945a8817fbd37d9d065060b242f76d3c3d40881"
+    },
+    {
+      "source": "execution/tickets/T0003-005.md",
+      "destination": "execution/tickets/T0003-005.md",
+      "sha256": "9107f3fde800289edc29dea9c4ae4c62c49f0adc95444cb3a8cb24f96cbfaf9a"
+    },
+    {
+      "source": "execution/tickets/T0003-006.md",
+      "destination": "execution/tickets/T0003-006.md",
+      "sha256": "2849296af7cf56928cad71cfc956d691e986464a1b050cbb802766ec33bf762f"
+    },
+    {
+      "source": "execution/tickets/T0003-007.md",
+      "destination": "execution/tickets/T0003-007.md",
+      "sha256": "3dcf950eaea0562b27ce43bcf74bca9e002971a2b580ca69f34a2763e072ca6c"
+    },
+    {
+      "source": "execution/tickets/T0004-001.md",
+      "destination": "execution/tickets/T0004-001.md",
+      "sha256": "0299f9effc0750244defd95cc8bfac32e12c48f4d5563346eb99b304768706a7"
+    },
+    {
+      "source": "execution/tickets/T0004-002.md",
+      "destination": "execution/tickets/T0004-002.md",
+      "sha256": "8333b0720772d4ee5002be88089ad94589b073447ab8592495432fece138eb16"
+    },
+    {
+      "source": "execution/tickets/T0004-003.md",
+      "destination": "execution/tickets/T0004-003.md",
+      "sha256": "50a8bfabc8b7a83ff663437e1f7b7019586535e3f0e6294d9cb1cc64d50d3a8e"
+    },
+    {
+      "source": "execution/tickets/T0004-004.md",
+      "destination": "execution/tickets/T0004-004.md",
+      "sha256": "85149e0e7abdf583e022560a8d22bbbb1219c7e6177dcc2dc0a6693a1933f955"
+    },
+    {
+      "source": "execution/tickets/T0004-005.md",
+      "destination": "execution/tickets/T0004-005.md",
+      "sha256": "bfdca4f74bb3f186ecd126d3c8a3589f82255003b6d6b57ba8a20076153d9755"
+    },
+    {
+      "source": "execution/tickets/T0004-006.md",
+      "destination": "execution/tickets/T0004-006.md",
+      "sha256": "358c609f7d2031815505dee50632425ca9199bb7a65e72c3be27aa02a63a62c2"
+    },
+    {
+      "source": "execution/tickets/T0005-001.md",
+      "destination": "execution/tickets/T0005-001.md",
+      "sha256": "55324f65499c1feb236468f66a2676749fe2b3696023d5ea8fba389cd1880db1"
+    },
+    {
+      "source": "execution/tickets/T0005-002.md",
+      "destination": "execution/tickets/T0005-002.md",
+      "sha256": "22024376859a0e9e5acbcbdc4b350940a62d8323ebed9a6eb45d42ae3aef6e55"
+    },
+    {
+      "source": "execution/tickets/T0005-003.md",
+      "destination": "execution/tickets/T0005-003.md",
+      "sha256": "3c2feefaed6722adf7229088981088dc50ab7ad8351cca0e54455a15ca4389b6"
+    },
+    {
+      "source": "execution/tickets/T0005-004.md",
+      "destination": "execution/tickets/T0005-004.md",
+      "sha256": "b799902a5a1800743f1d9f9dc43d0a82c27ed6a7f7a5050576d5bcfb5d3a8752"
+    },
+    {
+      "source": "execution/tickets/T0005-005.md",
+      "destination": "execution/tickets/T0005-005.md",
+      "sha256": "a7b659f0572614481223bab81992eba853fc02e03b1c6f6f8badd29c78afca54"
+    },
+    {
+      "source": "execution/tickets/T0005-006.md",
+      "destination": "execution/tickets/T0005-006.md",
+      "sha256": "d0231de98a539c8cb9a93a7487a4ccb5ba21acd792fc52662576f6b9ea23d20a"
+    },
+    {
+      "source": "execution/tickets/T0005-007.md",
+      "destination": "execution/tickets/T0005-007.md",
+      "sha256": "3964a429e36cc647c41e463fd445d19ba19e092c9b0d790f4ae530ce6b1e4cc3"
+    },
+    {
+      "source": "execution/tickets/T0006-001.md",
+      "destination": "execution/tickets/T0006-001.md",
+      "sha256": "633b835df6d1d2cb00f6ef1ba0333c76cef7277cf9501f14ef0277dfe51f69d7"
+    },
+    {
+      "source": "execution/tickets/T0006-002.md",
+      "destination": "execution/tickets/T0006-002.md",
+      "sha256": "7484d2cf17d15aceaf29bb3cfa7cf5330024a6c1ae8a1d3dba2fb2db58001857"
+    },
+    {
+      "source": "execution/tickets/T0006-003.md",
+      "destination": "execution/tickets/T0006-003.md",
+      "sha256": "4eb4f958c6148e518c612d0cc0dd617e695273ae245e6b9eac55f95524c6ed01"
+    },
+    {
+      "source": "execution/tickets/T0006-004.md",
+      "destination": "execution/tickets/T0006-004.md",
+      "sha256": "006aa24b6b7f946f5c7a4fac9eb330e052e019b9c3df98a5c4bda9d94a818f34"
+    },
+    {
+      "source": "execution/tickets/T0006-005.md",
+      "destination": "execution/tickets/T0006-005.md",
+      "sha256": "8e313b2f7fc14915aa13ff46690c95dd549866060873a4d8a03a74ce2c6328a6"
+    },
+    {
+      "source": "execution/tickets/T0006-006.md",
+      "destination": "execution/tickets/T0006-006.md",
+      "sha256": "01ccd166b29bfb5a8b4c20016adf0f71d9111834a604c8336668c2bad3d62fdc"
+    },
+    {
+      "source": "execution/tickets/T0007-001.md",
+      "destination": "execution/tickets/T0007-001.md",
+      "sha256": "83a8bb947a1e77c577baa643970b62530f0f5407f8e9e43f4d4361bc8e5c8b0a"
+    },
+    {
+      "source": "execution/tickets/T0007-002.md",
+      "destination": "execution/tickets/T0007-002.md",
+      "sha256": "d38aee35c90be64b23e39c5de2b5e5a7aff6ea6be83aab5a362deab78a4654e3"
+    },
+    {
+      "source": "execution/tickets/T0007-003.md",
+      "destination": "execution/tickets/T0007-003.md",
+      "sha256": "ced1ba8e14bc28d6db13ebf8c033a846bc66b02843edacea2e8f1b6b2d080db7"
+    },
+    {
+      "source": "execution/tickets/T0007-004.md",
+      "destination": "execution/tickets/T0007-004.md",
+      "sha256": "e870805e3ef2bdef449da98770e68d9089f2bf7399bcd42c3bb9cf6053337028"
+    },
+    {
+      "source": "execution/tickets/T0008-001.md",
+      "destination": "execution/tickets/T0008-001.md",
+      "sha256": "fe3fffc04984453b2ef9e0551a8e68b22146df8ac248cc71865d9a3dd36ed498"
+    },
+    {
+      "source": "execution/tickets/T0008-002.md",
+      "destination": "execution/tickets/T0008-002.md",
+      "sha256": "965b649025da128bbd89408486f12a25b2c0f74b611d3c6d619e9eda7d7b1259"
+    },
+    {
+      "source": "execution/tickets/T0008-003.md",
+      "destination": "execution/tickets/T0008-003.md",
+      "sha256": "dc0dff6e872a595a2432705458b73bcdbc4f279546d6914570069a5ca0de1557"
+    },
+    {
+      "source": "execution/tickets/T0008-004.md",
+      "destination": "execution/tickets/T0008-004.md",
+      "sha256": "d05243a3d5aa372ad4797ebca8aca151b618b9f06e4d670f39dfa0ff9d4f88fa"
+    },
+    {
+      "source": "execution/tickets/T0008-005.md",
+      "destination": "execution/tickets/T0008-005.md",
+      "sha256": "9357c983c84399d5e650cc2af610ecf5b869e69c129889434f244460ea1540f4"
+    },
+    {
+      "source": "execution/traceability.json",
+      "destination": "execution/traceability.json",
+      "sha256": "4cd5bd3a4b3e8fd5edbe54e2d380ec4f145c50aca43132a771834e352724ad29"
+    },
+    {
+      "source": "openspec/changes/0001-foundation/.openspec.yaml",
+      "destination": "openspec/changes/0001-foundation/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0001-foundation/design.md",
+      "destination": "openspec/changes/0001-foundation/design.md",
+      "sha256": "b04f987a42c08c3e63b5e8460a69bde81b2e6b81777a13ccdcbeaa311c6581e6"
+    },
+    {
+      "source": "openspec/changes/0001-foundation/proposal.md",
+      "destination": "openspec/changes/0001-foundation/proposal.md",
+      "sha256": "e40389b3c6b6fa88e82902fc47ca943116f4ec3cab86c7c463515c60790f3b23"
+    },
+    {
+      "source": "openspec/changes/0001-foundation/specs/foundation/spec.md",
+      "destination": "openspec/changes/0001-foundation/specs/foundation/spec.md",
+      "sha256": "a127f388cdb789e8fe8e2bbba4b4b4788b3201d489876a0fb551a23800ec410f"
+    },
+    {
+      "source": "openspec/changes/0001-foundation/tasks.md",
+      "destination": "openspec/changes/0001-foundation/tasks.md",
+      "sha256": "17ffdaaf67d4fab0915ceb93085480aa7cdee32289a41b1ac5b4805ecda20f36"
+    },
+    {
+      "source": "openspec/changes/0002-catalog-details/.openspec.yaml",
+      "destination": "openspec/changes/0002-catalog-details/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0002-catalog-details/design.md",
+      "destination": "openspec/changes/0002-catalog-details/design.md",
+      "sha256": "400d69f5e72715e960afd8f20ee6b9470c51821171546ea7a9fa1059029820f5"
+    },
+    {
+      "source": "openspec/changes/0002-catalog-details/proposal.md",
+      "destination": "openspec/changes/0002-catalog-details/proposal.md",
+      "sha256": "5284c8cf29c78b9f8b990d2251b1f164c243c184f1743f3ad177e5a6c9b38c57"
+    },
+    {
+      "source": "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+      "destination": "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+      "sha256": "914ad5c25e6a08167bddae88201ef472039dbb53d02767c5fa8d0001bb68ceca"
+    },
+    {
+      "source": "openspec/changes/0002-catalog-details/tasks.md",
+      "destination": "openspec/changes/0002-catalog-details/tasks.md",
+      "sha256": "0c81dc08d440132dcf8d0f27df9940d604798c87b0cc04b48ba80870f9147d95"
+    },
+    {
+      "source": "openspec/changes/0003-stone-management/.openspec.yaml",
+      "destination": "openspec/changes/0003-stone-management/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0003-stone-management/design.md",
+      "destination": "openspec/changes/0003-stone-management/design.md",
+      "sha256": "9cd6b9d40aee999d2bcd328e4d5de5c9bf8c829e0405dbe8d8fde4b45b629e5c"
+    },
+    {
+      "source": "openspec/changes/0003-stone-management/proposal.md",
+      "destination": "openspec/changes/0003-stone-management/proposal.md",
+      "sha256": "b3cf79cd5e8784fca463e896753d45ab15d9dadb88b52bc72c90b2343ddc6132"
+    },
+    {
+      "source": "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+      "destination": "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+      "sha256": "b5ad1f9bdb13695998dbb32d8e4cedc2ea494e36022e545eae100a4a89ec3aec"
+    },
+    {
+      "source": "openspec/changes/0003-stone-management/tasks.md",
+      "destination": "openspec/changes/0003-stone-management/tasks.md",
+      "sha256": "e8addc05f3cb672514542a785567a076a7fbf1d6b8fcf999a537c3f77866d047"
+    },
+    {
+      "source": "openspec/changes/0004-adoption-lifecycle/.openspec.yaml",
+      "destination": "openspec/changes/0004-adoption-lifecycle/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0004-adoption-lifecycle/design.md",
+      "destination": "openspec/changes/0004-adoption-lifecycle/design.md",
+      "sha256": "87e2d363b5cb776bc33d7734340ee14efd94a4c032c5e2afb79f4c079ed64a51"
+    },
+    {
+      "source": "openspec/changes/0004-adoption-lifecycle/proposal.md",
+      "destination": "openspec/changes/0004-adoption-lifecycle/proposal.md",
+      "sha256": "02210711ff99721be1662583fcbb78f8c46a96a7819bde9c0b6cf6b593561bb1"
+    },
+    {
+      "source": "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+      "destination": "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+      "sha256": "a288d837b9c7ae6e91dfcd91930af4f96b2cf790534818068bd26f214310e935"
+    },
+    {
+      "source": "openspec/changes/0004-adoption-lifecycle/tasks.md",
+      "destination": "openspec/changes/0004-adoption-lifecycle/tasks.md",
+      "sha256": "7cd687bb76e61c0c5047c5af85b5cb7bcd0fdb8037f9661e7d01077d972aca6d"
+    },
+    {
+      "source": "openspec/changes/0005-reliable-indexing/.openspec.yaml",
+      "destination": "openspec/changes/0005-reliable-indexing/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0005-reliable-indexing/design.md",
+      "destination": "openspec/changes/0005-reliable-indexing/design.md",
+      "sha256": "5440426fe0881f4baf760788d421ea3983da722b10133d7895a9adebdf0b9b03"
+    },
+    {
+      "source": "openspec/changes/0005-reliable-indexing/proposal.md",
+      "destination": "openspec/changes/0005-reliable-indexing/proposal.md",
+      "sha256": "01ae065c5529ba59a8ac39f826395f540590b00ea8dab317259283317fbbf3e2"
+    },
+    {
+      "source": "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+      "destination": "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+      "sha256": "63fb24dd657cdf28899fdaf83820f2852274dca1f9e841a531be2e52ec92fa89"
+    },
+    {
+      "source": "openspec/changes/0005-reliable-indexing/tasks.md",
+      "destination": "openspec/changes/0005-reliable-indexing/tasks.md",
+      "sha256": "48ac648e896bd80f597d1e81a93b94410b4527e89d8c6dcdce04d621005f6dee"
+    },
+    {
+      "source": "openspec/changes/0006-spring-ai-conversation/.openspec.yaml",
+      "destination": "openspec/changes/0006-spring-ai-conversation/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0006-spring-ai-conversation/design.md",
+      "destination": "openspec/changes/0006-spring-ai-conversation/design.md",
+      "sha256": "8e7204e686138543dbcac3d495618c08a3379c2465cd442f5c07145be88af283"
+    },
+    {
+      "source": "openspec/changes/0006-spring-ai-conversation/proposal.md",
+      "destination": "openspec/changes/0006-spring-ai-conversation/proposal.md",
+      "sha256": "0a4ea6c282b3fe3f414fa3bf7adc7b03e20ad817c168ebd04da31eba2d832926"
+    },
+    {
+      "source": "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+      "destination": "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+      "sha256": "17b64d370460bcfeaafd4be55f6b1c493a01fdf459e80024300402dee773a32a"
+    },
+    {
+      "source": "openspec/changes/0006-spring-ai-conversation/tasks.md",
+      "destination": "openspec/changes/0006-spring-ai-conversation/tasks.md",
+      "sha256": "7db747fb403f21a45fcf40caa5253fce7b4811eff656de0cf7b001cc9aca34d4"
+    },
+    {
+      "source": "openspec/changes/0007-streaming-browser/.openspec.yaml",
+      "destination": "openspec/changes/0007-streaming-browser/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0007-streaming-browser/design.md",
+      "destination": "openspec/changes/0007-streaming-browser/design.md",
+      "sha256": "363922539a8a597f7fab0ca37617d0a8bcd10cefb1c21900ecc4e52800e5f76c"
+    },
+    {
+      "source": "openspec/changes/0007-streaming-browser/proposal.md",
+      "destination": "openspec/changes/0007-streaming-browser/proposal.md",
+      "sha256": "d9313e2d103829b9d2b0f7df371436896033ea76345618b99769fb3c2738e5ed"
+    },
+    {
+      "source": "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+      "destination": "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+      "sha256": "4bdccd84555c475e0808554355161f42aceec6634648d2598b4d133b7909bc83"
+    },
+    {
+      "source": "openspec/changes/0007-streaming-browser/tasks.md",
+      "destination": "openspec/changes/0007-streaming-browser/tasks.md",
+      "sha256": "0282293a65339491a8d0aa2a5b61fea620f0c554c42783021b5961407b748853"
+    },
+    {
+      "source": "openspec/changes/0008-release-qualification/.openspec.yaml",
+      "destination": "openspec/changes/0008-release-qualification/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0008-release-qualification/design.md",
+      "destination": "openspec/changes/0008-release-qualification/design.md",
+      "sha256": "9a892fd6d9f877e52498ff8b96fe24f2f72bc577a4be7c13613ef5d8cd714a88"
+    },
+    {
+      "source": "openspec/changes/0008-release-qualification/proposal.md",
+      "destination": "openspec/changes/0008-release-qualification/proposal.md",
+      "sha256": "0b5a490a18310c04774c44bbe80206518c5d4fba21bb12ce578e8d70f03da294"
+    },
+    {
+      "source": "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+      "destination": "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+      "sha256": "8c4b809507d0ded87b01aaac70e51c14e6aeea58877ba7093586aeaccfad31e8"
+    },
+    {
+      "source": "openspec/changes/0008-release-qualification/tasks.md",
+      "destination": "openspec/changes/0008-release-qualification/tasks.md",
+      "sha256": "cee4a7fa9032314f007326ac14565e3a3546a35463c1bf2a94e863134abb7305"
+    },
+    {
+      "source": "openspec/changes/0009-agent-model-routing/.openspec.yaml",
+      "destination": "openspec/changes/0009-agent-model-routing/.openspec.yaml",
+      "sha256": "e2ebaebee255ccc1e09b64ba38d9b09c360a7392fc110a48ca2525e1ea49fa46"
+    },
+    {
+      "source": "openspec/changes/0009-agent-model-routing/design.md",
+      "destination": "openspec/changes/0009-agent-model-routing/design.md",
+      "sha256": "2a55441e68d8236d71614feceb7061c5eaed19294cc904c2bd736db1474c76de"
+    },
+    {
+      "source": "openspec/changes/0009-agent-model-routing/proposal.md",
+      "destination": "openspec/changes/0009-agent-model-routing/proposal.md",
+      "sha256": "2e65fe00f8133dbae8c0af9f235b127f6e9da95735dce1e2de62afe78ad07d24"
+    },
+    {
+      "source": "openspec/changes/0009-agent-model-routing/specs/agent-model-routing/spec.md",
+      "destination": "openspec/changes/0009-agent-model-routing/specs/agent-model-routing/spec.md",
+      "sha256": "861cc1b26f77ff9bdc4abe052ecd00d47390a41cc68030f01694f6bab1c928bb"
+    },
+    {
+      "source": "openspec/changes/0009-agent-model-routing/tasks.md",
+      "destination": "openspec/changes/0009-agent-model-routing/tasks.md",
+      "sha256": "986cebabf415e07060ae51950a60875231b2d41f1d0f9fa29625336912625071"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/STOP-POINT-2026-10-25.md",
+      "destination": "openspec/changes/0010-workflow-assurance/STOP-POINT-2026-10-25.md",
+      "sha256": "78c2301994e0e69b178e8abc55515f453aecd0a3b500b02a0220856b8c06962e"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/batch-001-003-report.md",
+      "destination": "openspec/changes/0010-workflow-assurance/batch-001-003-report.md",
+      "sha256": "43954e57b4e5368565918069e057c032d7bd03c2a017fb7cf5546db32111aa22"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/design.md",
+      "destination": "openspec/changes/0010-workflow-assurance/design.md",
+      "sha256": "67081aab86ffbff8ff2f5596277cba612b9717760283ad43540b84ad5d0a1b12"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/mini-swarm.md",
+      "destination": "openspec/changes/0010-workflow-assurance/mini-swarm.md",
+      "sha256": "6a6cb67c8a35182ce67b2731e3213781dcfb12013c31296304d7b59f69fe3fb3"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/proposal.md",
+      "destination": "openspec/changes/0010-workflow-assurance/proposal.md",
+      "sha256": "fae7d52f6525a3e2b02927d6a1d9d180277049ec52ccf635d96e565618f77063"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/review-001-003.md",
+      "destination": "openspec/changes/0010-workflow-assurance/review-001-003.md",
+      "sha256": "8ba4b9bfbd60976fc7ad761b9812fc0ee2f95a40bd7b0419457681a18aa4cb62"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/run-progress.md",
+      "destination": "openspec/changes/0010-workflow-assurance/run-progress.md",
+      "sha256": "dc7715cb082b434a40f80eb7acb96d406f3f8527d9c2e2f0ad75ab74060db372"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
+      "destination": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
+      "sha256": "0732579c95c3b43ce761d7463b1f9279cdc95d1af7e03fa3b8897bf6c79be64b"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/subscription-execution.md",
+      "destination": "openspec/changes/0010-workflow-assurance/subscription-execution.md",
+      "sha256": "f1f523595fee81468abf7556db2ca3bb2f73469ddcfe25f9bd1a091e316873c6"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/task-packets.md",
+      "destination": "openspec/changes/0010-workflow-assurance/task-packets.md",
+      "sha256": "5b816cc4ee90f72f88c5b869bc2c2e9f8a37fb5c0960b57f70f65f6d16892eaf"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/tasks.md",
+      "destination": "openspec/changes/0010-workflow-assurance/tasks.md",
+      "sha256": "a6f25c8366354d69f1e593b8665f8c284301cee460e6b7e1d114bebff22af603"
+    },
+    {
+      "source": "openspec/changes/0010-workflow-assurance/verification-matrix.md",
+      "destination": "openspec/changes/0010-workflow-assurance/verification-matrix.md",
+      "sha256": "bc785323b3cdd8c0a0f223e53a5c99e037f1505b75dc5a3855abfa9cfe80e858"
+    },
+    {
+      "source": "openspec/config.yaml",
+      "destination": "openspec/config.yaml",
+      "sha256": "30c40c58e72659b8afe64b4b9203c559c7e4f8261bc2a879e5a1ddf5c0460138"
+    },
+    {
+      "source": "openspec/specs/README.md",
+      "destination": "openspec/specs/README.md",
+      "sha256": "35eea829bd8c89fda37d059b52d27743cc0e77d68b6449922b9711f71c3081db"
+    },
+    {
+      "source": "package-lock.json",
+      "destination": "package-lock.json",
+      "sha256": "5d3e86c1e39c9ccab67c9bdac45f687f3db8ab330ca111a3a6f08e481fa18b9b"
+    },
+    {
+      "source": "package.json",
+      "destination": "package.json",
+      "sha256": "19044437c957bad4bcff996b9ae74d71897291fd6c55cf255c1b77f13ce2c3e3"
+    },
+    {
+      "source": "quality/application-gates.json",
+      "destination": "quality/application-gates.json",
+      "sha256": "23f58f734c47525b2bd575d9fdc7a1ff2a6bda3d2af4f9ce24344b4af22ca3c2"
+    },
+    {
+      "source": "quality/browser/package-lock.json",
+      "destination": "quality/browser/package-lock.json",
+      "sha256": "adeb9dd511c28b411d5c118f589ac91fa75cf794166c5a724b775c89b5e58a4b"
+    },
+    {
+      "source": "quality/browser/package.json",
+      "destination": "quality/browser/package.json",
+      "sha256": "3784f3b0b25d386cad380298cf880ccb5fcf02c30fbb19591d8a970d94a914d1"
+    },
+    {
+      "source": "quality/charters/adoption-lifecycle.json",
+      "destination": "quality/charters/adoption-lifecycle.json",
+      "sha256": "2049d2cd6008b6db4d8b6b61b8e65a15b1d75b217b3e6c5325df9bc5dba8e8b6"
+    },
+    {
+      "source": "quality/charters/catalog-details.json",
+      "destination": "quality/charters/catalog-details.json",
+      "sha256": "dd9249e1f06c81c4c47e3c013ebdf39f2e493dfecee20a7891f67defef74854f"
+    },
+    {
+      "source": "quality/charters/foundation.json",
+      "destination": "quality/charters/foundation.json",
+      "sha256": "a97f7de52ad076afc37c56a5a2817f013af11f0e208073f7ad8535baa9cff7e1"
+    },
+    {
+      "source": "quality/charters/release-qualification.json",
+      "destination": "quality/charters/release-qualification.json",
+      "sha256": "c46c80caf9a3aec5f45e79eabb0341636ea1a0c7838b7e67da3d8b3a50684e1d"
+    },
+    {
+      "source": "quality/charters/reliable-indexing.json",
+      "destination": "quality/charters/reliable-indexing.json",
+      "sha256": "c3c15623d95b19d36854df8706184dce84af2c52795337a9259d37af4e099944"
+    },
+    {
+      "source": "quality/charters/spring-ai-conversation.json",
+      "destination": "quality/charters/spring-ai-conversation.json",
+      "sha256": "f34d55dc90f4f8be22f861998aed29ec449566b3cdddde55d1f5d428608e4c6f"
+    },
+    {
+      "source": "quality/charters/stone-management.json",
+      "destination": "quality/charters/stone-management.json",
+      "sha256": "e4fd8eeff410264eeeca8814678748a40027046687d4a4f1108d97fca343e289"
+    },
+    {
+      "source": "quality/charters/streaming-browser.json",
+      "destination": "quality/charters/streaming-browser.json",
+      "sha256": "a880bb6aea406b60b6e55a3854eed84715d3c8ebb56c6cdf1d438c24819876d1"
+    },
+    {
+      "source": "quality/playwright.config.mjs",
+      "destination": "quality/playwright.config.mjs",
+      "sha256": "47d1124b5800b3ac43f444cac02564762ee7699af595a6a6274184172952a7fb"
+    },
+    {
+      "source": "quality/runtime/application-packet.example.json",
+      "destination": "quality/runtime/application-packet.example.json",
+      "sha256": "7a04b4a4b8585d6ded59da717a2dc1932cb604722d0025a36b279100bbb8b577"
+    },
+    {
+      "source": "quality/runtime/catalog-fixture.html",
+      "destination": "quality/runtime/catalog-fixture.html",
+      "sha256": "c6f56bc6db5640edb4637e3b4baf67c32c2e723ca8e88b6da305ce016996d1cb"
+    },
+    {
+      "source": "quality/runtime/policy.json",
+      "destination": "quality/runtime/policy.json",
+      "sha256": "bd68108f5ab7b610788d38677ba6e8d59a186f670e4baf07c6281e500243aabc"
+    },
+    {
+      "source": "quality/static-analysis/application-packet.example.json",
+      "destination": "quality/static-analysis/application-packet.example.json",
+      "sha256": "cb213b0cc2f1a6e80d9c58fc3f9d75d6c31485fb517fad956d0eaab7fccb27f8"
+    },
+    {
+      "source": "quality/static-analysis/checkstyle.properties",
+      "destination": "quality/static-analysis/checkstyle.properties",
+      "sha256": "0b3989608a12ae1628ff23f5a970d2fe3aa414a167434d44d2f2fd89b1809a39"
+    },
+    {
+      "source": "quality/static-analysis/eslint.config.mjs",
+      "destination": "quality/static-analysis/eslint.config.mjs",
+      "sha256": "36d169891d29fa6393df1d17e65fc731fde02ef0d661b110662668506da9acac"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/bad-packet.json",
+      "destination": "quality/static-analysis/fixtures/bad-packet.json",
+      "sha256": "2a83e3f795da16b9de64a5a9e994da22444c851fe47cb895a76891072894a611"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/cases.json",
+      "destination": "quality/static-analysis/fixtures/cases.json",
+      "sha256": "c188a1251d6a92a53afa90649f7d66ea5383180de3292ed2490bb0beeca58efe"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/good-packet.json",
+      "destination": "quality/static-analysis/fixtures/good-packet.json",
+      "sha256": "767af5d04182d2bd9dfc266b0111ec382578098ec55b85f8b2c0a5f5ea7f316c"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/controllers/StoneController.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/controllers/StoneController.java",
+      "sha256": "bb2c34baa9b3cc93064ba8e18f702e57955803e2f41414401f1c407b368504b3"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/controllers/WrongResponse.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/controllers/WrongResponse.java",
+      "sha256": "115c07c87f6f2bf520986db8bb14e34eb67bddfd782da03a32f6e7f0f72e6141"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/demo/EmptyCatchExample.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/demo/EmptyCatchExample.java",
+      "sha256": "4e1c93199ad341d55cc1549912722c690c5047cfae0fd1233108778ab05be332"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/demo/WildcardExample.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/demo/WildcardExample.java",
+      "sha256": "2214107e2b612b6963ba535c9cac084117d525c32e35e25d86b54c4af1049f69"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/dtos/SourceToTargetMapper.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/dtos/SourceToTargetMapper.java",
+      "sha256": "e9c30c4329a99425f7f2c4b2867aed33b5224f705265aaba834e949332bba746"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/entities/BadMapper.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/entities/BadMapper.java",
+      "sha256": "092369abd29bcac497e03ad82806d164b63343c59e68f11c52d6352c5fbf6e3b"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/entities/RequestToStoneEntityMapper.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/mappers/entities/RequestToStoneEntityMapper.java",
+      "sha256": "a83aac2fb3a92cf23081ffafdc0081234752df961d765cd462c288aeb7ce4b73"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/services/StoneService.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/services/StoneService.java",
+      "sha256": "cec175dffbb151447b74e3c563efcdb41b1676bf3703808d89f340915c589770"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/shared/LargeResponse.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/shared/LargeResponse.java",
+      "sha256": "414ea839e71c16de4609769eb8f60bc187fa325f1a5e8963ce0f4f1b49e7c1d7"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/shared/TooManyResponse.java",
+      "destination": "quality/static-analysis/fixtures/java/bad/lab/stoneshelter/shared/TooManyResponse.java",
+      "sha256": "95dd99441f21f0f6cf23dda89af355476c6e6c87ee4cf76efd17cfab2d5f2bbf"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/mappers/dtos/StoneEntityToStoneResponseMapper.java",
+      "destination": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/mappers/dtos/StoneEntityToStoneResponseMapper.java",
+      "sha256": "f007f27b948965de63a57e5ba1a159f1054260a9ecb28d58670c289019052edd"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/mappers/entities/StoneRequestToStoneEntityMapper.java",
+      "destination": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/mappers/entities/StoneRequestToStoneEntityMapper.java",
+      "sha256": "7cad28fc09b28da1a3b6d282b908942c9dcb32c04584ca68b0ed121af6db6558"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/shared/DetailedResponse.java",
+      "destination": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/shared/DetailedResponse.java",
+      "sha256": "a68fbb29b197587cb7db7689e351d6fc2b5cf5f605d1cd086e6357755dd8f21b"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/shared/StoneResponse.java",
+      "destination": "quality/static-analysis/fixtures/java/good/lab/stoneshelter/shared/StoneResponse.java",
+      "sha256": "dae51c3ca7c74d0ed235fd11199f525b9c720beff812715ce9a588d61fbf18ac"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/react/bad/BrokenCard.tsx",
+      "destination": "quality/static-analysis/fixtures/react/bad/BrokenCard.tsx",
+      "sha256": "92bf0dbd177984033b4a392fd4ae0c3716f7a2f76f7e5bac1c0b85a61d3d4dd3"
+    },
+    {
+      "source": "quality/static-analysis/fixtures/react/good/StoneCard.tsx",
+      "destination": "quality/static-analysis/fixtures/react/good/StoneCard.tsx",
+      "sha256": "032131576d122b81e5f3bc2520b87649c4b9f91adcaac61e4ce43f29797686c2"
+    },
+    {
+      "source": "quality/static-analysis/package-lock.json",
+      "destination": "quality/static-analysis/package-lock.json",
+      "sha256": "7771369988a580b229e97f81f94ca2297c183235240cc356335844d83f046239"
+    },
+    {
+      "source": "quality/static-analysis/package.json",
+      "destination": "quality/static-analysis/package.json",
+      "sha256": "de26b880e38352af157f7901b5fe95acaffdcffc01c2ea136b601e097c626f52"
+    },
+    {
+      "source": "quality/static-analysis/pmd.xml",
+      "destination": "quality/static-analysis/pmd.xml",
+      "sha256": "1e536b79bfa08d29f8acab418ffb4e64bc35bc0a91060a7ead8b982ddba1acd3"
+    },
+    {
+      "source": "quality/static-analysis/sonar-project.properties.example",
+      "destination": "quality/static-analysis/sonar-project.properties.example",
+      "sha256": "1c5cc51ec8d569e369c653d294effd7572a41acefcc64b10ce9284f1e5dc9817"
+    },
+    {
+      "source": "quality/static-analysis/sonarqube.compose.yml",
+      "destination": "quality/static-analysis/sonarqube.compose.yml",
+      "sha256": "69d16e2c3664267b5366ad988c0c4b404745a205f4b8068a84dcd34faff8bb2d"
+    },
+    {
+      "source": "quality/static-analysis/toolchain.json",
+      "destination": "quality/static-analysis/toolchain.json",
+      "sha256": "50f9170295ac227ce4048ddb5c57f22a03432d20133827dbaee13c8088674d36"
+    },
+    {
+      "source": "templates/agent-result.schema.json",
+      "destination": "templates/agent-result.schema.json",
+      "sha256": "704953974abe2b165552e2b6003a564c738a384d62dbf0093dc4a7b5a669c01e"
+    },
+    {
+      "source": "templates/browser-charter.json",
+      "destination": "templates/browser-charter.json",
+      "sha256": "edd767bb9ac23cc7ae63bb7a7b50c0ba568243a06439e0e981d1ec4b64f83cb6"
+    },
+    {
+      "source": "templates/handoff.json",
+      "destination": "templates/handoff.json",
+      "sha256": "6524df88708a8649bd08ae9368e726f0bfb3520ce40c82545ac3703f56b74677"
+    },
+    {
+      "source": "templates/maintenance-handoff.schema.json",
+      "destination": "templates/maintenance-handoff.schema.json",
+      "sha256": "e313aeb132c2a8a3629becb961de0ae973d52afcdce004e309bae7542b4863ae"
+    },
+    {
+      "source": "templates/maintenance-task.schema.json",
+      "destination": "templates/maintenance-task.schema.json",
+      "sha256": "f4c71fec820f076286276ad93a84882f443255f5df1a9c8011c75e939465b7fa"
+    },
+    {
+      "source": "templates/models/agent-budgets.example.json",
+      "destination": "templates/models/agent-budgets.example.json",
+      "sha256": "2144a9b826418ffaa65f0dcb0ce5f12bcb9ce6262f7b04775af97a4a43a84bce"
+    },
+    {
+      "source": "templates/models/openrouter-response.example.json",
+      "destination": "templates/models/openrouter-response.example.json",
+      "sha256": "6e8c6dcef6ac8ea7e89575e0ef23b5b6438f3a2a99229e00d78bd6feb8afd378"
+    },
+    {
+      "source": "templates/models/stone-openrouter.config.toml",
+      "destination": "templates/models/stone-openrouter.config.toml",
+      "sha256": "667fb4b28811ce33bb95c4af055d9dd41c1ee7254419fb33955166c587c92a1f"
+    },
+    {
+      "source": "templates/models/ticket-overrides.example.json",
+      "destination": "templates/models/ticket-overrides.example.json",
+      "sha256": "148ccce079de8a63943f2685e4968663ec897a1103559238a218adedaca8b4dd"
+    },
+    {
+      "source": "templates/new-change.md",
+      "destination": "templates/new-change.md",
+      "sha256": "c28cfa7ae259551b9964885b40b8ad6db7668bad5beea21ddab49ae5ff81682c"
+    },
+    {
+      "source": "templates/readiness.md",
+      "destination": "templates/readiness.md",
+      "sha256": "55bec62253f6a3c62db0049ecb9765682a1aba9a655ac5fac23424334dce6dbf"
+    },
+    {
+      "source": "templates/task-packet.json",
+      "destination": "templates/task-packet.json",
+      "sha256": "c306e6a80a7f3c5b1ac4f36a8a88a88e6e33a9c436fe8a8bf7fb5b2d974b4ba8"
+    },
+    {
+      "source": "tools/browser_charter.mjs",
+      "destination": "tools/browser_charter.mjs",
+      "sha256": "c9db440b9dcb1e72dac14e7a009dade2d2a3fb6259bc4ecc28fb0e403cb9e8c8"
+    },
+    {
+      "source": "tools/build_execution_package.py",
+      "destination": "tools/build_execution_package.py",
+      "sha256": "8171b1f85fb7e204a0e388da04aee87cc3d8f8c3cc0eddbb08138b297d786c16"
+    },
+    {
+      "source": "tools/check_spring_ai.py",
+      "destination": "tools/check_spring_ai.py",
+      "sha256": "98cac289fe3ee1fbce8a6827765a3f63217b1610be856ef5674b7d25482cd3fd"
+    },
+    {
+      "source": "tools/execution/agent_runtime.py",
+      "destination": "tools/execution/agent_runtime.py",
+      "sha256": "0b8c1c6eacdad5503b6fb3b0308d1387d5e61a605a662e59ef3b75e7a04139a4"
+    },
+    {
+      "source": "tools/execution/audit_backup.py",
+      "destination": "tools/execution/audit_backup.py",
+      "sha256": "5007d5f9d0a143b57aa1f4c1e0a69990a3c0c0670230f37ae4b67618a3bff226"
+    },
+    {
+      "source": "tools/execution/audit_paths.py",
+      "destination": "tools/execution/audit_paths.py",
+      "sha256": "c18e83b11196de98bfb5605df4a1ffc151a9957335a756084bbe1e433068962b"
+    },
+    {
+      "source": "tools/execution/budgets.py",
+      "destination": "tools/execution/budgets.py",
+      "sha256": "9882b72f2d0a81ef9f1d344a34bd3dfb4e23db12c982bcb75ddef3e9353432c2"
+    },
+    {
+      "source": "tools/execution/check_selection.py",
+      "destination": "tools/execution/check_selection.py",
+      "sha256": "84f0c2aec0633ecaf58ceee6a74521e2d851f8d3d2be7f64859b9f065d2886c8"
+    },
+    {
+      "source": "tools/execution/checkpoints.py",
+      "destination": "tools/execution/checkpoints.py",
+      "sha256": "0afb16ef4eb6fe4d1ae08a87f025f69879a4b4fc6538c460efe3c82a64877403"
+    },
+    {
+      "source": "tools/execution/core.py",
+      "destination": "tools/execution/core.py",
+      "sha256": "886b6457cd417262637221010dc12608f46a3b173234df1c8ad2943a4511f8d3"
+    },
+    {
+      "source": "tools/execution/environment.py",
+      "destination": "tools/execution/environment.py",
+      "sha256": "ba836f9600a0f6d244d36584cc7725909944483cfba5771171f89215d5f23dd1"
+    },
+    {
+      "source": "tools/execution/evidence.py",
+      "destination": "tools/execution/evidence.py",
+      "sha256": "7c7b74c6caa7433b9d94fa54ce6ace3c39f34a387cd32e5cc79b4a31bc9417e3"
+    },
+    {
+      "source": "tools/execution/gates.py",
+      "destination": "tools/execution/gates.py",
+      "sha256": "fe4508a883a40bb50db317797c8ebb4fc15903959245645fb9c41d9792f267ed"
+    },
+    {
+      "source": "tools/execution/history.py",
+      "destination": "tools/execution/history.py",
+      "sha256": "08d69a63a4cefcf43ab2846a694b55eee0378102ade4015ffc734d71bd412b88"
+    },
+    {
+      "source": "tools/execution/model_policy.py",
+      "destination": "tools/execution/model_policy.py",
+      "sha256": "e342ce8d148c2f34f9a8131afd1bff1c25355428a1b3b370bd939e146860e613"
+    },
+    {
+      "source": "tools/execution/money.py",
+      "destination": "tools/execution/money.py",
+      "sha256": "cd1b4403bccde57dc56e6d4b64e2d3457e3e3db35b7539ad92ce3e7b61e5af88"
+    },
+    {
+      "source": "tools/execution/processes.py",
+      "destination": "tools/execution/processes.py",
+      "sha256": "7c1316259c3ead30fa328645b877ae092d1cfea7aebcccc8034895ad57c226a7"
+    },
+    {
+      "source": "tools/execution/supervision.py",
+      "destination": "tools/execution/supervision.py",
+      "sha256": "10905350c530226342b31dca53b6d42b65d09ace590d98d202369d92d126741d"
+    },
+    {
+      "source": "tools/execution/test_environment.py",
+      "destination": "tools/execution/test_environment.py",
+      "sha256": "e55f0b61aacf67217d1e232c1bd8153c573f075a38cfc788a94c255250ee8a57"
+    },
+    {
+      "source": "tools/inspect_execution.py",
+      "destination": "tools/inspect_execution.py",
+      "sha256": "b3f618efe3e5b7eb20b135815ee17c689fe5f416f7fc1b5dc4fe639868ddf9b7"
+    },
+    {
+      "source": "tools/maintenance.py",
+      "destination": "tools/maintenance.py",
+      "sha256": "ab78fb941f1dd88454d4d182d441e50bac1eb088ffe82de33fc11246a713a1af"
+    },
+    {
+      "source": "tools/orchestrate.py",
+      "destination": "tools/orchestrate.py",
+      "sha256": "b575cef91199f09f4fbd9a9f34eb81dd20519315e57bcf663c53fc75f6344152"
+    },
+    {
+      "source": "tools/provider_key.py",
+      "destination": "tools/provider_key.py",
+      "sha256": "b5584d9a7d22fdf8537c7dae8640dd90eed935d3e40a0aab4e1a68fb423a8bad"
+    },
+    {
+      "source": "tools/runtime_demo.py",
+      "destination": "tools/runtime_demo.py",
+      "sha256": "8708997e6323316f921ee91b1f1697d8edbe3c310024a5bb5f0c8e5dd11ee0e7"
+    },
+    {
+      "source": "tools/runtime_gate.py",
+      "destination": "tools/runtime_gate.py",
+      "sha256": "e1bcac4fc1bfec4445f9f5d0194b8f38b5ac403f39bda9c2892a1c8df89e8e12"
+    },
+    {
+      "source": "tools/sonar_application.py",
+      "destination": "tools/sonar_application.py",
+      "sha256": "7f121753c3c9c6099ca370a3bf09531a79a210701fff09b4294d2f1ffc919af4"
+    },
+    {
+      "source": "tools/sonarqube_lab.py",
+      "destination": "tools/sonarqube_lab.py",
+      "sha256": "5e9a2f731f287080df7e97e01560bf5379e5093dfe8fd499497ec9c2fd6c9e13"
+    },
+    {
+      "source": "tools/static_analysis.py",
+      "destination": "tools/static_analysis.py",
+      "sha256": "f809c32f1cc72f504f654af91517b35f1297b49898ee8dfc58e2d92f52c14318"
+    },
+    {
+      "source": "tools/tests/test_agent_budgets.py",
+      "destination": "tools/tests/test_agent_budgets.py",
+      "sha256": "fbfbac67a44be1fb079670f14b77218da5cf4c447c2bcd361fd0191dcb9a0b85"
+    },
+    {
+      "source": "tools/tests/test_agent_history.py",
+      "destination": "tools/tests/test_agent_history.py",
+      "sha256": "402292d7a1b1e5056a7e97f2577ba4e8e7ea31b5e24eb110d1703b805d14a1dd"
+    },
+    {
+      "source": "tools/tests/test_agent_models.py",
+      "destination": "tools/tests/test_agent_models.py",
+      "sha256": "0d1e8e093bb5bfb2caf95c33d589c8be108693dff55db2e30b7a94b3ece611cb"
+    },
+    {
+      "source": "tools/tests/test_agent_money.py",
+      "destination": "tools/tests/test_agent_money.py",
+      "sha256": "7e6487b6f7eadfca6654cb79aa68dbde8f0c37d7c9f43088e1a72ef32ee4c26c"
+    },
+    {
+      "source": "tools/tests/test_agent_supervision.py",
+      "destination": "tools/tests/test_agent_supervision.py",
+      "sha256": "fd3b28f6c9266cc6f3e57fc653706fe2e36320a12f30c2157dfba9a8214737c0"
+    },
+    {
+      "source": "tools/tests/test_agent_workflow.py",
+      "destination": "tools/tests/test_agent_workflow.py",
+      "sha256": "3ed2d8bb5c729a7f020b5b3c3587927ac87f515cae78928c3a91d4e17eb7623c"
+    },
+    {
+      "source": "tools/tests/test_candidate_checks.py",
+      "destination": "tools/tests/test_candidate_checks.py",
+      "sha256": "bfcaab2d698ebbd80c2eee8a3559c4c46499f3fe0b43722004870dfcefdb03d0"
+    },
+    {
+      "source": "tools/tests/test_evidence_resources.py",
+      "destination": "tools/tests/test_evidence_resources.py",
+      "sha256": "3e9c68c9c5b5d208cf97ab1cbb56673c8d60379319c54faad8d72877ce86ad74"
+    },
+    {
+      "source": "tools/tests/test_execution.py",
+      "destination": "tools/tests/test_execution.py",
+      "sha256": "acf4944da9ad6a2b981e5b3f7ef632bbf15c56d3ab492175ad436b59077f865c"
+    },
+    {
+      "source": "tools/tests/test_history_reconciliation.py",
+      "destination": "tools/tests/test_history_reconciliation.py",
+      "sha256": "131ca488a76a4f3eb6da4db8dee75703333a95c5a4ec530f844710388819997b"
+    },
+    {
+      "source": "tools/tests/test_maintenance_dispatch.py",
+      "destination": "tools/tests/test_maintenance_dispatch.py",
+      "sha256": "66b9d74db31539448772d3460b6b0b658f8667ccc34c0e727215ba9b0d9c8d5c"
+    },
+    {
+      "source": "tools/tests/test_process_execution.py",
+      "destination": "tools/tests/test_process_execution.py",
+      "sha256": "7eafa61acec79e620a6ac73bcb10c375fde447ad486f1ef9104f8a5a056fd654"
+    },
+    {
+      "source": "tools/tests/test_review_evidence.py",
+      "destination": "tools/tests/test_review_evidence.py",
+      "sha256": "3c9d40c7715961599290724a1e0b7480cd461f2f0cbc9765e7dd134e0b4f4d26"
+    },
+    {
+      "source": "tools/tests/test_runtime_gate.py",
+      "destination": "tools/tests/test_runtime_gate.py",
+      "sha256": "c513a2f003eab4344ac9d54d39f9a42d920836b163e34286fb99e80e4b27afa2"
+    },
+    {
+      "source": "tools/tests/test_static_analysis.py",
+      "destination": "tools/tests/test_static_analysis.py",
+      "sha256": "e8fb4b206d04b57fe2b7ad2d2c2b97282064e516eff5f4b4232396cb38f82722"
+    },
+    {
+      "source": "tools/tests/workflow_assurance_fixtures.py",
+      "destination": "tools/tests/workflow_assurance_fixtures.py",
+      "sha256": "8ecd81d5cbbce658f65f7be3329a22149ec907829a6faea826a756cd7373d742"
+    },
+    {
+      "source": "tools/validate_execution.py",
+      "destination": "tools/validate_execution.py",
+      "sha256": "4e5f89d60273a737ce90d6b3f8a8892ed7a444c8cfd19e0c1873c7d03473b4ea"
+    },
+    {
+      "source": "infra/compose.yaml",
+      "destination": "infra/compose.yaml",
+      "sha256": "28d9d80637ef25b07747a83c5b7a18a102185852290d45a58027a7c313cde84e"
+    },
+    {
+      "source": "infra/minio/Dockerfile",
+      "destination": "infra/minio/Dockerfile",
+      "sha256": "175351602be8863f140b863a3db4c4780858fbf874d665bb6813b714a9badd61"
+    }
+  ]
+}

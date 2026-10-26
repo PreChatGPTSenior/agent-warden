@@ -1,0 +1,3994 @@
+{
+  "schema": 1,
+  "tasks": [
+    {
+      "id": "T0001-001",
+      "change": "0001-foundation",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-002",
+      "change": "0001-foundation",
+      "title": "Qualify exact versions and reproducible dependency setup",
+      "kind": "preparation",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-001"
+      ],
+      "requirements": [
+        "R073"
+      ],
+      "acceptance": [
+        "A33"
+      ],
+      "write_paths": [
+        "execution/runtime-lock.json",
+        "docs/adr/0003-version-qualification.md",
+        "stone-shelter-api/pom.xml",
+        "stone-shelter-api/Dockerfile",
+        "stone-shelter-ui/Dockerfile",
+        "infra/**",
+        "stone-shelter-ui/package.json",
+        "stone-shelter-ui/package-lock.json"
+      ],
+      "exclusive_resources": [
+        "build-inputs"
+      ],
+      "checks": [
+        {
+          "adapter": "package",
+          "selector": "validate"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Resolve inherited pinned coordinates and image digests; record compatibility; no latest or silent substitutions; install existing dependencies and approved Spring Security/Spring AI modules; add pinned JaCoCo XML and Vitest lcov reporting for the release gate"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-003",
+      "change": "0001-foundation",
+      "title": "Bring inherited Java code under Checkstyle PMD and architecture gates",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-002"
+      ],
+      "requirements": [
+        "R072",
+        "R076"
+      ],
+      "acceptance": [
+        "A33"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/**",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ArchitectureTest.java"
+      ],
+      "exclusive_resources": [
+        "api-source"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ArchitectureTest"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Repair inherited violations without changing behavior; preserve mapper contracts; add architecture checks for layers and shared DTOs; never suppress whole modules"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-004",
+      "change": "0001-foundation",
+      "title": "Bring inherited React code under lint type and build gates",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-002"
+      ],
+      "requirements": [
+        "R070",
+        "R076"
+      ],
+      "acceptance": [
+        "A33"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/**",
+        "stone-shelter-ui/eslint.config.mjs",
+        "stone-shelter-ui/tsconfig.json",
+        "stone-shelter-ui/src/App/App.test.tsx"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/App/App.test.tsx"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Resolve inherited lint/type failures; keep mock boundaries; preserve behavior"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-005",
+      "change": "0001-foundation",
+      "title": "Add isolated deployment readiness and source identity contract",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-003"
+      ],
+      "requirements": [
+        "R074",
+        "R075",
+        "R081"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Readiness*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*DeploymentIdentity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Health*.java",
+        "infra/**",
+        "stone-shelter-api/Dockerfile",
+        "stone-shelter-ui/Dockerfile",
+        "stone-shelter-api/src/main/resources/application.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/DeploymentIdentityTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/IntegrationTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ExecutionEnvironmentExtension.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/DeploymentIdentityTest.java"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "build-inputs"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "DeploymentIdentityTest"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Private operator capability diagnostics; public nonsecret health; deployment identity tied to build content; implement the mandatory actual-Testcontainers/JVM readiness handshake in docs/execution/test-environment-protocol.md and register it for all integration selectors; provision required private photo buckets and indexing/DLQ topics in explicit setup; verify database queries, Redis, storage and Kafka metadata; no business imports in preflight"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-006",
+      "change": "0001-foundation",
+      "title": "Implement staff sessions CSRF and provisioning with Spring Security",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-005"
+      ],
+      "requirements": [
+        "R003",
+        "R066",
+        "R067",
+        "R068"
+      ],
+      "acceptance": [
+        "A01",
+        "A31"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Staff*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Security*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Authentication*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Csrf*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Session*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1001-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/pom.xml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StaffSecurityTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StaffSecurityTest.java"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "build-inputs"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "StaffSecurityTest"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Spring Security approved by user; BCrypt 12; no default account; password stdin provisioning; rotate/revoke session; exact cookie paths and role matrix; throttling; test denied access"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": "10001-T0001-006",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-007",
+      "change": "0001-foundation",
+      "title": "Implement staff sign-in and shared authorized API boundary",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-004",
+        "T0001-006"
+      ],
+      "requirements": [
+        "R003",
+        "R067",
+        "R068"
+      ],
+      "acceptance": [
+        "A01",
+        "A31"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/staff-auth/**",
+        "stone-shelter-ui/src/api/httpClient.ts",
+        "stone-shelter-ui/src/App/**",
+        "stone-shelter-ui/src/enums/StaffRole.ts",
+        "quality/e2e/support/**",
+        "stone-shelter-ui/src/features/staff-auth/StaffSignIn.test.tsx",
+        "quality/charters/foundation.json",
+        "quality/e2e/T0001-007/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/staff-auth/StaffSignIn.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/foundation.json",
+      "deliverables": [
+        "Session login/logout/CSRF UX with safe errors; do not persist credentials in storage; central navigation wiring; shared isolated Playwright fixture helper provisions synthetic staff through the approved stdin command and per-task stack identity"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0001-008",
+      "change": "0001-foundation",
+      "title": "Freeze common DTO error concurrency and generated contract conventions",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-006"
+      ],
+      "requirements": [
+        "R005",
+        "R006",
+        "R008",
+        "R009",
+        "R066",
+        "R069",
+        "R082",
+        "R083",
+        "R084"
+      ],
+      "acceptance": [
+        "A02",
+        "A03",
+        "A13",
+        "A17",
+        "A31"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Request*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Response*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Problem*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Exception*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Handler*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Idempotency*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1002-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/GeneratedContractTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/GeneratedContractTest.java"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "GeneratedContractTest"
+        }
+      ],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Shared wire DTOs, ETag/If-Match and canonical idempotency hashing; generated OpenAPI snapshot with provenance, not handwritten OpenAPI; publish shared conventions before feature UI work"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": "10001-T0001-008",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0001-foundation/proposal.md",
+        "openspec/changes/0001-foundation/design.md",
+        "openspec/changes/0001-foundation/specs/foundation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0002-001",
+      "change": "0002-catalog-details",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0001-007",
+        "T0001-008"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0002-catalog-details/proposal.md",
+        "openspec/changes/0002-catalog-details/design.md",
+        "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0002-002",
+      "change": "0002-catalog-details",
+      "title": "Implement catalog query domain constraints and detail contract",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-001"
+      ],
+      "requirements": [
+        "R005",
+        "R006",
+        "R007",
+        "R008",
+        "R009",
+        "R011",
+        "R012",
+        "R014",
+        "R018"
+      ],
+      "acceptance": [
+        "A02",
+        "A05",
+        "A08"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneCatalog*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StonesSearch*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneSearch*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneResponse*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntityTo*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneSize*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneType*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*AdoptionStatus*.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/CatalogBaselineTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/CatalogBaselineTest.java",
+        "quality/charters/catalog-details.json",
+        "quality/e2e/T0002-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "CatalogBaselineTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/catalog-details.json",
+      "deliverables": [
+        "AVAILABLE before count/paging; UTC inclusive date inputs with exclusive upper instant; six sorts and ID tie-break; valid Unicode limits; detail gallery contract"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0002-catalog-details/proposal.md",
+        "openspec/changes/0002-catalog-details/design.md",
+        "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0002-003",
+      "change": "0002-catalog-details",
+      "title": "Implement routes responsive catalog filters chips and state",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-002"
+      ],
+      "requirements": [
+        "R010",
+        "R012",
+        "R013",
+        "R014",
+        "R015",
+        "R016",
+        "R017"
+      ],
+      "acceptance": [
+        "A04",
+        "A05",
+        "A06",
+        "A07"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/catalog/**",
+        "stone-shelter-ui/src/components/Common/**",
+        "stone-shelter-ui/src/App/**",
+        "stone-shelter-ui/src/api/httpStonesApi.ts",
+        "stone-shelter-ui/src/api/dto/**",
+        "stone-shelter-ui/src/enums/**",
+        "stone-shelter-ui/src/features/catalog/components/CatalogPage/CatalogPage.test.tsx",
+        "quality/charters/catalog-details.json",
+        "quality/e2e/T0002-003/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/catalog/components/CatalogPage/CatalogPage.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/catalog-details.json",
+      "deliverables": [
+        "Use generated contract; stale-response protection; correct invalid draft dates/reset/focus; canonical navigation and restore in-memory state"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0002-catalog-details/proposal.md",
+        "openspec/changes/0002-catalog-details/design.md",
+        "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0002-004",
+      "change": "0002-catalog-details",
+      "title": "Implement detail gallery and availability states",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-003"
+      ],
+      "requirements": [
+        "R018",
+        "R009"
+      ],
+      "acceptance": [
+        "A08",
+        "A13"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/stone-details/**",
+        "stone-shelter-ui/src/domain/stone/**",
+        "stone-shelter-ui/src/features/stone-details/components/StoneDetailsPage/StoneDetailsPage.test.tsx",
+        "quality/charters/catalog-details.json",
+        "quality/e2e/T0002-004/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/stone-details/components/StoneDetailsPage/StoneDetailsPage.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/catalog-details.json",
+      "deliverables": [
+        "0/1/16 images, once-only fallback, expiry refresh and unavailable CTA; full biography and UTC display"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0002-catalog-details/proposal.md",
+        "openspec/changes/0002-catalog-details/design.md",
+        "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0002-005",
+      "change": "0002-catalog-details",
+      "title": "Qualify catalog and shared navigation in the real browser",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-004"
+      ],
+      "requirements": [
+        "R010",
+        "R011",
+        "R012",
+        "R013",
+        "R014",
+        "R015",
+        "R016",
+        "R017",
+        "R018",
+        "R070"
+      ],
+      "acceptance": [
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "write_paths": [
+        "quality/charters/catalog-details.json",
+        "quality/e2e/catalog/**",
+        "quality/charters/catalog-details.json",
+        "quality/e2e/T0002-005/**"
+      ],
+      "exclusive_resources": [
+        "browser-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "browser",
+          "selector": "catalog-details"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/catalog-details.json",
+      "deliverables": [
+        "Charter includes filter truth, negative/race states and 320/768/1440 layouts with keyboard and zoom"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0002-catalog-details/proposal.md",
+        "openspec/changes/0002-catalog-details/design.md",
+        "openspec/changes/0002-catalog-details/specs/catalog-details/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-001",
+      "change": "0003-stone-management",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-005"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-002",
+      "change": "0003-stone-management",
+      "title": "Implement safe owned upload drafts and private storage",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-001"
+      ],
+      "requirements": [
+        "R019",
+        "R020",
+        "R023"
+      ],
+      "acceptance": [
+        "A09"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*PhotoDraft*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*PhotoUpload*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*PhotoStorage*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Minio*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1003-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/PhotoUploadBoundaryTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/PhotoUploadBoundaryTest.java",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "PhotoUploadBoundaryTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "Decode bounded raster images; strip metadata; reject animation and mismatches; owned 24h drafts; no public keys; generated upload schemas"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10003-T0003-002",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-003",
+      "change": "0003-stone-management",
+      "title": "Implement atomic create replay versioning and event publication intent",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-002"
+      ],
+      "requirements": [
+        "R006",
+        "R007",
+        "R020",
+        "R027",
+        "R029",
+        "R060"
+      ],
+      "acceptance": [
+        "A02",
+        "A10",
+        "A17"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneCreate*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneService*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntityTo*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Idempotency*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Outbox*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1004-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StoneCreateAtomicityTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StoneCreateAtomicityTest.java",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-003/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "StoneCreateAtomicityTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "Claim drafts and stone/outbox/idempotency atomically; 72h result/90d used-key marker; preserve source on uncertain commit; authoritative UTC and AVAILABLE"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10003-T0003-003",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-004",
+      "change": "0003-stone-management",
+      "title": "Implement durable photo transfer retry and cleanup",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-003"
+      ],
+      "requirements": [
+        "R021",
+        "R022",
+        "R024"
+      ],
+      "acceptance": [
+        "A11"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Photo*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Cleanup*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Transfer*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1005-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/PhotoLifecycleTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/PhotoLifecycleTest.java",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-004/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "PhotoLifecycleTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "PENDING/READY/FAILED; six attempts and manual retry; protect sole source under lock; hourly bounded cleanup; no inline deletion"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10003-T0003-004",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-005",
+      "change": "0003-stone-management",
+      "title": "Implement staff edit delete reorder and concurrency preconditions",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-004"
+      ],
+      "requirements": [
+        "R008",
+        "R022",
+        "R028"
+      ],
+      "acceptance": [
+        "A03",
+        "A11"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneUpdate*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneDelete*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneService*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Photo*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntityTo*.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StoneManagementTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/StoneManagementTest.java",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-005/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "StoneManagementTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "If-Match mandatory; active hold prevents deletion; full gallery permutation; tombstone and deferred cleanup; authoritative status transitions stay with adoption"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-006",
+      "change": "0003-stone-management",
+      "title": "Implement progressive create edit and photo recovery UI",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-003",
+        "T0003-005"
+      ],
+      "requirements": [
+        "R022",
+        "R025",
+        "R026",
+        "R027",
+        "R028",
+        "R029"
+      ],
+      "acceptance": [
+        "A03",
+        "A12",
+        "A13",
+        "A17"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/add-stone/**",
+        "stone-shelter-ui/src/features/edit-stone/**",
+        "stone-shelter-ui/src/api/**",
+        "stone-shelter-ui/src/App/**",
+        "stone-shelter-ui/src/features/add-stone/components/AddStoneForm/AddStoneForm.test.tsx",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-006/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/add-stone/components/AddStoneForm/AddStoneForm.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "Two uploads concurrently; preserve successes/order; confirmation and unsaved navigation; stale edits preserve draft; no sixteen empty tiles"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0003-007",
+      "change": "0003-stone-management",
+      "title": "Qualify upload and create browser flows with storage faults",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-006"
+      ],
+      "requirements": [
+        "R019",
+        "R020",
+        "R021",
+        "R022",
+        "R023",
+        "R024",
+        "R025",
+        "R026",
+        "R027",
+        "R028",
+        "R029"
+      ],
+      "acceptance": [
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A17"
+      ],
+      "write_paths": [
+        "quality/charters/stone-management.json",
+        "quality/e2e/management/**",
+        "quality/charters/stone-management.json",
+        "quality/e2e/T0003-007/**"
+      ],
+      "exclusive_resources": [
+        "browser-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "browser",
+          "selector": "stone-management"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/stone-management.json",
+      "deliverables": [
+        "Real API photos, signed URL expiry, mixed failures, duplicate submit, stale edit and cleanup evidence"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0003-stone-management/proposal.md",
+        "openspec/changes/0003-stone-management/design.md",
+        "openspec/changes/0003-stone-management/specs/stone-management/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-001",
+      "change": "0004-adoption-lifecycle",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0002-005"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-002",
+      "change": "0004-adoption-lifecycle",
+      "title": "Implement atomic application hold expiry and replay contract",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-001"
+      ],
+      "requirements": [
+        "R029",
+        "R030",
+        "R031",
+        "R032",
+        "R033",
+        "R034",
+        "R084"
+      ],
+      "acceptance": [
+        "A14",
+        "A15",
+        "A17"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Reservation*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Application*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneEntity*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*StoneSearch*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Idempotency*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1006-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/AdoptionConcurrencyTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/AdoptionConcurrencyTest.java",
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/T0004-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "AdoptionConcurrencyTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/adoption-lifecycle.json",
+      "deliverables": [
+        "One active partial unique constraint; stone/application row locking; 72h hold and effective expired reads; replay exact result; no client status mutation"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10004-T0004-002",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-003",
+      "change": "0004-adoption-lifecycle",
+      "title": "Implement volunteer queue transitions retention and abuse controls",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-002"
+      ],
+      "requirements": [
+        "R033",
+        "R034",
+        "R035",
+        "R068",
+        "R084"
+      ],
+      "acceptance": [
+        "A15",
+        "A16"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Reservation*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Application*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Staff*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*RateLimit*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1007-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/AdoptionLifecycleTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/AdoptionLifecycleTest.java",
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/T0004-003/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "AdoptionLifecycleTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/adoption-lifecycle.json",
+      "deliverables": [
+        "Complete/cancel/reject/expire and one extension; required reason; exact expiry boundary; purge PII at 30d, audit at 90d; no contact in logs"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10004-T0004-003",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-004",
+      "change": "0004-adoption-lifecycle",
+      "title": "Implement visitor application modal and uncertain-submit recovery",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-002"
+      ],
+      "requirements": [
+        "R030",
+        "R031",
+        "R032"
+      ],
+      "acceptance": [
+        "A14",
+        "A17"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/adopt-stone/**",
+        "stone-shelter-ui/src/api/StoneReservationError.ts",
+        "stone-shelter-ui/src/api/dto/StoneReservation*",
+        "stone-shelter-ui/src/api/httpStonesApi.ts",
+        "stone-shelter-ui/src/features/adopt-stone/components/AdoptStoneAction/AdoptStoneAction.integration.test.tsx",
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/T0004-004/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/adopt-stone/components/AdoptStoneAction/AdoptStoneAction.integration.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/adoption-lifecycle.json",
+      "deliverables": [
+        "Focus/inert/draft preservation; one key per intent; success survives refresh failure; RESERVED after submit, never ADOPTED"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-005",
+      "change": "0004-adoption-lifecycle",
+      "title": "Implement staff queue and resolution interface",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-003",
+        "T0004-004"
+      ],
+      "requirements": [
+        "R033",
+        "R034",
+        "R035"
+      ],
+      "acceptance": [
+        "A15",
+        "A16"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/staff-applications/**",
+        "stone-shelter-ui/src/App/**",
+        "stone-shelter-ui/src/api/**",
+        "stone-shelter-ui/src/features/staff-applications/StaffApplications.test.tsx",
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/T0004-005/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/staff-applications/StaffApplications.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/adoption-lifecycle.json",
+      "deliverables": [
+        "PENDING by earliest expiry; terminal sort/filter/page20; authorized contact display; ETag conflicts and all terminal actions"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0004-006",
+      "change": "0004-adoption-lifecycle",
+      "title": "Qualify two-session adoption race and staff lifecycle",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-005"
+      ],
+      "requirements": [
+        "R029",
+        "R030",
+        "R031",
+        "R032",
+        "R033",
+        "R034",
+        "R035"
+      ],
+      "acceptance": [
+        "A14",
+        "A15",
+        "A16",
+        "A17"
+      ],
+      "write_paths": [
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/adoption/**",
+        "quality/charters/adoption-lifecycle.json",
+        "quality/e2e/T0004-006/**"
+      ],
+      "exclusive_resources": [
+        "browser-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "browser",
+          "selector": "adoption-lifecycle"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/adoption-lifecycle.json",
+      "deliverables": [
+        "Two independent visitor sessions, one winner; staff completes; catalog no longer shows reserved/adopted; clock/retention checks"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0004-adoption-lifecycle/proposal.md",
+        "openspec/changes/0004-adoption-lifecycle/design.md",
+        "openspec/changes/0004-adoption-lifecycle/specs/adoption-lifecycle/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-001",
+      "change": "0005-reliable-indexing",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0003-007"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-002",
+      "change": "0005-reliable-indexing",
+      "title": "Adopt Spring AI EmbeddingModel and PgVectorStore with versioned schema",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-001"
+      ],
+      "requirements": [
+        "R049",
+        "R057",
+        "R058",
+        "R060",
+        "AI001"
+      ],
+      "acceptance": [
+        "A24",
+        "A25",
+        "A27"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Embedding*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*SemanticSearchRepository*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Vector*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*DocumentFragment*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*DocumentIndex*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1008-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/pom.xml",
+        "stone-shelter-api/src/main/resources/application.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/SpringAiVectorStoreTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/SpringAiVectorStoreTest.java",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "build-inputs",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "SpringAiVectorStoreTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Use Spring AI BOM 2.0.1; OllamaEmbeddingModel and PgVectorStore; remove custom HTTP embedding and handwritten similarity SQL; Liquibase owns schema; 1024 dimensions and recorded digest; metadata filters before topK; explicit one-vector reuse adapter if native call would re-embed"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10005-T0005-002",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-003",
+      "change": "0005-reliable-indexing",
+      "title": "Implement source-aware atomic encyclopedia indexing",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-002"
+      ],
+      "requirements": [
+        "R057",
+        "R058",
+        "R059"
+      ],
+      "acceptance": [
+        "A25",
+        "A27"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Document*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Encyclopedia*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*IndexSource*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1009-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "data/**",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/DocumentPublicationTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/DocumentPublicationTest.java",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-003/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "DocumentPublicationTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Approved source only; preserve factual/fictional headings/spans/qualifications; all vectors prepared then publish; version-backed citations; uncertain commit reconciliation; no forbidden sources"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10005-T0005-003",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-004",
+      "change": "0005-reliable-indexing",
+      "title": "Publish AsyncAPI and reliable outbox dispatcher",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-002"
+      ],
+      "requirements": [
+        "R060",
+        "R061"
+      ],
+      "acceptance": [
+        "A28"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Outbox*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Kafka*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*IndexEvent*.java",
+        "contracts/asyncapi.yaml",
+        "stone-shelter-api/src/main/resources/db/changelog/1010-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/OutboxDeliveryTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/OutboxDeliveryTest.java",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-004/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "event-contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "OutboxDeliveryTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Validate immutable UUID plus payload hash; documented AsyncAPI before code; acks all, at least once; 3 event-specific attempts; outage does not spend attempt; durable DLQ ack"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10005-T0005-004",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-005",
+      "change": "0005-reliable-indexing",
+      "title": "Implement idempotent consumer tombstones and restart recovery",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-003",
+        "T0005-004"
+      ],
+      "requirements": [
+        "R062",
+        "R065"
+      ],
+      "acceptance": [
+        "A29"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Index*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Embedding*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*OutboxDeadLetter*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1011-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/IndexConsumerRecoveryTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/IndexConsumerRecoveryTest.java",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-005/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "IndexConsumerRecoveryTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Persist attempts/version guard; no stale model calls; acknowledge only after commit or durable DLQ; model/database outages pause; never resurrect deletion"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10005-T0005-005",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-006",
+      "change": "0005-reliable-indexing",
+      "title": "Implement durable reindex and operator recovery views",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-005"
+      ],
+      "requirements": [
+        "R063",
+        "R064",
+        "R065"
+      ],
+      "acceptance": [
+        "A30"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Reindex*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*IndexStatus*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*IndexSource*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Outbox*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1012-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ReindexCompletionTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ReindexCompletionTest.java",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-006/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "contract",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ReindexCompletionTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Finite high-water ALL and bounded SELECTED; ENQUEUED not DONE; per-item consumer outcomes; restart, pause, supersession and error counts; linked retry jobs"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10005-T0005-006",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0005-007",
+      "change": "0005-reliable-indexing",
+      "title": "Implement operator index diagnostics and qualify recovery",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0005-006"
+      ],
+      "requirements": [
+        "R063",
+        "R064",
+        "R065",
+        "R081"
+      ],
+      "acceptance": [
+        "A30"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/operator-index/**",
+        "stone-shelter-ui/src/api/**",
+        "stone-shelter-ui/src/App/**",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/indexing/**",
+        "stone-shelter-ui/src/features/operator-index/IndexOperations.test.tsx",
+        "quality/charters/reliable-indexing.json",
+        "quality/e2e/T0005-007/**"
+      ],
+      "exclusive_resources": [
+        "ui-source",
+        "browser-runtime",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/operator-index/IndexOperations.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/reliable-indexing.json",
+      "deliverables": [
+        "Protected status and DLQ inspection; reindex action; no obsolete-event blind replay; truthful degraded search signal"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0005-reliable-indexing/proposal.md",
+        "openspec/changes/0005-reliable-indexing/design.md",
+        "openspec/changes/0005-reliable-indexing/specs/reliable-indexing/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-001",
+      "change": "0006-spring-ai-conversation",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0004-006",
+        "T0005-007"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-002",
+      "change": "0006-spring-ai-conversation",
+      "title": "Implement shared Spring AI model admission and durable budget ledger",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-001"
+      ],
+      "requirements": [
+        "R039",
+        "R040",
+        "R054",
+        "R056",
+        "AI001"
+      ],
+      "acceptance": [
+        "A19",
+        "A26"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Model*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Token*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*OllamaChat*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*ChatModel*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Admission*.java",
+        "stone-shelter-api/src/main/resources/db/changelog/1013-*.xml",
+        "stone-shelter-api/src/main/resources/db/changelog/db.changelog-master.yaml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ModelAdmissionTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ModelAdmissionTest.java",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/T0006-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ModelAdmissionTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/spring-ai-conversation.json",
+      "deliverables": [
+        "ChatClient calls pass one shared permit/ledger; 120s deadline; no hidden retries; unknown usage stays charged; lease fenced; background waits"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10006-T0006-002",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-003",
+      "change": "0006-spring-ai-conversation",
+      "title": "Implement owned history idempotent turns new and clear conversation",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-002"
+      ],
+      "requirements": [
+        "R037",
+        "R038",
+        "R039",
+        "R040",
+        "R044"
+      ],
+      "acceptance": [
+        "A18",
+        "A19",
+        "A22"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Chat*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Conversation*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Session*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Turn*.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ConversationOwnershipTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ConversationOwnershipTest.java",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/T0006-003/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "contract"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ConversationOwnershipTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/spring-ai-conversation.json",
+      "deliverables": [
+        "24h completed-pair TTL only; cap200; history/replay survive provider outage; cookie cannot transfer UUID ownership; atomic clear rejects active turns"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-004",
+      "change": "0006-spring-ai-conversation",
+      "title": "Implement Spring AI structured intent and exact search",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-003"
+      ],
+      "requirements": [
+        "R046",
+        "R047",
+        "R048"
+      ],
+      "acceptance": [
+        "A23"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Chat*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*ExactSearch*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Intent*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Reference*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*OllamaChat*.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ExactConversationSearchTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ExactConversationSearchTest.java",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/T0006-004/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ExactConversationSearchTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/spring-ai-conversation.json",
+      "deliverables": [
+        "One interpretation plus one repair via ChatClient structured conversion; explicit all allowed; vague and missing year clarify; exact JPA query stays deterministic; five current results/exact count"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-005",
+      "change": "0006-spring-ai-conversation",
+      "title": "Implement Spring AI RAG and semantic evidence pipeline",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-004"
+      ],
+      "requirements": [
+        "R049",
+        "R050",
+        "R051",
+        "R052",
+        "R053",
+        "R054",
+        "R055",
+        "R058",
+        "AI001"
+      ],
+      "acceptance": [
+        "A24",
+        "A25",
+        "A26"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Semantic*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Rag*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*DocumentRetrieval*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Vector*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Chat*.java",
+        "stone-shelter-api/pom.xml",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/GroundedSpringAiTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/GroundedSpringAiTest.java",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/T0006-005/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "build-inputs",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "GroundedSpringAiTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/spring-ai-conversation.json",
+      "deliverables": [
+        "RetrievalAugmentationAdvisor and Spring AI retrieval abstractions; reuse query embedding; current constraints before limit; card contradiction veto; truthful bounded count; type fact is not individual fact; one all-lost refresh; no hand-rolled inference/vector plumbing"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0006-006",
+      "change": "0006-spring-ai-conversation",
+      "title": "Implement chat UX lifecycle sources and factual/fictional disclosure",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-003",
+        "T0006-005"
+      ],
+      "requirements": [
+        "R036",
+        "R037",
+        "R038",
+        "R044",
+        "R045",
+        "R052",
+        "R053"
+      ],
+      "acceptance": [
+        "A18",
+        "A22",
+        "A25"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/features/stone-chatbot/**",
+        "stone-shelter-ui/src/api/chatbotApi.ts",
+        "stone-shelter-ui/src/api/dto/StoneChat*",
+        "stone-shelter-ui/src/enums/Chat*",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/chat/**",
+        "stone-shelter-ui/src/features/stone-chatbot/components/StoneChatbot/StoneChatbot.test.tsx",
+        "quality/charters/spring-ai-conversation.json",
+        "quality/e2e/T0006-006/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/features/stone-chatbot/components/StoneChatbot/StoneChatbot.test.tsx"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/spring-ai-conversation.json",
+      "deliverables": [
+        "One pair per turn; IME/Unicode; new/clear; preserved draft and page context; Sources version links; fiction visible without opening disclosure"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0006-spring-ai-conversation/proposal.md",
+        "openspec/changes/0006-spring-ai-conversation/design.md",
+        "openspec/changes/0006-spring-ai-conversation/specs/spring-ai-conversation/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0007-001",
+      "change": "0007-streaming-browser",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0006-006"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0007-streaming-browser/proposal.md",
+        "openspec/changes/0007-streaming-browser/design.md",
+        "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0007-002",
+      "change": "0007-streaming-browser",
+      "title": "Implement bounded commit-before-text SSE using shared pipeline",
+      "kind": "backend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0007-001"
+      ],
+      "requirements": [
+        "R041",
+        "R042",
+        "R043"
+      ],
+      "acceptance": [
+        "A20",
+        "A21"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*ChatStream*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Chat*.java",
+        "stone-shelter-api/src/main/java/lab/stoneshelter/**/*Sse*.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ChatStreamTransportTest.java",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ChatStreamTransportTest.java",
+        "quality/charters/streaming-browser.json",
+        "quality/e2e/T0007-002/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ChatStreamTransportTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/streaming-browser.json",
+      "deliverables": [
+        "Four streams zero queue; commit before deltas; contiguous positive sequence; replay started/completed only; disconnect does not duplicate work; permit retained until actual exit"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0007-streaming-browser/proposal.md",
+        "openspec/changes/0007-streaming-browser/design.md",
+        "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0007-003",
+      "change": "0007-streaming-browser",
+      "title": "Implement robust browser parser interruption and reconciliation",
+      "kind": "frontend",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0007-002"
+      ],
+      "requirements": [
+        "R041",
+        "R042",
+        "R043",
+        "R045"
+      ],
+      "acceptance": [
+        "A20",
+        "A21"
+      ],
+      "write_paths": [
+        "stone-shelter-ui/src/api/chatbotStream*",
+        "stone-shelter-ui/src/features/stone-chatbot/**",
+        "stone-shelter-ui/src/api/dto/StoneChatStreamEvent.ts",
+        "stone-shelter-ui/src/enums/Chat*",
+        "stone-shelter-ui/src/api/chatbotStream.test.ts",
+        "quality/charters/streaming-browser.json",
+        "quality/e2e/T0007-003/**"
+      ],
+      "exclusive_resources": [
+        "ui-source"
+      ],
+      "checks": [
+        {
+          "adapter": "vitest",
+          "selector": "src/api/chatbotStream.test.ts"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/streaming-browser.json",
+      "deliverables": [
+        "UTF-8/chunk boundaries; no EOF=success; incomplete no links; no automatic fallback/resend; history dedup; completed persists through sync failure"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0007-streaming-browser/proposal.md",
+        "openspec/changes/0007-streaming-browser/design.md",
+        "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0007-004",
+      "change": "0007-streaming-browser",
+      "title": "Qualify multi-tab accessibility and real network failure flows",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0007-003"
+      ],
+      "requirements": [
+        "R017",
+        "R036",
+        "R037",
+        "R038",
+        "R041",
+        "R042",
+        "R043",
+        "R044",
+        "R045",
+        "R070",
+        "R079"
+      ],
+      "acceptance": [
+        "A07",
+        "A18",
+        "A20",
+        "A21",
+        "A22"
+      ],
+      "write_paths": [
+        "quality/charters/streaming-browser.json",
+        "quality/e2e/streaming/**",
+        "quality/charters/streaming-browser.json",
+        "quality/e2e/T0007-004/**"
+      ],
+      "exclusive_resources": [
+        "browser-runtime",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "browser",
+          "selector": "streaming-browser"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/streaming-browser.json",
+      "deliverables": [
+        "320/768/1440, 200% zoom, keyboard, IME, focus across modal/chat; controlled disconnect/cookie loss/reload with trace and screenshots"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0007-streaming-browser/proposal.md",
+        "openspec/changes/0007-streaming-browser/design.md",
+        "openspec/changes/0007-streaming-browser/specs/streaming-browser/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0008-001",
+      "change": "0008-release-qualification",
+      "title": "Verify readiness for the selected feature batch",
+      "kind": "readiness",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0007-004"
+      ],
+      "requirements": [
+        "R074",
+        "R075"
+      ],
+      "acceptance": [
+        "A34"
+      ],
+      "write_paths": [],
+      "exclusive_resources": [],
+      "checks": [],
+      "browser_required": false,
+      "browser_charter": null,
+      "deliverables": [
+        "Record every selected task ID and required component; no future unbuilt component is marked ready"
+      ],
+      "environment": [
+        "toolchain"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment"
+      ],
+      "browser_policy": "technical charter review; no user-visible change is authorized",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0008-release-qualification/proposal.md",
+        "openspec/changes/0008-release-qualification/design.md",
+        "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0008-002",
+      "change": "0008-release-qualification",
+      "title": "Run fixed real-model qualification and independent rubric",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0008-001"
+      ],
+      "requirements": [
+        "R049",
+        "R050",
+        "R051",
+        "R052",
+        "R053",
+        "R054",
+        "R055",
+        "R056",
+        "R080"
+      ],
+      "acceptance": [
+        "A24",
+        "A25",
+        "A26",
+        "A36"
+      ],
+      "write_paths": [
+        "quality/qualification/**",
+        "stone-shelter-api/src/test/java/lab/stoneshelter/AiQualificationTest.java",
+        "quality/charters/release-qualification.json",
+        "quality/e2e/T0008-002/**"
+      ],
+      "exclusive_resources": [
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "AiQualificationTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/release-qualification.json",
+      "deliverables": [
+        "SS-QUAL-1.0: 20 scenarios/28 turns; semantic >=8/9 ordinary >=10/12; all hard checks; templates never count as ordinary answers; original negative results not reused"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0008-release-qualification/proposal.md",
+        "openspec/changes/0008-release-qualification/design.md",
+        "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0008-003",
+      "change": "0008-release-qualification",
+      "title": "Qualify security contracts migration and recovery",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0008-001"
+      ],
+      "requirements": [
+        "R008",
+        "R019",
+        "R029",
+        "R035",
+        "R066",
+        "R067",
+        "R068",
+        "R069",
+        "R081"
+      ],
+      "acceptance": [
+        "A03",
+        "A09",
+        "A16",
+        "A17",
+        "A31",
+        "A32"
+      ],
+      "write_paths": [
+        "stone-shelter-api/src/test/java/lab/stoneshelter/ReleaseSecurityTest.java",
+        "quality/recovery/**",
+        "docs/release/**",
+        "quality/charters/release-qualification.json",
+        "quality/e2e/T0008-003/**"
+      ],
+      "exclusive_resources": [
+        "api-source",
+        "schema"
+      ],
+      "checks": [
+        {
+          "adapter": "maven",
+          "selector": "ReleaseSecurityTest"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/release-qualification.json",
+      "deliverables": [
+        "Role/CSRF/Origin/ETag/PII boundaries; generated contract parity; backup and isolated restore; migration notes; no destructive original-data imports"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": "10008-T0008-003",
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0008-release-qualification/proposal.md",
+        "openspec/changes/0008-release-qualification/design.md",
+        "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0008-004",
+      "change": "0008-release-qualification",
+      "title": "Measure performance accessibility and final browser journeys",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0008-001"
+      ],
+      "requirements": [
+        "R070",
+        "R071",
+        "R079",
+        "R081"
+      ],
+      "acceptance": [
+        "A07",
+        "A32"
+      ],
+      "write_paths": [
+        "quality/charters/release-qualification.json",
+        "quality/performance/**",
+        "quality/e2e/release/**",
+        "quality/charters/release-qualification.json",
+        "quality/e2e/T0008-004/**"
+      ],
+      "exclusive_resources": [
+        "browser-runtime",
+        "model-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "browser",
+          "selector": "release-qualification"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/release-qualification.json",
+      "deliverables": [
+        "Reference hardware, declared dataset/load and percentile samples; accessible complete journeys; record limits; no estimated PASS"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0008-release-qualification/proposal.md",
+        "openspec/changes/0008-release-qualification/design.md",
+        "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    },
+    {
+      "id": "T0008-005",
+      "change": "0008-release-qualification",
+      "title": "Run release regression SonarQube and integrated final gate",
+      "kind": "qualification",
+      "status": "PLANNED",
+      "depends_on": [
+        "T0008-002",
+        "T0008-003",
+        "T0008-004"
+      ],
+      "requirements": [
+        "R001",
+        "R002",
+        "R004",
+        "R073",
+        "R074",
+        "R075",
+        "R076",
+        "R077",
+        "R078",
+        "R079",
+        "R080",
+        "R081"
+      ],
+      "acceptance": [
+        "A01",
+        "A31",
+        "A32",
+        "A33",
+        "A34",
+        "A35",
+        "A36"
+      ],
+      "write_paths": [
+        "docs/release/**",
+        "quality/charters/release-qualification.json",
+        "quality/e2e/T0008-005/**"
+      ],
+      "exclusive_resources": [
+        "release",
+        "model-runtime",
+        "browser-runtime"
+      ],
+      "checks": [
+        {
+          "adapter": "release",
+          "selector": "all"
+        }
+      ],
+      "browser_required": true,
+      "browser_charter": "quality/charters/release-qualification.json",
+      "deliverables": [
+        "Authorized release-only complete regression; actual Sonar analysis ID + server OK; new-code coverage >=80% duplication <=3%; every task integrated, all review stages current, no synthetic or missing evidence"
+      ],
+      "environment": [
+        "toolchain",
+        "docker",
+        "postgres",
+        "redis",
+        "kafka",
+        "minio",
+        "api",
+        "ui",
+        "ollama"
+      ],
+      "max_attempts": 2,
+      "timeout_seconds": 7200,
+      "completion": "All required gates and independent reviews on the current content; integrate and reverify before DONE",
+      "required_stages": [
+        "environment",
+        "developer",
+        "static",
+        "code_review",
+        "tests",
+        "test_review",
+        "browser",
+        "browser_review",
+        "integration"
+      ],
+      "browser_policy": "required",
+      "migration_prefix": null,
+      "read_first": [
+        "AGENTS.md",
+        "openspec/changes/0008-release-qualification/proposal.md",
+        "openspec/changes/0008-release-qualification/design.md",
+        "openspec/changes/0008-release-qualification/specs/release-qualification/spec.md",
+        "docs/execution/handoffs.md",
+        "docs/architecture.md",
+        "docs/contracts-and-data.md"
+      ],
+      "prohibited_changes": [
+        "historical applied migration edits",
+        "secrets or production data",
+        "source repositories outside this new checkout",
+        "unrequested features",
+        "unapproved dependency/framework changes"
+      ]
+    }
+  ]
+}
