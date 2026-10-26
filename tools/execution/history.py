@@ -16,12 +16,13 @@ def read_rows(path, table):
     path=evidence_path(Path(path).parent,Path(path).name)
     if not Path(path).exists():
         return []
-    if table not in ('tasks', 'leases', 'calls', 'stops', 'events'):
+    if table not in ('tasks', 'leases', 'calls', 'stops', 'events','adjustments'):
         raise Blocked('Unsupported audit table')
     with closing(sqlite3.connect(Path(path).absolute().as_uri() + '?mode=ro', uri=True)) as db:
         db.row_factory = sqlite3.Row
         if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise Blocked('SQLite integrity check failed')
+        if table=='adjustments' and not db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='adjustments'").fetchone():return []
         return [dict(row) for row in db.execute('SELECT * FROM ' + table)]
 
 
@@ -51,7 +52,7 @@ class History:
         if fresh:
             directory=self.path.parent
             retained_rows=any(read_rows(directory/name,table) for name,table in
-                [('state.sqlite','tasks'),('state.sqlite','leases'),('state.sqlite','events'),('budgets.sqlite','calls'),('budgets.sqlite','stops')])
+                [('state.sqlite','tasks'),('state.sqlite','leases'),('state.sqlite','events'),('budgets.sqlite','calls'),('budgets.sqlite','stops'),('budgets.sqlite','adjustments')])
             if retained_rows or retained_artifacts(directory) or any(public_artifacts(directory)):
                 raise Blocked('Refuse initializing history over retained execution state/artifacts')
         if not fresh:execution_identity(self.path)
@@ -133,6 +134,45 @@ def timeline(path, task=None):
     return result
 
 
+def verify_budget_adjustments(path,events=None):
+    """Bind retained correction intent/evidence/outcome to exact ledger projections."""
+    path=evidence_path(Path(path).parent,Path(path).name);directory=path.parent
+    rows=read_rows(path,'adjustments')
+    if events is None:events=timeline(directory/'trace.sqlite')
+    intents={};completed={}
+    for event in events:
+        if event['event'] not in {'accounting.correction.intent','accounting.correction.completed'}:continue
+        payload=event['payload'];receipt=payload.get('receipt_id')
+        if not receipt or payload.get('budget_database')!=path.name:raise Blocked('Foreign accounting correction database')
+        collection=intents if event['event'].endswith('.intent') else completed
+        if receipt in collection:raise Blocked('Duplicate retained accounting correction')
+        collection[receipt]=event
+    if len(rows)!=len(intents) or set(intents)!=set(completed):
+        raise Blocked('Interrupted or rolled-back accounting correction publication')
+    if [row['receipt_id'] for row in sorted(rows,key=lambda row:row['sequence'])]!=list(intents):
+        raise Blocked('Accounting effective order differs from retained causal order')
+    for row in rows:
+        receipt=row['receipt_id'];intent=intents.get(receipt);outcome=completed.get(receipt)
+        if not intent or not outcome:raise Blocked('Accounting adjustment lacks retained history')
+        payload=intent['payload']
+        if (outcome['payload']!={**payload,'intent_event_id':intent['event_id']}
+                or any(intent[key]!=outcome[key] for key in ('trace','task','session','role'))):
+            raise Blocked('Foreign accounting correction completion')
+        reference=payload.get('artifact','')
+        if reference!='model-preflight/accounting-'+payload.get('correction_sha256','')+'.json':
+            raise Blocked('Foreign accounting correction artifact')
+        artifact=evidence_path(directory,reference)
+        if not artifact.is_file() or sha(artifact)!=payload.get('artifact_sha256'):raise Blocked('Missing/changed accounting correction evidence')
+        projection=dict(row)
+        projection['correction']=json.loads(projection['correction']);projection['approval']=json.loads(projection['approval'])
+        if (json_read(artifact)!=projection or stable(projection)!=payload.get('projection_sha256')
+                or row['correction_sha256']!=stable(projection['correction'])
+                or intent['session']!=row['session']):raise Blocked('Accounting correction projection mismatch')
+        if projection['approval'].get('correction_sha256')!=row['correction_sha256']:
+            raise Blocked('Accounting approval digest mismatch')
+    return {'adjustments_verified':len(rows)}
+
+
 def database_state(directory, events):
     """Cross-check retained evidence before any writer can recreate a lost database."""
     directory = Path(directory)
@@ -154,6 +194,8 @@ def database_state(directory, events):
             sessions.add(event['session'])
     rows = {row['id']: row for row in state}
     gaps = lifecycle_gaps
+    try:verify_budget_adjustments(directory/'budgets.sqlite',events)
+    except (Blocked,OSError,ValueError,KeyError) as error:gaps.append(str(error))
     for task in rows.keys() - latest.keys():
         gaps.append('Task state lacks retained lifecycle: ' + task)
     if latest and not (directory / 'state.sqlite').is_file():
@@ -399,6 +441,7 @@ def verify_evidence(directory, events=None):
             if session in seen or session not in receipts or stable(record)!=stable(json_read(artifact(receipts[session]))):raise Blocked('Orphaned or inconsistent retained usage record')
             seen.add(session)
     if seen!=set(receipts):raise Blocked('Missing/truncated completed-invocation usage ledger')
+    verify_budget_adjustments(directory/'budgets.sqlite',events)
     from .checkpoints import verify_checkpoint
     return {'status': 'VERIFIED', 'events': len(events), 'raw_streams': len(raw),
             'execution_id':execution_identity(directory/'trace.sqlite'),

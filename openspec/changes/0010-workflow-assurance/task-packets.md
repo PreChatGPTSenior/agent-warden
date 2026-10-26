@@ -405,3 +405,100 @@ positive empty actual checks as UNBOUND_PENDING, not fabricated executable cover
 Reject malformed registry/source structures before claiming a valid map; no new
 library. Rerun the fifteen focused methods after a behavioral red demonstration,
 freeze source/evidence hashes and return for independent review.
+
+## T0010-011 Agent Warden exact offline dispatch
+
+Base:accepted96aeb83. Original011 production scope unchanged. Bind new
+BudgetReconciliationTest.test_concurrent_exposure_reservations,
+BudgetReconciliationTest.test_late_cost_adjustment,
+BudgetReconciliationTest.test_missing_final_usage_remains_reserved,
+BudgetReconciliationTest.test_duplicate_receipt_is_idempotent,
+BudgetReconciliationTest.test_stale_or_missing_rate_rejected,
+BudgetReconciliationTest.test_malformed_currency_and_cost_rejected,
+BudgetReconciliationTest.test_rounding_boundary_is_conservative,
+BudgetReconciliationTest.test_reopen_preserves_adjustment_history,
+BudgetReconciliationTest.test_unsupported_per_call_bound_blocks,
+BudgetReconciliationTest.test_expired_model_admission_blocks,
+BudgetReconciliationTest.test_adjustments_are_attributable_append_only,
+BudgetReconciliationTest.test_unapproved_adjustment_rejected.
+
+Exact compatibility:BudgetTest.test_default_zero_disables_both_providers_without_database_or_process,
+BudgetTest.test_concurrent_reservations_cannot_oversubscribe,
+BudgetTest.test_exact_limit_stops_both_pools_and_survives_restart,
+BudgetTest.test_late_overrun_is_recorded_not_clamped_to_allowance,
+BudgetTest.test_missing_usage_preserves_full_reservation_and_blocks_other_pool,
+BudgetTest.test_crash_reservation_blocks_restart_without_automatic_reset,
+BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt,
+BudgetTest.test_other_pool_stop_cancels_silent_active_process,
+BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop.
+Total21 exact methods; existing offline guards/clean environment/disposable fixtures.
+Any extra required compatibility case must be bound by coordinator before execution.
+
+Attributable adjustments need explicit approval/provenance, durable idempotence and
+append-only observations. Estimates are not verified provider invoices; unknown
+usage stays reserved. A global stop is not silently cleared by a refund or late
+receipt. Missing enforceable exposure/capability cannot be described as a hard cap.
+No real invoice fetch, rate lookup, model call or numeric policy activation.
+
+Narrow mechanical dependency amendment:execution/requirement-map.json may refresh
+the semantic0010 task-source digest and T0010-011 owner checks for this approved
+packet. Preserve all other stable IDs/spec hashes/baseline links and scenario
+completion NONE. One read-only current maintenance mapping validation is authorized
+after refresh; it is not application or completion acceptance. No change to010
+validator behavior unless a concrete defect returns to its owning packet.
+
+## T0010-011 internal approval seam boundary
+
+Coordinator accepts an internal reconcile_cost approval-verifier seam only; no
+production CLI or approval producer. Default/missing verifier rejects. Untrusted
+correction data cannot select/install a verifier. Bind approval to exact session,
+pool, receipt identity, amount/currency and correction digest, with attributable
+actor/decision identity; retain provenance and reject conflicting replay. Tests may
+inject a trusted verifier. This qualifies fixture accounting only, not real approval
+authority;012–013 own approved plan validation/application. Unknown spending stays
+reserved unless exact approved evidence resolves it. A correction never clears a
+historical global stop. Requested unsupported hard bounds reject; no invented adapter
+qualification. Original011 scope and exact21 tests are unchanged.
+
+## T0010-011 review-1 retained accounting repair
+
+Independent disposable probes reproduce: P1 old budget snapshot silently loses an
+approved correction because neither retained history nor database projections bind
+adjustments; P1 corrected invocation overrun below pool limit skips the global stop;
+P2 estimate-named/billing report fields include verified corrections.
+
+Narrow dependency scope amendment:tools/execution/history.py may bind adjustment
+rows and retained causal correction evidence to existing history/restart checks.
+Use existing safe artifact namespaces if possible; request a concrete further path
+amendment before expanding. Tests belong in test_budget_reconciliation.py. Keep
+trusted approval seam fixture-only and preserve prior history/zero policy guards.
+
+Add BudgetReconciliationTest.test_adjustment_rollback_is_detected,
+BudgetReconciliationTest.test_interrupted_adjustment_publication_blocks,
+BudgetReconciliationTest.test_corrected_invocation_overrun_latches_global_stop,
+BudgetReconciliationTest.test_estimated_verified_and_exposure_fields_are_distinct.
+Add exact compatibility HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance,
+HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks,
+HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted.
+Total28 exact methods including prior21. Test-first behavioral failures, then repair.
+Exercise publication interruption both before and after ledger mutation, missing or
+changed retained correction evidence and reopen; no loss of prior facts or uncertain
+reservations. No unattended clearing of stops. Estimates must keep their old meaning;
+exposure and verified/reconciled costs have distinct fields and honest labels.
+Mechanical requirement-map refresh remains permitted only for approved011 bindings.
+
+## T0010-011 review-2 atomic admission and correction-order repair
+
+Remaining P1 probes: an already-checked reserve can enter its transaction while
+correction completion is unpublished; reconstructed adjustment sequence order can
+change charged exposure without invalidating retained evidence. Prior three repairs
+hold. Existing011/history scope only. Add exact
+BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock
+and BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected
+(total30 focused methods). First reproduce both behavior failures with disposable
+fixtures. Revalidate correction publication under the same ledger serialization
+boundary as admission, before reservation writes. Bind effective correction order
+to retained evidence; do not merely document sequence as trustworthy. Preserve
+append-only history and fail closed for unqualified old evidence. No broader work.
+Freeze after30 focused cases and mechanical map refresh; coordinator may stop before
+acceptance to preserve quota. No012 execution is authorized during this repair.

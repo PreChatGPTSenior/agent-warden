@@ -58,3 +58,11 @@ prerequisites remain applicable. Missing external legacy product baseline is kno
 and must be reported blocked for application-package qualification; it does not
 block implementing/testing the current OpenSpec validator on disposable fixtures.
 Overall READY for the exact ten T0010-010 offline methods; live execution BLOCKED.
+
+## T0010-011 recheck after accepted base96aeb83
+
+Python3.14.8; sandbox-exec/ps present; disposable storage probePASS;3.68GiB free.
+Production limits both0.00. Weekly quota55%used/45%remaining. Exact21 offline methods
+bound in packet; no JDK/application/provider dependencies. Those services remain
+NOT CHECKED/NOT STARTED, no impact on disposable accounting/process fixtures.
+READY for011 fixtures and one read-only mapping validation; LIVE remains BLOCKED.

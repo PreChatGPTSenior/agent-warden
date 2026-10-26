@@ -58,3 +58,21 @@ def estimate(metrics, price):
              + outputs * decimal_amount(price['output_usd_per_million']))
     # USD per million tokens maps directly to microdollars per token; round up once.
     return int(value.to_integral_value(rounding=ROUND_CEILING))
+
+
+def validate_cost_receipt(receipt):
+    """Shape/provenance only; authenticity requires the trusted approval seam."""
+    fields={'session','pool','receipt_id','amount_usd','currency','basis','source','observed_at'}
+    if not isinstance(receipt,dict) or set(receipt)!=fields:
+        raise Blocked('Explicit cost correction identity and provenance required')
+    if any(not isinstance(value,str) or not value.strip() for value in receipt.values()):
+        raise Blocked('Cost correction fields must be nonempty strings')
+    if receipt['currency']!='USD' or receipt['basis'] not in {'verified_provider_receipt','approved_accounting_evidence'}:
+        raise Blocked('Unsupported correction currency or evidence basis')
+    micros(receipt['amount_usd'])
+    try:
+        source=urlsplit(receipt['source']);observed=datetime.fromisoformat(receipt['observed_at'])
+        if (source.scheme!='https' or not source.hostname or source.username or source.password or source.query
+                or source.fragment or observed.tzinfo is None):raise ValueError('Invalid provenance')
+    except (ValueError,TypeError) as error:raise Blocked('Invalid correction provenance') from error
+    return receipt

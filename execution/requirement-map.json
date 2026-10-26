@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "3cd67f266d68f90478b621ad8e89815d873ab6ce4d0c2e9c475b7d99262936be"
+      "sha256": "a5808b757026c16aab3fcd496294dab26b5a445b63d547582d233ef1304511b6"
     },
     {
       "namespace": "maintenance",
@@ -7129,7 +7129,38 @@
       "owners": [
         {
           "task": "T0010-011",
-          "checks": []
+          "checks": [
+            "BudgetReconciliationTest.test_adjustment_rollback_is_detected",
+            "BudgetReconciliationTest.test_adjustments_are_attributable_append_only",
+            "BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected",
+            "BudgetReconciliationTest.test_concurrent_exposure_reservations",
+            "BudgetReconciliationTest.test_corrected_invocation_overrun_latches_global_stop",
+            "BudgetReconciliationTest.test_duplicate_receipt_is_idempotent",
+            "BudgetReconciliationTest.test_estimated_verified_and_exposure_fields_are_distinct",
+            "BudgetReconciliationTest.test_expired_model_admission_blocks",
+            "BudgetReconciliationTest.test_interrupted_adjustment_publication_blocks",
+            "BudgetReconciliationTest.test_late_cost_adjustment",
+            "BudgetReconciliationTest.test_malformed_currency_and_cost_rejected",
+            "BudgetReconciliationTest.test_missing_final_usage_remains_reserved",
+            "BudgetReconciliationTest.test_reopen_preserves_adjustment_history",
+            "BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock",
+            "BudgetReconciliationTest.test_rounding_boundary_is_conservative",
+            "BudgetReconciliationTest.test_stale_or_missing_rate_rejected",
+            "BudgetReconciliationTest.test_unapproved_adjustment_rejected",
+            "BudgetReconciliationTest.test_unsupported_per_call_bound_blocks",
+            "BudgetTest.test_concurrent_reservations_cannot_oversubscribe",
+            "BudgetTest.test_crash_reservation_blocks_restart_without_automatic_reset",
+            "BudgetTest.test_default_zero_disables_both_providers_without_database_or_process",
+            "BudgetTest.test_exact_limit_stops_both_pools_and_survives_restart",
+            "BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop",
+            "BudgetTest.test_late_overrun_is_recorded_not_clamped_to_allowance",
+            "BudgetTest.test_missing_usage_preserves_full_reservation_and_blocks_other_pool",
+            "BudgetTest.test_other_pool_stop_cancels_silent_active_process",
+            "BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt",
+            "HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance",
+            "HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks",
+            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted"
+          ]
         }
       ],
       "evidence": []
@@ -7145,7 +7176,38 @@
       "owners": [
         {
           "task": "T0010-011",
-          "checks": []
+          "checks": [
+            "BudgetReconciliationTest.test_adjustment_rollback_is_detected",
+            "BudgetReconciliationTest.test_adjustments_are_attributable_append_only",
+            "BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected",
+            "BudgetReconciliationTest.test_concurrent_exposure_reservations",
+            "BudgetReconciliationTest.test_corrected_invocation_overrun_latches_global_stop",
+            "BudgetReconciliationTest.test_duplicate_receipt_is_idempotent",
+            "BudgetReconciliationTest.test_estimated_verified_and_exposure_fields_are_distinct",
+            "BudgetReconciliationTest.test_expired_model_admission_blocks",
+            "BudgetReconciliationTest.test_interrupted_adjustment_publication_blocks",
+            "BudgetReconciliationTest.test_late_cost_adjustment",
+            "BudgetReconciliationTest.test_malformed_currency_and_cost_rejected",
+            "BudgetReconciliationTest.test_missing_final_usage_remains_reserved",
+            "BudgetReconciliationTest.test_reopen_preserves_adjustment_history",
+            "BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock",
+            "BudgetReconciliationTest.test_rounding_boundary_is_conservative",
+            "BudgetReconciliationTest.test_stale_or_missing_rate_rejected",
+            "BudgetReconciliationTest.test_unapproved_adjustment_rejected",
+            "BudgetReconciliationTest.test_unsupported_per_call_bound_blocks",
+            "BudgetTest.test_concurrent_reservations_cannot_oversubscribe",
+            "BudgetTest.test_crash_reservation_blocks_restart_without_automatic_reset",
+            "BudgetTest.test_default_zero_disables_both_providers_without_database_or_process",
+            "BudgetTest.test_exact_limit_stops_both_pools_and_survives_restart",
+            "BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop",
+            "BudgetTest.test_late_overrun_is_recorded_not_clamped_to_allowance",
+            "BudgetTest.test_missing_usage_preserves_full_reservation_and_blocks_other_pool",
+            "BudgetTest.test_other_pool_stop_cancels_silent_active_process",
+            "BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt",
+            "HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance",
+            "HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks",
+            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted"
+          ]
         }
       ],
       "evidence": []

@@ -13,7 +13,7 @@ import time
 import uuid
 
 from .core import ROOT, Blocked, json_read, stable
-from .money import dollars, estimate, micros, price_for, validate_price
+from .money import dollars, estimate, micros, price_for, validate_price, validate_cost_receipt
 
 POLICY_PATH = ROOT / 'execution/agent-budgets.json'
 POOLS = ('codex', 'openrouter')
@@ -64,23 +64,37 @@ def pool_for(selection):
     raise Blocked('Provider has no approved budget pool; arbitrary routers need explicit accounting support')
 
 
+def accounting_rows(db):
+    rows=[dict(row) for row in db.execute('SELECT * FROM calls')]
+    if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='adjustments'").fetchone():
+        for row in rows:
+            actual=db.execute('SELECT amount,correction FROM adjustments WHERE session=? ORDER BY sequence DESC LIMIT 1',(row['session'],)).fetchone()
+            if actual:
+                row['reconciled_spent']=actual['amount']
+                row['verified_provider_spent']=actual['amount'] if json.loads(actual['correction'])['basis']=='verified_provider_receipt' else None
+    return rows
+
+
 def summarize(policy, rows, stop):
     pools = {}
     for name, settings in policy['pools'].items():
         own = [r for r in rows if r['pool'] == name]
         observed = sum(r['tokens'] for r in own)
         spent = sum(r['spent'] if policy['unit'] == 'usd' else r['tokens'] for r in own)
-        charged = sum(max(r['spent'] if policy['unit'] == 'usd' else r['tokens'], r['allowance']) if r['state'] in
-                      ('RESERVED', 'RUNNING', 'UNKNOWN') else (r['spent'] if policy['unit'] == 'usd' else r['tokens']) for r in own)
+        effective=lambda r:r.get('reconciled_spent',r['spent']) if policy['unit']=='usd' else r['tokens']
+        charged = sum(max(effective(r),r['spent'],r['allowance']) if r['state'] in
+                      ('RESERVED', 'RUNNING', 'UNKNOWN') else effective(r) for r in own)
         limit, _ = limits(policy, name)
-        amounts = ({'observed_estimated_usd': dollars(spent), 'charged_estimated_usd': dollars(charged),
-                    'available_usd': dollars(max(0, limit - charged)), 'provider_reported_cost_usd': None}
+        amounts = ({'observed_estimated_usd': dollars(spent), 'charged_estimated_usd': dollars(sum(max(r['spent'],r['allowance']) if r['state'] in ('RESERVED','RUNNING','UNKNOWN') else r['spent'] for r in own)),
+                    'charged_exposure_usd':dollars(charged),'accounted_usd':dollars(sum(effective(r) for r in own)),
+                    'available_usd': dollars(max(0, limit - charged)),
+                    'provider_reported_cost_usd':dollars(sum(r['verified_provider_spent'] for r in own)) if own and all(r.get('verified_provider_spent') is not None for r in own) else None}
                    if policy['unit'] == 'usd' else {'charged_tokens': charged, 'available_tokens': max(0, limit - charged)})
         pools[name] = {**settings, 'observed_tokens': observed, **amounts,
                       'unsettled_calls': sum(r['state'] in ('RESERVED', 'RUNNING', 'UNKNOWN') for r in own)}
     return {'unit': policy['unit'], 'stop_reason': stop, 'pools': pools,
             'scope': 'Project lifetime; retries and preset changes do not reset consumption',
-            'billing': 'Configured USD estimate; not invoices/subscription quota' if policy['unit'] == 'usd' else 'Observed tokens, not currency or remaining account quota'}
+            'billing': 'Configured estimates, separately approved verified/reconciled costs and admission exposure; not subscription quota or independent invoice verification' if policy['unit'] == 'usd' else 'Observed tokens, not currency or remaining account quota'}
 
 
 def limits(policy, pool):
@@ -100,20 +114,26 @@ def snapshot(path, policy):
     """Read-only CLI status; does not create a database or require credentials."""
     if not Path(path).exists():
         return {'status': 'NOT_STARTED', **summarize(policy, [], None)}
+    from .history import verify_budget_adjustments
+    verify_budget_adjustments(path)
     with closing(sqlite3.connect(Path(path).absolute().as_uri() + '?mode=ro', uri=True)) as db:
         db.row_factory = sqlite3.Row
         db.execute('BEGIN')
         check_unit(db, policy)
-        rows = [dict(row) for row in db.execute('SELECT * FROM calls')]
+        rows = accounting_rows(db)
         stop = db.execute("SELECT reason FROM stops WHERE id=1").fetchone()
         return {'status': 'STOPPED' if stop else 'RECORDED',
                 **summarize(policy, rows, stop[0] if stop else None)}
 
 
 class Budgets:
-    def __init__(self, path, policy, policy_path=None):
+    def __init__(self, path, policy, policy_path=None, *, approval_verifier=None):
         self.path, self.policy = Path(path), deepcopy(validate(policy))
+        # Trusted integration dependency only; never selected by correction data.
+        self.approval_verifier=approval_verifier
         self.policy_path, self.owner = policy_path, uuid.uuid4().hex
+        from .history import verify_budget_adjustments
+        if self.path.exists():verify_budget_adjustments(self.path)
         self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         # Fail closed if accounting was removed while invocation evidence survives.
         if not self.path.exists() and (self.path.parent / 'usage.jsonl').exists():
@@ -125,6 +145,14 @@ class Budgets:
                        'task TEXT NOT NULL, role TEXT NOT NULL, kind TEXT NOT NULL, owner TEXT NOT NULL, '
                        'allowance INTEGER NOT NULL, tokens INTEGER NOT NULL, state TEXT NOT NULL, updated REAL NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS stops (id INTEGER PRIMARY KEY CHECK(id=1), reason TEXT NOT NULL)')
+            db.execute('CREATE TABLE IF NOT EXISTS adjustments (sequence INTEGER PRIMARY KEY AUTOINCREMENT, '
+                       'receipt_id TEXT NOT NULL UNIQUE,session TEXT NOT NULL,amount INTEGER NOT NULL, '
+                       'correction_sha256 TEXT NOT NULL,correction TEXT NOT NULL,approval TEXT NOT NULL, '
+                       'decision_id TEXT NOT NULL UNIQUE,created REAL NOT NULL)')
+            for operation in ('UPDATE','DELETE'):
+                db.execute("CREATE TRIGGER IF NOT EXISTS adjustments_no_"+operation.lower()+" BEFORE "+operation+
+                           " ON adjustments BEGIN SELECT RAISE(ABORT,'Accounting adjustments are append-only'); END")
+
             check_unit(db, self.policy)
             columns = {row[1] for row in db.execute('PRAGMA table_info(calls)')}
             for name, declaration in (('spent', 'INTEGER NOT NULL DEFAULT 0'), ('price', "TEXT NOT NULL DEFAULT '{}'")):
@@ -159,6 +187,8 @@ class Budgets:
         db.execute('INSERT OR IGNORE INTO stops VALUES (1,?)', (reason,))
 
     def check_stop(self):
+        from .history import verify_budget_adjustments
+        verify_budget_adjustments(self.path)
         if self.policy_path is not None and stable(validate(json_read(self.policy_path))) != stable(self.policy):
             with self.transaction() as db:
                 self.stop(db, 'Budget policy changed during execution; stop and requalify')
@@ -184,6 +214,8 @@ class Budgets:
         """Linearize DONE publication against committed stop writers, never hold over Git."""
         self.check_stop()
         with self.transaction() as db:
+            from .history import verify_budget_adjustments
+            verify_budget_adjustments(self.path)
             row = db.execute('SELECT reason FROM stops WHERE id=1').fetchone()
             if row:
                 raise Blocked('Budget stopped before finalization: ' + row[0])
@@ -191,12 +223,16 @@ class Budgets:
 
     def reserve(self, session, selection, task, role, kind):
         self.check_stop()
+        if selection.get('required_bounds'):
+            raise Blocked('Requested per-call bound unsupported by the unqualified adapter; allowance is not a hard cap')
         pool = pool_for(selection)
         price = price_for(self.policy, pool, selection['model']) if self.policy['unit'] == 'usd' else {}
         with self.transaction() as db:
+            from .history import verify_budget_adjustments
+            verify_budget_adjustments(self.path)
             if db.execute('SELECT 1 FROM stops').fetchone():
                 raise Blocked('Budget stopped before reservation')
-            rows = [dict(row) for row in db.execute('SELECT * FROM calls')]
+            rows = accounting_rows(db)
             settings = summarize(self.policy, rows, None)['pools'][pool]
             allowance = limits(self.policy, pool)[1]
             available = micros(settings['available_usd']) if self.policy['unit'] == 'usd' else settings['available_tokens']
@@ -234,11 +270,69 @@ class Budgets:
                 self.stop(db, row['pool'] + ' budget limit reached')
         return self.receipt(session)
 
+    def reconcile_cost(self, correction, *, approval=None):
+        """Internal fail-closed seam; no CLI/real approval authority is supplied here.
+
+        The trusted host installs the verifier, independently of untrusted receipt
+        data. Approved cost corrections never resolve unknown tokens or clear stop.
+        """
+        correction=deepcopy(validate_cost_receipt(correction))
+        if self.policy['unit']!='usd' or not callable(self.approval_verifier):
+            raise Blocked('Trusted USD accounting approval verifier required')
+        from .history import History,verify_budget_adjustments
+        verify_budget_adjustments(self.path)
+        history=History(self.path.parent/'trace.sqlite')
+        digest=stable(correction)
+        verified=self.approval_verifier(deepcopy(approval),deepcopy(correction))
+        if (not isinstance(verified,dict) or set(verified)!={'actor','decision_id','correction_sha256'}
+                or any(not isinstance(value,str) or not value.strip() for value in verified.values())
+                or verified['correction_sha256']!=digest):
+            raise Blocked('Approval must bind exact correction digest and attributable decision')
+        with self.transaction() as db:
+            verify_budget_adjustments(self.path)
+            row=db.execute('SELECT * FROM calls WHERE session=?',(correction['session'],)).fetchone()
+            if row is None or row['pool']!=correction['pool'] or row['state']=='NOT_STARTED':
+                raise Blocked('Correction session/pool has no potentially started invocation')
+            prior=db.execute('SELECT * FROM adjustments WHERE receipt_id=?',(correction['receipt_id'],)).fetchone()
+            if prior:
+                if prior['correction_sha256']!=digest or json.loads(prior['approval'])!=verified:
+                    raise Blocked('Conflicting receipt or approval reuse')
+            else:
+                if db.execute('SELECT 1 FROM adjustments WHERE decision_id=?',(verified['decision_id'],)).fetchone():
+                    raise Blocked('Approval decision replayed for another correction')
+                amount=micros(correction['amount_usd'])
+                created=time.time()
+                sequence=db.execute('SELECT COALESCE(MAX(sequence),0)+1 FROM adjustments').fetchone()[0]
+                projection={'sequence':sequence,'receipt_id':correction['receipt_id'],'session':correction['session'],'amount':amount,
+                    'correction_sha256':digest,'correction':correction,'approval':verified,'decision_id':verified['decision_id'],'created':created}
+                reference='model-preflight/accounting-'+digest+'.json'
+                import hashlib
+                artifact_hash=hashlib.sha256((json.dumps(projection,indent=2)+'\n').encode()).hexdigest()
+                payload={'receipt_id':correction['receipt_id'],'budget_database':self.path.name,'correction_sha256':digest,
+                    'artifact':reference,'artifact_sha256':artifact_hash,'projection_sha256':stable(projection)}
+                context={'trace':'accounting:'+digest,'task':row['task'],'session':row['session'],'role':row['role']}
+                intent=history.append('accounting.correction.intent',**context,payload=payload)
+                history.write_artifact(reference,projection,trace=context['trace'],task=row['task'])
+                db.execute('INSERT INTO adjustments(sequence,receipt_id,session,amount,correction_sha256,correction,approval,decision_id,created) VALUES (?,?,?,?,?,?,?,?,?)',
+                    (sequence,correction['receipt_id'],correction['session'],amount,digest,json.dumps(correction,sort_keys=True),json.dumps(verified,sort_keys=True),verified['decision_id'],created))
+                if amount>=row['allowance']:
+                    self.stop(db,'Corrected invocation budget allowance reached: '+row['session'])
+                state=summarize(self.policy,accounting_rows(db),None)['pools'][row['pool']]
+                if micros(state['charged_exposure_usd'])>=limits(self.policy,row['pool'])[0]:
+                    self.stop(db,row['pool']+' reconciled exposure reaches configured limit')
+        if not prior:history.append('accounting.correction.completed',**context,payload={**payload,'intent_event_id':intent['event_id']})
+        return self.receipt(correction['session'])
+
     def receipt(self, session):
         with self.transaction() as db:
             row = db.execute('SELECT * FROM calls WHERE session=?', (session,)).fetchone()
             stop = db.execute('SELECT reason FROM stops WHERE id=1').fetchone()
+            adjustments=[]
+            for item in db.execute('SELECT * FROM adjustments WHERE session=? ORDER BY sequence',(session,)):
+                entry=dict(item);entry['correction']=json.loads(entry['correction']);entry['approval']=json.loads(entry['approval']);adjustments.append(entry)
+            latest=adjustments[-1] if adjustments else None
             return {'reservation': dict(row) if row else None, 'stop_reason': stop[0] if stop else None,
                     'unit': self.policy['unit'], 'estimated_cost_usd': dollars(row['spent']) if row and self.policy['unit'] == 'usd' else None,
-                    'provider_reported_cost_usd': None,
+                    'provider_reported_cost_usd': dollars(latest['amount']) if latest and latest['correction']['basis']=='verified_provider_receipt' else None,
+                    'reconciled_cost_usd':dollars(latest['amount']) if latest else None,'adjustments':adjustments,
                     'policy_sha256': stable(self.policy)}
