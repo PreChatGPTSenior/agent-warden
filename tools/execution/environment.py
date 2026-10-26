@@ -1,8 +1,8 @@
 """Isolated per-ticket environment setup and capability checks."""
 from __future__ import annotations
-import json,os,re,secrets,shutil,socket,subprocess,sys,time,urllib.request
+import json,os,re,secrets,shutil,socket,sys,time,urllib.request
 from pathlib import Path
-from .core import ROOT,Blocked,command,json_read,json_write,sha,safe
+from .core import ROOT,Blocked,command,command_result,json_read,json_write,sha,safe
 from .check_selection import checked_root
 
 def runtime_env():
@@ -22,9 +22,9 @@ def toolchain(env,*,candidate_root=ROOT):
   observed=command(argv,env=env).strip();match=re.fullmatch({'node':r'v?([0-9]+\.[0-9]+\.[0-9]+)','npm':r'([0-9]+\.[0-9]+\.[0-9]+)','python':r'Python ([0-9]+\.[0-9]+\.[0-9]+)'}[name],observed);ok=match is not None and match.group(1)==expect;checks.append({'component':name,'expected':expect,'observed':observed,'status':'READY' if ok else 'BLOCKED'})
  home=env.get('JAVA_HOME')
  if not home:raise Blocked('Required JAVA_HOME missing')
- r=subprocess.run([str(Path(home)/'bin/java'),'-version'],capture_output=True,text=True,env=env)
- observed=re.search(r'(?m)^(?:openjdk|java) version "([0-9]+\.[0-9]+\.[0-9]+)"(?: |$)',r.stderr+r.stdout)
- ok=r.returncode==0 and observed is not None and observed.group(1)==lock['jdk']
+ r=command_result([str(Path(home)/'bin/java'),'-version'],env=env)
+ observed=re.search(r'(?m)^(?:openjdk|java) version "([0-9]+\.[0-9]+\.[0-9]+)"(?: |$)',r['stderr']+r['stdout'])
+ ok=r['status']=='EXITED' and r['returncode']==0 and observed is not None and observed.group(1)==lock['jdk']
  checks.append({'component':'JAVA_HOME JDK','expected':lock['jdk'],'observed':'matching version' if ok else 'mismatch','status':'READY' if ok else 'BLOCKED'})
  if any(x['status']!='READY' for x in checks):raise Blocked('Pinned toolchain mismatch')
  return checks

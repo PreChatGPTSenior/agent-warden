@@ -4,7 +4,8 @@ Current user-authorized supervised subscription execution is defined in [subscri
 
 Follow-up status: the user authorized T0010-001–003 offline preparation and tests. Their initial results are in [the batch report](batch-001-003-report.md), with subsequently authorized corrections and scoped PR publication in [the review report](review-001-003.md); independent review and live launch remain pending. Other packets below are still future work.
 
-Repository: `/Users/viktoryia/IdeaProjects/stone-shelter-spec-parallel`.
+Repository for the current batch: `/Users/viktoryia/IdeaProjects/agent-warden`.
+The imported source path is historical; do not operate in sibling repositories.
 Paths below are relative to that repository. A path marked **new** is a proposed future file, not an existing implementation. Each task also permits updating only its own status/evidence references in this change's documentation after execution. No task permits writing runtime secrets, live state, budget limits/rates, sibling projects or the human-only directory.
 
 Acceptance requirements and scenarios are authoritative in [spec.md](specs/workflow-assurance/spec.md); the tests below describe how to demonstrate them. Dependencies are authoritative in [tasks.md](tasks.md). The coordinator must bind an exact test method list at dispatch; the listed modules are the maximum focused regression scope, not permission to run unrelated suites.
@@ -124,6 +125,105 @@ Review-driven focused test binding for T0010-008: retain the ten ProcessExecutio
 
 **Review/return:** before/after call-site inventory and causal timeline. Reviewer checks actual coverage rather than accepting that creation of a helper migrated every caller.
 
+### T0010-009 coordinator compatibility amendment (Agent Warden, 2026-10-26)
+
+The common executor replaces runtime.launch as the model fixture injection seam.
+Before editing, permit fixture-only adaptation in tools/tests/test_agent_models.py,
+test_agent_budgets.py, test_agent_workflow.py and test_maintenance_dispatch.py,
+plus a shared fake-process helper in workflow_assurance_fixtures.py if needed.
+Preserve all assertions, production locks and install_offline_guards behavior.
+This is necessary compatibility verification for T0010-009, not deferred T0010-019.
+
+Bind these additional exact cases (use the actual existing class names):
+- test_mocked_cli_receipt_and_ledger_include_usage_and_failure
+- test_streamed_limit_cancels_fake_process_and_preserves_receipt
+- test_other_pool_stop_cancels_silent_active_process
+- test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done
+- test_stop_during_merge_preserves_git_side_effect_without_done
+- test_two_role_handoff_uses_existing_metered_runtime
+- test_zero_budget_blocks_before_process
+- test_direct_api_is_locked_without_fixture_qualification_patch
+
+Missing new APIs are not accepted behavioral RED proof. Capture a regression on
+existing pre-fix core.command behavior, instrumenting the common executor so the
+failure demonstrates a real bypass, and retain the matching corrected positive run.
+
+T0010-009 journal-consumer amendment: permit tools/execution/audit_paths.py
+and tools/execution/history.py changes only to safely admit, correlate and verify
+the new command evidence namespace and journal lifecycle. Preserve prior artifact,
+invocation, ownership and accounting invariants. Unknown/missing/foreign/tampered
+command evidence must fail closed, and interrupted side effects must block restart.
+Do not make arbitrary new artifact trees trusted or treat output existence as success.
+Extend bound CommandJournalTest cases with these restart/tamper variants; additionally
+bind test_command_history_tampering_blocks_restart and test_command_namespace_is_safe.
+Existing fixture roots may be canonicalized before admission to avoid macOS /var
+aliases; the silent reviewer cancellation fixture may supply the already-required
+trusted review contract while preserving its original budget/cancellation assertions.
+
+T0010-009 planning compatibility amendment: permit tools/maintenance.py _head
+only to invoke the supervised common command service with explicit planning context
+and sanitized diagnostic receipts under .cache/maintenance-planning. No project
+.execution operational state or accounting may be created by plan/inspect. Clarify
+that read-only planning means no operational/application mutation, with diagnostic
+receipts retained. Add processes.py to its trusted source fingerprint and matching
+fixture list. Bind existing test_plan_has_exact_roles_and_no_runtime_side_effect,
+test_plan_inspection_does_not_create_accounting and
+test_source_and_policy_changes_invalidate_packet. Include unmocked planning command
+routing in the new journal test; mocks alone do not prove this integration.
+
+T0010-009 review-1 repair binding: independent high-effort review reproduced two
+P1 findings (post-spawn journal failure loses ownership and falsely settles NOT_STARTED;
+reconciliation follows a child symlink) and one P2 (basename-only/detach-option policy).
+Coordinator concurs. Within already approved files, add and run tests first:
+- CommandJournalTest.test_started_write_failure_cleans_owned_process
+- CommandJournalTest.test_started_write_failure_preserves_unknown_budget
+- CommandJournalTest.test_reconciliation_rejects_symlink_before_read
+- CommandJournalTest.test_policy_rejects_spoofed_binary_and_detach_variants
+
+Retain controls for genuine pre-spawn failure, known successful calls and approved
+non-detaching commands. Preserve uncertain reservations, never invent zero spend
+when a model may have started. Do not fix a protected-path read merely by moving it
+behind another dereference; rejection must precede target access. Requalify the
+existing 24 bound cases after these shared-path repairs, then freeze for review-2.
+
+T0010-009 coordinator concurrency repair: the shared journal must not classify
+another currently owned live command as an interrupted historical effect. Add
+CommandJournalTest.test_owned_live_action_allows_independent_command_but_restart_blocks.
+A narrow in-process handle/lease registry may distinguish live ownership; bind it
+to the current process, journal root and exact action/receipt identity, validate
+safe indexed evidence before any exemption, and use bounded critical sections.
+No saved PID, raw started flag, worker assertion or restored registry grants the
+exemption. Unknown/unowned/interrupted effects still block. No global lock may be
+held across command execution in a way that serializes independent workers.
+
+T0010-009 review-2 repair binding: add these exact CommandJournalTest methods,
+first RED against attempt-2, then GREEN after scoped correction:
+- test_dead_or_foreign_supervisor_cannot_claim_live_exemption
+- test_postlaunch_setup_failure_preserves_ownership_and_uncertainty
+- test_output_publication_is_serialized_with_independent_admission
+
+Close the entire post-launch setup boundary, not only journal.write: ownership
+must survive stdin/drain-thread setup failures and cleanup failure must remain
+explicitly uncertain. Only current-process live supervisor/lease and matching safe
+evidence can qualify the live-action exception; an exited supervisor or foreign
+owner cannot. Final output-artifact publication uses the same short synchronization
+boundary as admission/finalization, with no lock across process waits. Preserve
+review-1 fixes and known pre-spawn controls. Requalify the 32 bound cases; no next task.
+
+T0010-009 review-3 finalization repair binding: prior P1 repairs passed independent
+review. One P2 remains: the exact owned handle can have finished normally before
+JournalHandle publishes its outcome, causing unrelated admission to be rejected.
+Add these exact CommandJournalTest methods first RED, then GREEN:
+- test_normal_finalization_does_not_block_independent_command
+- test_pending_finalization_rejects_interrupted_or_foreign_result
+
+Recognize only current-process-owned, fully verified normal completion pending
+publication, or coordinate that bounded publication safely. Do not exempt merely
+terminated supervisors, missing/mismatched receipts, capture errors, old/PID-only
+records, foreign owners or unknown outcomes. Keep process waiting outside locks.
+No new feature or broad refactor; existing approved source scope only. Requalify the
+34 bound cases for this shared admission change, then freeze for independent review-4.
+
 ## T0010-010 — Current OpenSpec coverage
 
 **Requirement:** WA-011. **Write scope:** `tools/validate_execution.py`, **new** `tools/execution/requirements.py`, **new** `templates/requirement-evidence.schema.json`, **new** `execution/requirement-map.json`, **new** `tools/tests/test_requirement_traceability.py`.
@@ -231,3 +331,19 @@ Review-driven focused test binding for T0010-008: retain the ten ProcessExecutio
 **Return:** PR URL, commit identity, observed checks and remaining launch blockers. CI is not silently disabled; preview its scope before publication so it cannot perform an unauthorized paid/live run. Actual model smoke, real recovery, budget activation and merging remain separate decisions.
 
 T0010-007 bounded fixture amendment: the existing positive restart review fixture must publish its first.json and second.json evidence through History.write_artifact; retain all assertions. Rerun only the failed case, then freeze. No subsequent task or expensive review phase is admitted before the budget checkpoint.
+
+## T0010-009 review-4 finalization coordination amendment
+
+Attempt 4 closes only post-cache publication. The independent guarded reproduction
+still rejects a healthy owner after real lease closure and before result caching.
+Attempt 5 must cover the entire current-owner finalization boundary, without
+accepting unverified outcomes. Bounded waiting for attributable finalization must
+occur outside the admission lock, followed by complete evidence revalidation.
+Keep existing abnormal/foreign/unknown rejection checks. Scope remains the approved
+core/processes and test_command_journal files; no other task is admitted by this repair.
+
+Add exact test selectors `CommandJournalTest.test_precache_finalization_coordinates_independent_admission`
+and `CommandJournalTest.test_precache_interruption_or_stall_does_not_admit_command`
+to the prior 34-case set (36 total). First demonstrate the normal pre-cache failure.
+Include bounded stalled finalization and interrupted/capture-failed outcomes as
+negative subcases. Freeze after focused green and hand off for independent review.

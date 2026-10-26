@@ -5,7 +5,7 @@ from pathlib import Path
 from .core import safe
 
 DATABASES = ('state.sqlite', 'budgets.sqlite', 'trace.sqlite')
-TREES = ('runs', 'model-preflight', 'batches', 'versions')
+TREES = ('runs', 'model-preflight', 'batches', 'versions', 'commands')
 LEAVES = ('usage.jsonl', 'policy.json', 'result.json', 'budget-stop.json', 'execution-identity.json')
 PROTECTED_NAMES = {'engineering-log', '.git'}
 SECRET_NAMES = {'secrets', '.secrets', 'credentials', '.credentials', '.ssh',

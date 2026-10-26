@@ -227,7 +227,7 @@ def verify_evidence(directory, events=None):
         parts = Path(reference).parts
         if any(part.lower() == 'engineering-log' for part in parts): raise Blocked('Protected evidence path')
         if '.execution' in parts: parts = parts[parts.index('.execution') + 1:]
-        if not parts or parts[0] not in ('runs', 'model-preflight', 'batches'):
+        if not parts or parts[0] not in ('runs', 'model-preflight', 'batches', 'commands'):
             raise Blocked('Evidence is outside the audit directory')
         if secret_path(parts):
             raise Blocked('Required evidence references an excluded secret path; preserve source for reviewed reconciliation')
@@ -361,6 +361,29 @@ def verify_evidence(directory, events=None):
         path=evidence_path(directory,reference)
         if not path.is_file() or sha(path)!=digest:raise Blocked('Missing/corrupt registered artifact version: '+reference)
         indexed.add(reference)
+    # Command journals are retained, hash-indexed causal evidence, never hidden
+    # operational state. Interrupted effects block recovery rather than replay.
+    from .processes import read_outcome
+    for reference in published:
+        parts=Path(reference).parts
+        if parts[0]!='commands' or len(parts)!=2:continue
+        command=json_read(evidence_path(directory,reference))
+        action=parts[1].removesuffix('.json')
+        records=command.get('events',[])
+        if (command.get('action_id')!=action or not records
+                or any(record.get('action_id')!=action for record in records)
+                or [record.get('event') for record in records]!=['intent','started','outcome']
+                or not all(isinstance(command.get(key),str) and command[key].strip()
+                           for key in ('actor','task','parent_action','candidate','cwd','policy'))):
+            raise Blocked('Incomplete command causality; observed-state reconciliation required')
+        process_reference='commands/processes/'+action+'.process.json'
+        if process_reference not in published:raise Blocked('Missing indexed command outcome')
+        actual=read_outcome(evidence_path(directory,process_reference),records[1].get('execution_id'))
+        expected=records[2].get('outcome',{})
+        if (actual.get('status')=='INTERRUPTED'
+                or (command.get('side_effect') and actual.get('status')!='EXITED')
+                or any(actual.get(key)!=expected.get(key) for key in ('execution_id','status','returncode'))):
+            raise Blocked('Interrupted/inconsistent command; observed-state reconciliation required')
     retained={str(path.relative_to(directory)) for path in public_artifacts(directory)}
     for name in ('policy.json','result.json','budget-stop.json'):
         if evidence_path(directory,name).exists():retained.add(name)

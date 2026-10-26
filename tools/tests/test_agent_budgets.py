@@ -10,6 +10,7 @@ import tempfile
 import threading
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 from execution.budgets import Budgets, load, pool_for, snapshot, validate
@@ -25,7 +26,9 @@ class BudgetTest(unittest.TestCase):
         patch('socket.socket.connect', side_effect=AssertionError('Network forbidden')).start()
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
+        from execution.history import History
+        History(self.root/'.execution/trace.sqlite')
         self.path = self.root / 'budgets.sqlite'
         self.policy = {'schema': 1, 'unit': 'input_plus_output_tokens', 'pools': {
             pool: {'limit_tokens': 200, 'invocation_allowance_tokens': 100}
@@ -168,8 +171,8 @@ class BudgetTest(unittest.TestCase):
                 if inner.returncode is None: raise subprocess.TimeoutExpired('fake', timeout)
                 return inner.returncode
             def poll(inner): return inner.returncode
-        def terminate(process): process.returncode = -15
-        with patch.object(runtime, 'ROOT', self.root), patch.object(runtime, 'launch', Process), \
+        def terminate(handle): handle.supervisor.returncode = -15
+        with patch.object(runtime, 'ROOT', self.root), patch('execution.processes.start', side_effect=fake_executor_start(Process)), \
                 patch.object(runtime, 'terminate', side_effect=terminate) as cancelled:
             with self.assertRaises(Blocked):
                 runtime.invoke(self.codex, 'T0002-002', 'developer', self.root, self.root / 'run',
@@ -192,12 +195,12 @@ class BudgetTest(unittest.TestCase):
                     budget.observe('exhaust-codex', self.metrics(100), final=True)
                     raise subprocess.TimeoutExpired('fake', timeout)
                 return inner.returncode
-        def terminate(process): process.returncode = -15
-        with patch.object(runtime, 'ROOT', self.root), patch.object(runtime, 'launch', Process), \
+        def terminate(handle): handle.supervisor.returncode = -15
+        with patch.object(runtime, 'ROOT', self.root), patch('execution.processes.start', side_effect=fake_executor_start(Process)), \
                 patch.object(runtime, 'terminate', side_effect=terminate) as cancelled:
             with self.assertRaises(Blocked):
                 runtime.invoke(self.router, 'T0002-002', 'code_review', self.root, self.root / 'quiet',
-                               'fixture', 2, env={'OPENROUTER_API_KEY': 'fixture-only'}, budget=self.budget)
+                               'fixture', 2, env={'OPENROUTER_API_KEY': 'fixture-only'}, budget=self.budget, trace_context={'review_contract':{'schema':2,'fixture_only':True}})
             cancelled.assert_called_once()
         self.assertEqual(100, snapshot(self.path, self.policy)['pools']['openrouter']['charged_tokens'])
 

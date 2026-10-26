@@ -8,6 +8,7 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 import maintenance
@@ -36,6 +37,7 @@ class MaintenanceTest(unittest.TestCase):
                      'templates/maintenance-task.schema.json', 'templates/maintenance-handoff.schema.json',
                      'tools/execution/agent_runtime.py', 'tools/execution/model_policy.py',
                      'tools/execution/core.py', 'tools/execution/history.py', 'tools/execution/budgets.py',
+                     'tools/execution/processes.py',
                      'tools/execution/money.py', 'tools/execution/audit_paths.py', 'tools/execution/supervision.py',
                      'tools/execution/evidence.py', 'tools/execution/check_selection.py',
                      'templates/agent-result.schema.json', 'tools/execution/checkpoints.py'):
@@ -106,7 +108,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def invoke(self, packet, role='developer', context=None, previous=None, checks=None):
         context = context or self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch), \
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                 patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
             return maintenance.dispatch_role(packet, role, self.workspace,
                 self.root / '.execution/runs/maintenance-fixture' / role,
@@ -142,7 +144,7 @@ class MaintenanceTest(unittest.TestCase):
     def test_source_and_policy_changes_invalidate_packet(self):
         for name in (CHANGE + '/task-packets.md', 'execution/agent-models.json',
                      'execution/runtime-lock.json', 'execution/agent-budgets.json',
-                     'tools/execution/agent_runtime.py', 'templates/maintenance-task.schema.json',
+                     'tools/execution/agent_runtime.py', 'tools/execution/processes.py', 'templates/maintenance-task.schema.json',
                      'tools/execution/evidence.py', 'tools/execution/check_selection.py',
                      'templates/agent-result.schema.json', 'tools/execution/checkpoints.py'):
             packet = self.packet(); path = self.root / name; before = path.read_bytes()
@@ -347,7 +349,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def test_direct_api_is_locked_without_fixture_qualification_patch(self):
         packet = self.packet(); context = self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch):
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)):
             with self.assertRaisesRegex(Blocked, 'unqualified'):
                 maintenance.dispatch_role(packet, 'developer', self.workspace,
                     self.root / '.execution/runs/maintenance-fixture/developer', **context)
@@ -378,7 +380,7 @@ class MaintenanceTest(unittest.TestCase):
                 (self.workspace, self.root / '.execution/runs/another-attempt/code_review'),
                 (other, self.root / '.execution/runs/maintenance-fixture/code_review')):
             with self.subTest(workspace=workspace, folder=folder), \
-                    patch.object(runtime, 'launch', self.fake_launch), \
+                    patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                     patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
                 with self.assertRaisesRegex(Blocked, 'handoff'):
                     maintenance.dispatch_role(packet, 'code_review', workspace, folder,
@@ -397,7 +399,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def test_attempt_folder_has_fixed_role_leaf(self):
         packet = self.packet(); context = self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch), \
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                 patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
             with self.assertRaises(Blocked):
                 maintenance.dispatch_role(packet, 'developer', self.workspace,

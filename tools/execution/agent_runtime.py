@@ -17,11 +17,11 @@ import threading
 import time
 import uuid
 
-from .core import ROOT, Blocked, command, files, json_read, json_write, sha, stable
+from .core import ROOT, Blocked, command, files, json_read, json_write, sha, stable, start_process, command_scope, CommandStartFailure
 from .history import History
 from .money import dollars, micros
 from .model_policy import cli_args
-from .supervision import close_lease, launch
+
 from .evidence import REVIEW_ROLES,ReviewEvidenceError,validate_review
 
 
@@ -35,7 +35,7 @@ def private_stream(path):
 
 
 def redact(text, env, selection):
-    names = {'OPENAI_API_KEY', 'CODEX_API_KEY', 'OPENROUTER_API_KEY', 'CODEX_ACCESS_TOKEN'}
+    names = {name for name in env if re.search(r'TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_KEY|ACCESS_KEY|PRIVATE_KEY',name,re.I)}
     names.add(selection['provider_config'].get('api_key_env', ''))
     for name in names:
         if name and env.get(name):
@@ -115,14 +115,9 @@ def append_ledger(path, record):
         os.fsync(stream.fileno())
 
 
-def terminate(process):
-    if process.poll() is None:
-        os.killpg(process.pid, signal.SIGTERM)
-        try:
-            process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait()
+def terminate(handle):
+    handle.cancel()
+    return handle.wait()
 
 
 def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
@@ -175,7 +170,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     argv.append('-')
     started_at, started = utc(), time.monotonic()
     usage, warnings, reader_errors = Usage(), [], []
-    process, status, code = None, 'START_FAILED', None
+    process, handle, status, code = None, None, 'START_FAILED', None
+    launch_uncertain = False
     reservation = budget.reserve(session, selection, task_id, role, kind)
     before = source_manifest()
     input_path = folder / (role + '-' + session + '.input.json')
@@ -186,7 +182,12 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                                'input_artifact': reference(input_path), 'input_sha256': sha(input_path)})
     try:
         with private_stream(log) as stdout, private_stream(errors) as stderr:
-            process = launch(argv, cwd=workspace, env=env, timeout=timeout)
+            with command_scope(ROOT/'.execution/commands',actor=role,task=task_id,
+                    parent_action=trace,candidate=trace_context.get('candidate') or 'COMPATIBILITY_ONLY'):
+                handle = start_process(argv, cwd=workspace, env=env, timeout=timeout, external_stream=True)
+            process = handle.supervisor
+            if process is None:
+                raise Blocked('Model process admission failed')
             emit('invocation.process_started', {'pid': getattr(process, 'pid', None),
                                                 'identity': 'Live supervisor; coordinator pipe owns lifetime, never kill this saved PID',
                                                 'supervision': 'parent-pipe EOF and independent deadline'})
@@ -245,13 +246,13 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                 status = 'COMPLETED' if code == 0 else 'FAILED'
             except subprocess.TimeoutExpired:
                 status = 'TIMED_OUT'
-                terminate(process)
+                terminate(handle)
             except Blocked:
                 status = 'BUDGET_STOPPED'
-                terminate(process)
+                terminate(handle)
             except BaseException:
                 status = 'INTERRUPTED'
-                terminate(process)
+                terminate(handle)
                 raise
             finally:
                 for reader in readers:
@@ -259,8 +260,15 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                 if any(reader.is_alive() for reader in readers):
                     reader_errors.append('Incomplete event stream')
                 code = process.returncode
+    except CommandStartFailure as error:
+        launch_uncertain = error.may_have_started
+        if launch_uncertain: status = 'INTERRUPTED'
+        raise
     finally:
-        if process is not None: close_lease(process)
+        if handle is not None:
+            outcome = handle.wait()
+            if outcome['status'] != 'EXITED' and status == 'COMPLETED':
+                status = 'INTERRUPTED'
         try:
             if output.is_file():
                 output.write_text(redact(output.read_text(), env, selection))
@@ -268,7 +276,7 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
         except (OSError, UnicodeError):
             reader_errors.append('Final result could not be safely recorded')
         metrics = usage.summary(status == 'COMPLETED' and not reader_errors)
-        accounting = budget.observe(session, metrics, final=True, not_started=process is None)
+        accounting = budget.observe(session, metrics, final=True, not_started=process is None and not launch_uncertain)
         metrics['estimated_cost_usd'] = accounting['estimated_cost_usd']
         metrics['cost_basis'] = 'configured_estimate' if accounting['unit'] == 'usd' else 'unavailable'
         after = source_manifest()
@@ -290,6 +298,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                   'stderr_log': str(errors), 'raw_result': str(output)}
         record['artifact_hashes'] = {reference(path): sha(path)
                                     for path in (input_path, changes_path, log, errors, output)+((result_schema,) if not reviewing else ()) if path.is_file()}
+        if handle is not None:
+            handle.publish_output_artifacts({reference(path):sha(path) for path in (log, errors) if path.is_file()})
         json_write(receipt, record)
         append_ledger(ROOT / '.execution/usage.jsonl', record)
         decision = None

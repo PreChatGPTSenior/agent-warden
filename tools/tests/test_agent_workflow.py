@@ -13,9 +13,10 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-from execution.core import Blocked, State, command, json_write, sha, stable
+from execution.core import Blocked, State, command, json_write, sha, stable, command_scope
 from execution.budgets import Budgets
 from execution.gates import report
 from execution.history import History, recovery_status, require_recovered, timeline, verify_evidence
@@ -29,8 +30,10 @@ class WorkflowTest(unittest.TestCase):
     def exercise(self, reject_review=False, budget_stop_at=None):
         temporary = tempfile.TemporaryDirectory(); self.addCleanup(temporary.cleanup)
         root = Path(temporary.name).resolve() / 'repository'; root.mkdir()
+        History(root/'.execution/trace.sqlite')
         def git(argv, cwd=None, **kwargs):
-            result = command(argv, cwd=root if cwd is None else cwd, **kwargs)
+            with command_scope(root/'.execution/commands',actor='fixture-coordinator',task='T0002-002',parent_action='fixture-setup',candidate='fixture-baseline'), patch('execution.core._command_policy'):
+                result = command(argv, cwd=root if cwd is None else cwd, **kwargs)
             if budget_stop_at == 'during_merge' and argv[:2] == ['git', 'merge']:
                 with budget.transaction() as db: budget.stop(db, 'Concurrent stop during merge')
             return result
@@ -117,8 +120,7 @@ class WorkflowTest(unittest.TestCase):
             for target, name, value in [(engine, 'ROOT', root), (runtime, 'ROOT', root),
                 (engine, 'MODEL_POLICY', models), (engine, 'MODEL_PRESET', 'gpt'), (engine, 'MODEL_RECEIPTS', receipts),
                 (engine, 'MODEL_ENV', {}), (engine, 'BUDGET', budget)]: stack.enter_context(patch.object(target, name, value))
-            stack.enter_context(patch('subprocess.Popen', side_effect=popen))
-            stack.enter_context(patch.object(runtime, 'launch', side_effect=FakeModel))
+            stack.enter_context(patch('execution.processes.start', side_effect=fake_executor_start(FakeModel)))
             stack.enter_context(patch.object(engine, 'audit', side_effect=audit))
             stack.enter_context(patch('socket.socket.connect', side_effect=AssertionError('Network forbidden')))
             stack.enter_context(patch.object(engine, 'command', side_effect=git))
@@ -141,7 +143,7 @@ class WorkflowTest(unittest.TestCase):
         self.assertEqual('DONE', state.status()['T0002-002']['status'])
         self.assertEqual(['developer'] + list(ROLES[1:]) * 2, calls)
         events = timeline(root / '.execution/trace.sqlite', 'T0002-002')
-        self.assertEqual(['R003'], events[0]['payload']['packet']['requirements'])
+        self.assertEqual(['R003'], next(event for event in events if event['event']=='task.claimed')['payload']['packet']['requirements'])
         invocations = [e for e in events if e['event'] == 'invocation.finished']
         self.assertEqual(11, len({e['session'] for e in invocations}))
         self.assertEqual('feature.txt', invocations[0]['payload']['changes'][0]['path'])

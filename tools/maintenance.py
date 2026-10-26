@@ -16,7 +16,7 @@ import re
 import time
 
 from execution import agent_runtime as runtime
-from execution.core import ROOT, Blocked, command, files, identity, json_read, json_write, safe, sha, stable
+from execution.core import ROOT, Blocked, command, files, identity, json_read, json_write, safe, sha, stable, command_scope
 from execution.history import History, recovery_status, timeline
 from execution.model_policy import resolve, validate as validate_models
 
@@ -41,6 +41,7 @@ SOURCES = (
     'templates/maintenance-task.schema.json', 'templates/maintenance-handoff.schema.json',
     'tools/execution/agent_runtime.py', 'tools/execution/model_policy.py',
     'tools/execution/core.py', 'tools/execution/history.py', 'tools/execution/budgets.py',
+    'tools/execution/processes.py',
     'tools/execution/money.py', 'tools/execution/audit_paths.py', 'tools/execution/supervision.py',
     'tools/execution/evidence.py', 'tools/execution/check_selection.py',
     'templates/agent-result.schema.json', 'tools/execution/checkpoints.py',
@@ -62,7 +63,14 @@ def _root(root):
 
 
 def _head(root):
-    return command(['git', 'rev-parse', 'HEAD'], cwd=root).strip()
+    """Inspect HEAD; retain sanitized diagnostic receipts only in the planning cache.
+
+    Planning does not create the project's operational .execution or accounting.
+    """
+    with command_scope(root/'.cache/maintenance-planning/.execution/commands',
+            actor='maintenance-planner',task='maintenance-planning',
+            parent_action='inspect-head',candidate='NOT_YET_OBSERVED'):
+        return command(['git', 'rev-parse', 'HEAD'], cwd=root).strip()
 
 
 def _source(root, name):
@@ -193,7 +201,7 @@ def dispatch_role(packet, role, workspace, folder, *, root=None, readiness=None,
                   execute=False, env=None):
     """Internal bootstrap primitive; NOT a qualified production launch API.
 
-    The coordinator supplies trusted admission inputs. Tests replace runtime.launch,
+    The coordinator supplies trusted admission inputs. Tests replace the common executor provider seam,
     not accounting/history. This function cannot mark a task accepted or integrate.
     The CLI remains locked until independent review and later evidence gates exist.
     """

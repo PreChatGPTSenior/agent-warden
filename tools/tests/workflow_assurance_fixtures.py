@@ -76,6 +76,47 @@ def install_offline_guards():
     _INSTALLED = True
 
 
+def fake_executor_start(factory):
+    """Adapt an existing in-memory provider fixture at the common executor seam.
+
+    Non-provider actions still use the real guarded executor. Fake terminal
+    evidence is explicit disposable test data and cannot qualify a live process.
+    """
+    import time
+    import uuid
+    from execution import processes
+    real_start = processes.start
+    def start(argv, *, cwd, env, timeout, receipt, admission, **kwargs):
+        if Path(argv[0]).name != 'codex':
+            return real_start(argv,cwd=cwd,env=env,timeout=timeout,receipt=receipt,
+                              admission=admission,**kwargs)
+        _, proof = processes._approval(admission,argv,cwd)
+        supervisor = factory(argv,cwd=cwd,env=env,timeout=timeout)
+        if not hasattr(supervisor,'poll'):
+            supervisor.poll = lambda: supervisor.returncode
+        class Handle:
+            execution_id = uuid.uuid4().hex
+            started_at = time.time()
+            def __init__(self):
+                self.supervisor = supervisor
+                self.receipt = Path(receipt)
+                self.receipt.parent.mkdir(parents=True,exist_ok=True)
+            def wait(self):
+                code = self.supervisor.wait(timeout=timeout)
+                result = {'schema':1,'execution_id':self.execution_id,'status':'EXITED',
+                          'returncode':code,'started_at':self.started_at,'finished_at':time.time(),
+                          'assurance':processes.ASSURANCE,'admission':proof,
+                          'stdout':'','stderr':'','stdout_truncated':False,'stderr_truncated':False}
+                processes.write_receipt(self.receipt,result)
+                return result
+            def cancel(self): self.supervisor.returncode = -15
+            def close(self):
+                self.cancel()
+                return self.wait()
+        return Handle()
+    return start
+
+
 def main():
     selected = sys.argv[1:] or list(BASELINE)
     allowed = set(BASELINE) | {'test_maintenance_dispatch'}

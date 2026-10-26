@@ -9,7 +9,8 @@ import json
 import os
 from pathlib import Path
 import re
-import subprocess
+from types import SimpleNamespace
+from execution.core import command_result, scoped_commands
 import sys
 import urllib.request
 import uuid
@@ -151,10 +152,10 @@ def clean_environment(java_home):
 
 
 def execute(command, cwd, env, timeout=120):
-    try:
-        return subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout)
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise Blocked(type(error).__name__ + ': analyzer did not complete') from error
+    result = command_result(command, cwd=cwd, env=env, timeout=timeout)
+    if result['status'] != 'EXITED':
+        raise Blocked('Analyzer did not complete')
+    return SimpleNamespace(returncode=result['returncode'],stdout=result['stdout'],stderr=result['stderr'])
 
 
 def runtime(java_needed, react_needed, java_home):
@@ -244,6 +245,7 @@ def parse_report(name, path, inputs):
     return findings, errors
 
 
+@scoped_commands
 def run_gate(packet_file, java_home):
     inputs = snapshot(packet_file)
     meta, env, java, versions = runtime(bool(inputs['java_files']), bool(inputs['react_files']), java_home)
@@ -360,6 +362,7 @@ def setup():
     print(json.dumps({'status': 'INSTALLED', 'scope': 'local analyzer tooling only'}))
 
 
+@scoped_commands
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['setup', 'run', 'handoff', 'verify'])
