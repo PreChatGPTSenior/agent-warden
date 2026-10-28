@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "7421f8a517fad43a77fb2698684fdae7710eadfef5beb7d413b03324ebc8f43a"
+      "sha256": "2866940b1aaf205c0010c3598a36abe236849c76c14c66b1fa97de97f75f549f"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "4093613bb8297b7f12c8ebefdc3cefd88919cccb8c340d5f25fe6d9c3f39487d"
+      "sha256": "c36d7d5bcb06339f5b05f831c84990c6fc52762828972d51548fbae5753b058a"
     },
     {
       "namespace": "maintenance",
@@ -985,7 +985,7 @@
       "id": "WA-013",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-013 Approved recovery plans",
-      "sha256": "455879c8aa1da64d44bf87a4573ee36fd798a3e107eab6f67efb0597f322e2b1",
+      "sha256": "2741d3a53f85af0c1405ec85abad8aeddde5a6a00c268f4316553b50fc57012b",
       "baseline_id": null
     },
     {
@@ -7227,7 +7227,22 @@
       "owners": [
         {
           "task": "T0010-012",
-          "checks": []
+          "checks": [
+            "RecoveryPlanTest.test_altered_plan_digest_rejected",
+            "RecoveryPlanTest.test_authenticated_author_blocks_self_review",
+            "RecoveryPlanTest.test_author_attestation_missing_foreign_or_expired",
+            "RecoveryPlanTest.test_budget_raise_rejected",
+            "RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected",
+            "RecoveryPlanTest.test_done_without_gates_rejected",
+            "RecoveryPlanTest.test_dry_run_preserves_operational_state",
+            "RecoveryPlanTest.test_expired_foreign_or_self_asserted_approval",
+            "RecoveryPlanTest.test_independent_review_bound_to_plan",
+            "RecoveryPlanTest.test_invalid_typed_action_rejected",
+            "RecoveryPlanTest.test_live_lease_rejected",
+            "RecoveryPlanTest.test_safe_attributable_refusal",
+            "RecoveryPlanTest.test_unknown_spending_cannot_unlock",
+            "RecoveryPlanTest.test_valid_fully_bound_dry_run"
+          ]
         }
       ],
       "evidence": []
@@ -7243,7 +7258,22 @@
       "owners": [
         {
           "task": "T0010-012",
-          "checks": []
+          "checks": [
+            "RecoveryPlanTest.test_altered_plan_digest_rejected",
+            "RecoveryPlanTest.test_authenticated_author_blocks_self_review",
+            "RecoveryPlanTest.test_author_attestation_missing_foreign_or_expired",
+            "RecoveryPlanTest.test_budget_raise_rejected",
+            "RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected",
+            "RecoveryPlanTest.test_done_without_gates_rejected",
+            "RecoveryPlanTest.test_dry_run_preserves_operational_state",
+            "RecoveryPlanTest.test_expired_foreign_or_self_asserted_approval",
+            "RecoveryPlanTest.test_independent_review_bound_to_plan",
+            "RecoveryPlanTest.test_invalid_typed_action_rejected",
+            "RecoveryPlanTest.test_live_lease_rejected",
+            "RecoveryPlanTest.test_safe_attributable_refusal",
+            "RecoveryPlanTest.test_unknown_spending_cannot_unlock",
+            "RecoveryPlanTest.test_valid_fully_bound_dry_run"
+          ]
         }
       ],
       "evidence": []

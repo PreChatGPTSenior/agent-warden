@@ -1,0 +1,251 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "incident_id",
+    "author",
+    "created_at",
+    "expires_at",
+    "preconditions",
+    "operations",
+    "postconditions",
+    "plan_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+    },
+    "incident_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+    },
+    "author": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "preconditions": {
+      "$ref": "#/$defs/snapshot"
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "task",
+              "owner",
+              "from_status",
+              "to_status"
+            ],
+            "properties": {
+              "type": {
+                "const": "enable_task_retry"
+              },
+              "task": {
+                "type": "string",
+                "pattern": "^T[0-9]{4}-[0-9]{3}$"
+              },
+              "owner": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              },
+              "from_status": {
+                "const": "BLOCKED"
+              },
+              "to_status": {
+                "const": "RETRY"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "owner",
+              "resource"
+            ],
+            "properties": {
+              "type": {
+                "const": "release_stopped_lease"
+              },
+              "owner": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              },
+              "resource": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "postconditions": {
+      "$ref": "#/$defs/snapshot"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "recovery-plan.schema.json",
+  "title": "Immutable typed recovery proposal; not authorization or apply authority",
+  "description": "Semantic state equality, expiry, ownership and independent host verification are enforced by recovery_plans.py. Documents cannot install authority. No apply operation.",
+  "$defs": {
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_id",
+        "git_head",
+        "journal",
+        "evidence_sha256",
+        "checkpoint_sha256",
+        "accounting_sha256",
+        "unknown_spending",
+        "unresolved_effects",
+        "stop_reason",
+        "tasks",
+        "leases"
+      ],
+      "properties": {
+        "execution_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "git_head": {
+          "type": "string",
+          "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "journal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sequence",
+            "sha256"
+          ],
+          "properties": {
+            "sequence": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        },
+        "evidence_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "checkpoint_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "accounting_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "unknown_spending": {
+          "type": "boolean"
+        },
+        "unresolved_effects": {
+          "type": "boolean"
+        },
+        "stop_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "status",
+              "owner",
+              "commit"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^T[0-9]{4}-[0-9]{3}$"
+              },
+              "status": {
+                "enum": [
+                  "BLOCKED",
+                  "RETRY",
+                  "CLAIMED",
+                  "DEVELOPING",
+                  "DONE"
+                ]
+              },
+              "owner": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              },
+              "commit": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+              }
+            }
+          }
+        },
+        "leases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "owner",
+              "resource",
+              "live"
+            ],
+            "properties": {
+              "owner": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              },
+              "resource": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_.:@-]{1,128}$"
+              },
+              "live": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -86,3 +86,26 @@ exact32 methods in the appended packet. Production prerequisites are unchanged;
 Python/guards/storage sufficient for those same offline accounting/history fixtures.
 Updated user quota policy for this session:graceful stop at40%remaining, full stop
 before35%; former35/30 thresholds are historical. No T0010-012 execution admitted.
+
+## 2026-10-28 T0010-001 renewed for requested T0010-012–020 batch
+
+Basecc8e048; initial branch clean. Python3.14.8/SQLite3.54.1, Git2.48.1,
+Node24.21.0/npm11.19.0 and OpenSpec1.14.3 observed matching selected tooling.
+Sandbox-exec/ps and installed offline fixture guards present. Disposable SQLite
+write/commit/reopen probePASS;37.00GiB free. GitHub account authentication present
+for020 publication (secret values not recorded). Production pools0.00/pricesempty.
+At admission weekly quota6%used/94%remaining; graceful stop40%remaining/full35%.
+
+012–018 use pure validators and disposable SQLite/Git/process/file fixtures;
+014 uses local notification delivery only;015 injects storage failures without
+filling the host disk;016 uses synthetic canaries only.019 uses affected wrapper
+suites plus pinned offline OpenSpec/scoped maintenance package validation; exact
+aggregate commands bind only after integration.020 uses authenticated GitHub after
+accepted qualification. No new dependencies/services/models/application stack needed.
+Services/JDK/provider connectivity NOT CHECKED/NOT REQUIRED; live approval, external
+checkpoint durability and application baseline qualification remain deferred/blocked.
+
+READY for this entire offline batch. Dependency acceptance still precedes each task;
+recheck affected prerequisites when inputs/base/runner change. No business imports,
+application tests or provider requests were used for readiness. Initial SQLite probe
+was disposable preparation, not a production-state operation. No original repo edits.

@@ -1,6 +1,6 @@
 # Agent Warden checkpoint — 2026-10-28
 
-Status: REQUESTED T0010-011 COMPLETE; stopped at task boundary, not quota exhaustion.
+Status: ACTIVE requested batch T0010-012–020; T0010-012 accepted; preparing T0010-013.
 Workspace:/Users/viktoryia/IdeaProjects/agent-warden.
 Branch:codex/t0010-workflow-assurance. Prior checkpoint commit877b7ce is superseded
 by the accepted011 repair commit containing this document; resolve its exact hash
@@ -17,10 +17,11 @@ releasing reservations. Unknown usage recovery is a later explicitly approved fl
 
 ## Resume
 
-No developer/reviewer work remains active. Developer /root/warden_developer uses
+Developer and reviewer idle after012acceptance. No competing writer allowed. Developer /root/warden_developer uses
  gpt-6.1-sol medium; reviewer /root/warden_reviewer_resume uses gpt-6.1-sol high.
-Next logical task is012:recovery-plan validation/dry-run/approval. Do not start it
-without a user continuation and refreshed001 readiness for the requested batch.
+User explicitly authorized continuing012–020 until quota boundaries. Refreshed001
+readiness covers that offline batch oncc8e048;012 has12 bound focused tests.
+Next after developer freeze:independent review, coordinator acceptance, then013.
 Read current AGENTS/spec/packet; preserve one writer, tests first, frozen independent
 review, coordinator acceptance last.013–020 remain unstarted:approved application,
 notifications,backup/restore,privacy,operator report,combined faults,final qualification,
@@ -38,3 +39,6 @@ Approval seam remains fixture-only; no external checkpoint/provider hard-cap cla
 Application qualification blocked by absent legacy baseline; ownership map is not
 proof of application scenario completion. Final combined offline qualification019
 has not run. Private red/green/review evidence remains under.cache/t0010-subscription-run.
+
+012accepted2026-10-28:14focusedmethods, independentreview2+coordinator; see012acceptance.
+Next013requires exacttestbinding and affectedreadiness refresh. Quota limits40/35remaining.

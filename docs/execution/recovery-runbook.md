@@ -105,3 +105,78 @@ All must be recorded before requesting a first bounded retry:
 5. The user authorizes the exact retry and any billable preflight. Start with one task and observe its full lifecycle before permitting wider scheduling.
 
 After these conditions are met, `retry --execute` is a separately authorized state transition and `run --execute` is a separately authorized execution. Neither command is performed by this runbook. If uncertainty remains, the correct decision is REMAIN_BLOCKED.
+
+## 7. WA-013 typed proposal and dry-run contract (T0010-012)
+
+This contract defines validation only. No plan application, retry, lease release,
+stop clearing, command execution or accounting mutation is provided by this ticket.
+The two allowed operations are deliberately bounded preparation transitions for a
+future separately authorized T0010-013 executor:
+
+| Operation | Exact fields | Preconditions from fresh trusted observation | Predicted postcondition |
+|---|---|---|---|
+| `enable_task_retry` | `type`, `task`, `owner`, `from_status: BLOCKED`, `to_status: RETRY` | Exactly one matching task is BLOCKED with the same owner; no unknown spending, unresolved external effects or live lease | Only that task's status becomes RETRY; all existing gates still apply and the budget stop remains |
+| `release_stopped_lease` | `type`, `owner`, `resource` | Exactly one matching lease exists and its current-process ownership/liveness has independently been confirmed stopped; no live lease, unknown spending or unresolved effects | Only that exact lease is absent; no task becomes DONE or replayed |
+
+Duplicate targets and all other operations/fields reject. No plan may contain shell,
+SQL, provider changes, budget changes, DONE transitions, stop removal or automatic
+replay. A stopped lease is established by a trusted observer, never a saved PID,
+expired timestamp or a boolean assertion supplied in the plan. Uncertain accounting
+requires a separate approved recovery contract and cannot use these operations.
+
+The immutable schema-1 plan contains `plan_id`, `incident_id`, `author`, UTC
+`created_at`/`expires_at`, complete `preconditions`, typed `operations`, complete
+predicted `postconditions`, and `plan_sha256` over every other field using canonical
+JSON. The precondition snapshot contains execution identity, actual Git HEAD,
+journal sequence/hash, verified evidence/checkpoint/accounting digests, unknown
+spending and unresolved-effect flags, preserved stop reason, task rows and current
+lease observations. Predicted postconditions preserve every unmodified field.
+Changed Git, evidence, checkpoint, journal, accounting, ownership or stop invalidates
+validation. This is exact-state validation, not a waiver of completion gates.
+
+Host integration supplies four independent callable dependencies; plan documents
+and approval files cannot install them. `observe()` must freshly inspect the real
+execution/Git/evidence/checkpoint/accounting and actual lease ownership without
+mutation, refusing unavailable or unverifiable observations. The fixture observer
+used by tests is not a deployed observation authority. `verify_review(token,
+binding)` and `verify_operator(token, binding)` must independently authenticate an
+external decision and return actor, decision ID, exact plan digest, exact observed
+snapshot digest and expiry. The binding includes immutable plan/incident identity,
+plan digest and snapshot digest. Both decision expiries and plan expiry must remain
+valid. Author, reviewer and operator must be distinct; operator/reviewer decision
+IDs must also differ. A token's own APPROVED/PASS claim has no authority. Missing
+observation/reviewer/operator adapters fail closed. The current CLI installs none,
+so it cannot authorize a plan using files alone. Actual approval authority remains
+unqualified until separately admitted integration is available.
+
+The Python API can propose from a trusted observation, validate with freshly
+observed matching state and independent decisions, and return a dry-run report.
+`inspect_execution.py recovery-plan --plan <relative-path>` reads a proposal within
+the selected audit directory and performs only this default-deny dry-run. It has no
+apply option. Existing copy/inspection actions retain their separate semantics.
+Dry-run never writes operational databases, original evidence or diagnostics. A
+refusal returns a fixed reason code and plan/author hashes for attribution, never
+untrusted exception text, approval tokens or raw observation data. An operator may
+separately retain that returned diagnostic on explicitly approved private storage;
+this is not automatic evidence repair and is not implemented as an output write.
+
+### WA-013 canonical creator provenance amendment
+
+A document author name is a claim, not identity evidence. Host integration must
+also provide `verify_author(author_token, binding)`, independently of the proposal
+and its token contents. This fourth required trust dependency authenticates the
+canonical creator and provenance of this exact immutable plan. Its verified record
+has actor, attestation/decision ID, exact plan digest, exact observed snapshot digest
+and expiry, with the same binding and validity rules as the two approval records.
+The actor must equal the plan's claimed author. Authenticated author, reviewer and
+operator must all be distinct, and the three record IDs must differ. Renaming the
+claimed author and recomputing a plan digest cannot change authenticated provenance.
+
+Missing, forged, foreign or expired creator attestation blocks validation, including
+when reviewer/operator evidence otherwise passes. The host installs the verifier;
+no plan field, token, signed-looking file or CLI option supplies that authority.
+Creator attestation is rechecked for expiry at the validation return boundary.
+The CLI has none of the four trusted adapters and remains default-deny. Test
+attestations are fixture-only; no deployed creator identity infrastructure is
+claimed. A future executor must obtain fresh canonical provenance along with all
+other state/approval checks before an independently authorized application.

@@ -530,3 +530,60 @@ refresh current0010 source digest, WA-012 requirement digest and0010 task source
 Behavioral RED first, minimal repair,32 focused offline cases, one mapping validation,
 freeze source hashes/handoff. No providers/services/production policy changes or012.
 Session quota:graceful stop at40%remaining, complete stop before35%remaining.
+
+## T0010-012–020 sequential batch binding (2026-10-28)
+
+User authorizes sequential execution until quota stop, using developer gpt-6.1-sol
+medium, independent reviewer gpt-6.1-sol high and coordinator additional review.
+Graceful stop40%remaining, full stop before35%; unknown quota blocks new dispatch.
+Preserve zero production budgets/no real provider/service/recovery calls. All code,
+tests, typed actions and review evidence must remain tied to the owning packet.
+Publication020 is authorized as a new PR, no merge. Original repositories unchanged.
+
+For each packet, a narrow execution/requirement-map.json dependency refresh is
+allowed for its approved task-source/check declarations and explicitly amended
+specification blocks only. Preserve unrelated IDs/digests/baseline links/completion
+NONE. One read-only maintenance mapping validation after each such refresh is
+allowed; no application acceptance implied. Coordinator owns task/spec/status docs.
+This prevents an approved packet edit from leaving010's mapping silently stale.
+
+## T0010-012 exact offline execution
+
+Bind RecoveryPlanTest methods: RecoveryPlanTest.test_valid_fully_bound_dry_run,
+RecoveryPlanTest.test_altered_plan_digest_rejected, RecoveryPlanTest.test_expired_foreign_or_self_asserted_approval,
+RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected, RecoveryPlanTest.test_invalid_typed_action_rejected,
+RecoveryPlanTest.test_unknown_spending_cannot_unlock, RecoveryPlanTest.test_live_lease_rejected,
+RecoveryPlanTest.test_done_without_gates_rejected, RecoveryPlanTest.test_budget_raise_rejected,
+RecoveryPlanTest.test_dry_run_preserves_operational_state, RecoveryPlanTest.test_safe_attributable_refusal,
+RecoveryPlanTest.test_independent_review_bound_to_plan. Total12 exact methods in `tools/tests/test_recovery_plans.py`.
+Use existing guards/clean environment/disposable fixtures, not actual .execution.
+
+Before implementation, define exact allowed typed operations/pre-postconditions and
+trusted observation/reviewer/operator approval interfaces within recovery-runbook.
+No arbitrary shell/SQL, no model/provider switch, no automatic clear-stop or replay.
+A plan/evidence document alone cannot install trusted observers/verifiers or grant
+approval. Default unavailable authority must block actual authorization; injected
+trusted fixture adapters do not prove deployed authority. Dry-run may validate a
+proposal but cannot call it approved without both independently bound verifications.
+Return diagnostics without altering operational state; separate diagnostic retention
+must be explicit/private and cannot repair original evidence. No apply in012.
+
+## T0010-012 review-1 creator provenance repair
+
+P1 reproduced: actual creator can change document author name and then pass as the
+verified reviewer. Add trusted host canonical author provenance bound to exact plan/
+observation and validity; default unavailable rejects. Require authenticated author
+matches claimed author and differs from verified reviewer/operator. Plan/token data
+cannot install the provenance verifier; signed-looking strings are not authority.
+Clarified WA-013 precedes implementation. Runbook must describe this trust boundary
+without claiming deployed identity infrastructure. No new framework/dependency.
+
+Add RecoveryPlanTest.test_authenticated_author_blocks_self_review and
+RecoveryPlanTest.test_author_attestation_missing_foreign_or_expired (14total).
+Use honest creator/reviewer identity positive/negative controls and preserve all
+prior12 scenarios. Source API test failures distinguish absent seam from behavioral
+spoof reproduction. Original012 write scope unchanged; spec is coordinator-owned.
+Mechanical map refresh may update0010 source/WA-013 block/taskdigest and012 check
+bindings. WA-013-S1/S2 must carry real fully qualified declared selectors (not[]);
+all completion remains NONE. Verify this in the one authorized map validation.
+Freeze after14 focused cases; no013 before independent/coordinator acceptance.

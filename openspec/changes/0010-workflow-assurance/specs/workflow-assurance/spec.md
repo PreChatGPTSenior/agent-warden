@@ -145,7 +145,7 @@ Separate pools SHALL reserve admitted exposure atomically, preserve uncertain us
 - **THEN** an attributable adjustment is appended, prior observations remain available, and duplicate receipts cannot double-charge or double-credit the ledger.
 
 ### Requirement: WA-013 Approved recovery plans
-Recovery SHALL be read-only by default and SHALL require an independently reviewed, separately operator-approved immutable plan before application. Validation SHALL bind approval to exact preconditions and typed operations.
+Recovery SHALL be read-only by default and SHALL require an independently reviewed, separately operator-approved immutable plan before application. Validation SHALL bind approval to exact preconditions and typed operations. Author identity SHALL be established by trusted host provenance bound to the exact plan; a document-supplied author name alone SHALL NOT establish independence from the authenticated reviewer and operator.
 
 #### Scenario: WA-013-S1 Stale or fabricated approval
 - **WHEN** plan contents, Git state, relevant history, evidence or approval validity differ from the approved values, or approval comes only from an agent-authored assertion
