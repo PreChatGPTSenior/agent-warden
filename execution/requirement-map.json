@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "fd99b116956f0518b1ac46deb36a5651a8455c7988a880710ca18b6d3bf4415d"
+      "sha256": "9c3b3f1e504dc5c93e6c9637e80a06d8fe5cbaeb841e4009b76d8493eea43e4f"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "1a579ec04dc258621c54800348e8df7f24a509f29448ba1cd9b6f4e6ecc5d8a2"
+      "sha256": "d78e20c89913d0180486d0274bf65ed6bcd375a8141349cf5cdadb78b122dd11"
     },
     {
       "namespace": "maintenance",
@@ -1017,7 +1017,7 @@
       "id": "WA-017",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-017 Private evidence and least privilege",
-      "sha256": "e61b95a93c502ccaa530ded8e9301c5f2ce6749f668149f23a786e2be6b55f21",
+      "sha256": "190f037138ceb05dbb4819ce54ebf087dd50ba06c3129fc3ae930e32f38042cf",
       "baseline_id": null
     },
     {
@@ -7466,7 +7466,24 @@
       "owners": [
         {
           "task": "T0010-016",
-          "checks": []
+          "checks": [
+            "AgentModelTest.test_secret_redaction",
+            "AuditStorageTest.test_restore_retains_notification_and_recovery_history",
+            "EvidencePrivacyTest.test_argv_and_output_use_canonical_redaction",
+            "EvidencePrivacyTest.test_backup_refuses_unsafe_legacy_without_rewriting_history",
+            "EvidencePrivacyTest.test_notification_payload_never_contains_canary",
+            "EvidencePrivacyTest.test_private_permissions_fail_closed",
+            "EvidencePrivacyTest.test_protected_and_secret_names_precede_metadata",
+            "EvidencePrivacyTest.test_provider_stream_and_exception_no_secret_persistence",
+            "EvidencePrivacyTest.test_quarantine_preserves_original_evidence_and_explains_block",
+            "EvidencePrivacyTest.test_role_environment_omits_unrelated_credentials",
+            "EvidencePrivacyTest.test_sanitized_artifact_hashes_match_canonical_bytes",
+            "EvidencePrivacyTest.test_selected_provider_credential_required_not_invented",
+            "EvidencePrivacyTest.test_split_secret_and_url_credentials_redacted",
+            "EvidencePrivacyTest.test_symlink_alias_cannot_bypass_exclusion",
+            "HistoryTest.test_secret_exclusion_precedes_metadata_access",
+            "ProcessExecutionTest.test_output_sanitization_across_chunks_and_truncation"
+          ]
         }
       ],
       "evidence": []

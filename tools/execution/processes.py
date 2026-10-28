@@ -115,25 +115,8 @@ def read_outcome(receipt, execution_id=None):
     return {'schema':1,'execution_id':execution_id,'status':'INTERRUPTED','returncode':None}
 
 
-class _Sanitizer:
-    def __init__(self, values):
-        self.values = sorted(values,key=len,reverse=True)
-        self.pending = b''
-    def feed(self, chunk, *, final=False):
-        if not self.values: return chunk
-        self.pending += chunk
-        output = bytearray()
-        while self.pending:
-            partial = any(value.startswith(self.pending) and len(value)>len(self.pending) for value in self.values)
-            if partial and not final: break
-            match = next((value for value in self.values if self.pending.startswith(value)),None)
-            if match is not None:
-                output.extend(b'[REDACTED]'); self.pending = self.pending[len(match):]
-            elif partial:
-                output.extend(b'[REDACTED]'); self.pending = b''
-            else:
-                output.append(self.pending[0]); self.pending = self.pending[1:]
-        return bytes(output)
+# Shared boundary also protects core command argv canonicalization.
+from .evidence import CanonicalStream as _Sanitizer
 
 
 def _sensitive_values(env, configured):

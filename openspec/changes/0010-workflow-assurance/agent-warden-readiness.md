@@ -145,3 +145,21 @@ applicationservice, key, encryptedvolume or offhostcheckpoint is required for
 these fault fixtures; those components NOT CHECKED/NOT QUALIFIED. READY for015
 16 scopedoffline methods and mechanicalmap validation, not operationalrestore.
 Quota lastobserved38%used/62%remaining;40/35remainingstops continue.
+
+## T0010-016 affected readiness refresh
+
+2026-10-28 basef59a73a. Python3.14.8/SQLite3.54.1 observed;33.61GiBfree;
+disposableSQLite commit/reopenPASS; production pools0.00/pricesempty verified.
+Existing installed offlineguards/sandbox-exec/ps support the single bound dummy
+process compatibility test; no external model/service/dependency needed. Synthetic
+canaries only, no real credential inspection. Wholebatch prerequisites apply;
+READY for016 exact16 offline tests, not deployed privacy/hostilecode containment.
+Quota49%used/51%remaining at admission; recheck beforecostlyphases, stop40/35remaining.
+
+## 2026-10-28 quota stop during016 review
+
+Observed60%weeklyused/40%remaining. Graceful stop triggered; no new implementation,
+probe/test phase or017 dispatch.016candidate frozen but NOT ACCEPTED: bounded
+independent source review found canonical JSON keys are not sanitized. Next resume
+requires fresh quota/affected readiness, regression beforefix and complete review.
+Original016 readiness is historical, not proof of future availability.

@@ -31,16 +31,61 @@ def utc():
 
 def private_stream(path):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w')
+    descriptor=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    try:
+        os.fchmod(descriptor,0o600)
+        if os.fstat(descriptor).st_mode&0o777!=0o600:raise Blocked('Private stream permissions unavailable')
+        return os.fdopen(descriptor,'w')
+    except BaseException:os.close(descriptor);raise
 
 
 def redact(text, env, selection):
-    names = {name for name in env if re.search(r'TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_KEY|ACCESS_KEY|PRIVATE_KEY',name,re.I)}
-    names.add(selection['provider_config'].get('api_key_env', ''))
-    for name in names:
-        if name and env.get(name):
-            text = text.replace(env[name], '[REDACTED]')
-    return re.sub(r'\bsk-(?:or-v1-)?[A-Za-z0-9_-]{12,}', '[REDACTED]', text)
+    from .evidence import canonical_text
+    key=selection['provider_config'].get('api_key_env')
+    return canonical_text(text,env=env,sensitive_values=[env[key]] if key and env.get(key) else [])
+
+
+def role_environment(env,selection,role):
+    if not isinstance(env,dict):raise Blocked('Explicit role environment required')
+    common={'PATH','HOME','LANG','LC_ALL','TZ','TMPDIR','PYTHONDONTWRITEBYTECODE','OPENSPEC_TELEMETRY','DO_NOT_TRACK'}
+    toolchain={'JAVA_HOME','MAVEN_USER_HOME','MAVEN_OPTS','PLAYWRIGHT_BROWSERS_PATH','OLLAMA_HOST_URL','SPRING_AI_OLLAMA_BASE_URL'}
+    browser={'PLAYWRIGHT_BROWSERS_PATH','OLLAMA_HOST_URL','SPRING_AI_OLLAMA_BASE_URL'}
+    allowed=common|(toolchain if role in ('developer','test_engineer') else browser if role in ('browser_planner','browser_review') else set())
+    key=selection['provider_config'].get('api_key_env')
+    if key and (not isinstance(env.get(key),str) or not env[key].strip()):raise Blocked('Explicit selected provider credential required')
+    result={name:value for name,value in env.items() if name in allowed}
+    for name,value in result.items():
+        if not isinstance(value,str) or redact(value,env,selection)!=value:raise Blocked('Unsafe role setting requires explicit corrected configuration')
+    if key:result[key]=env[key]
+    return result
+
+
+def canonical_lines(source,env,selection,*,max_record_bytes=32768,max_capture_bytes=1048576):
+    from .evidence import CanonicalStream,secret_values,canonical_value
+    key=selection['provider_config'].get('api_key_env');values=secret_values(env,[env[key]] if key and env.get(key) else [])
+    sanitizer=CanonicalStream(values);pending='';captured=0
+    try:
+        while True:
+            chunk=source.read(4096)
+            rendered=sanitizer.feed(chunk.encode() if isinstance(chunk,str) else chunk or b'',final=not chunk).decode('utf-8','replace')
+            pending+=rendered
+            if len(pending.encode())>max_record_bytes:raise Blocked('Canonical record limit reached')
+            while '\n' in pending:
+                line,pending=pending.split('\n',1)
+                try:line=json.dumps(canonical_value(json.loads(line),env=env,sensitive_values=values))
+                except (ValueError,TypeError):pass
+                line+='\n';captured+=len(line.encode())
+                if captured>max_capture_bytes:raise Blocked('Canonical capture limit reached')
+                yield line
+            if not chunk:
+                if pending:
+                    try:pending=json.dumps(canonical_value(json.loads(pending),env=env,sensitive_values=values))
+                    except (ValueError,TypeError):pass
+                    captured+=len(pending.encode())
+                    if captured>max_capture_bytes:raise Blocked('Canonical capture limit reached')
+                    yield pending
+                return
+    except Exception:raise Blocked('Canonical stream unavailable or bounded limit reached') from None
 
 
 def count(value):
@@ -123,7 +168,8 @@ def terminate(handle):
 def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
            kind='agent', iteration='1', env=None, budget=None, trace_context=None):
     """Run once; preserve metrics on failure, timeout and interruption. No retry/fallback."""
-    env = dict(os.environ if env is None else env)
+    redaction_env=dict(env or {})
+    env = role_environment(env,selection,role)
     key_name = selection['provider_config'].get('api_key_env')
     if key_name and not env.get(key_name, '').strip():
         raise Blocked('Provider credential missing: ' + key_name)
@@ -146,8 +192,9 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
         return {str(p.relative_to(workspace)): sha(p) for p in files(workspace)
                 if any(fnmatch.fnmatchcase(str(p.relative_to(workspace)), pattern) for pattern in patterns)} if patterns else {}
     folder = Path(folder)
-    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    folder.mkdir(parents=True, exist_ok=True, mode=0o700);os.chmod(folder,0o700)
     output = folder / (role + '-' + session + '.result.json')
+    raw_output=folder/'.private-staging'/(session+'.json')
     log = folder / (role + '-' + session + '.events.jsonl')
     errors = folder / (role + '-' + session + '.stderr.log')
     receipt = folder / (role + '-' + session + '.execution.json')
@@ -164,7 +211,7 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     argv = ['codex', 'exec', '--ephemeral', '--sandbox',
             'workspace-write' if role == 'developer' and kind == 'agent' else 'read-only',
             '--cd', str(workspace), '--output-schema', str(result_schema),
-            '--output-last-message', str(output), '--json', *cli_args(selection)]
+            '--output-last-message', str(raw_output), '--json', *cli_args(selection)]
     if kind == 'preflight':
         argv.append('--skip-git-repo-check')
     argv.append('-')
@@ -172,11 +219,13 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     usage, warnings, reader_errors = Usage(), [], []
     process, handle, status, code = None, None, 'START_FAILED', None
     launch_uncertain = False
+    private_result_provenance=None
     reservation = budget.reserve(session, selection, task_id, role, kind)
+    prepare_private_result(folder,session)
     before = source_manifest()
     input_path = folder / (role + '-' + session + '.input.json')
-    json_write(input_path, {'context': trace_context, 'selection': selection,
-                           'prompt': redact(prompt, env, selection)})
+    from .evidence import write_private_artifact,canonical_value
+    write_private_artifact(folder,input_path.name,{'context':trace_context,'selection':selection,'prompt':redact(prompt,redaction_env,selection)},env=redaction_env)
     emit('invocation.started', {'kind': kind, 'iteration': str(iteration), 'context': trace_context,
                                'selection': selection, 'reservation': reservation,
                                'input_artifact': reference(input_path), 'input_sha256': sha(input_path)})
@@ -195,9 +244,9 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
             def drain(source, destination, events=False):
                 try:
                     line_number = 0
-                    for line in source:
+                    for line in canonical_lines(source,redaction_env,selection):
                         line_number += 1
-                        line = redact(line, env, selection)
+                        line = redact(line, redaction_env, selection)
                         destination.write(line)
                         destination.flush()
                         os.fsync(destination.fileno())
@@ -270,10 +319,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
             if outcome['status'] != 'EXITED' and status == 'COMPLETED':
                 status = 'INTERRUPTED'
         try:
-            if output.is_file():
-                output.write_text(redact(output.read_text(), env, selection))
-                os.chmod(output, 0o600)
-        except (OSError, UnicodeError):
+            if raw_output.is_file():private_result_provenance=publish_private_result(raw_output,output,redaction_env,selection)
+        except (Blocked,OSError,UnicodeError):
             reader_errors.append('Final result could not be safely recorded')
         metrics = usage.summary(status == 'COMPLETED' and not reader_errors)
         accounting = budget.observe(session, metrics, final=True, not_started=process is None and not launch_uncertain)
@@ -283,10 +330,11 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
         changes = [{'path': path, 'before_sha256': before.get(path), 'after_sha256': after.get(path)}
                    for path in sorted(set(before) | set(after)) if before.get(path) != after.get(path)]
         changes_path = folder / (role + '-' + session + '.changes.json')
-        json_write(changes_path, {'session': session, 'task': task_id, 'role': role,
-                                 'scope': 'Observed before/after hashes inside assigned write paths', 'changes': changes})
+        write_private_artifact(folder,changes_path.name,{'session':session,'task':task_id,'role':role,
+            'scope':'Observed before/after hashes inside assigned write paths','changes':changes},env=redaction_env)
         record = {'schema': 1, 'session': session, 'kind': kind, 'task': task_id,
                   'role': role, 'iteration': str(iteration), 'selection': selection,
+                  'private_result_provenance':private_result_provenance,
                   'result_assurance':'REVIEW_EVIDENCE_PENDING' if reviewing else 'COMPATIBILITY_ONLY' if kind=='preflight' else 'WORK_RESULT_NOT_REVIEW',
                   'trace': trace, 'context': trace_context, 'input_artifact': reference(input_path),
                   'changes_artifact': reference(changes_path), 'changes_sha256': sha(changes_path),
@@ -300,7 +348,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                                     for path in (input_path, changes_path, log, errors, output)+((result_schema,) if not reviewing else ()) if path.is_file()}
         if handle is not None:
             handle.publish_output_artifacts({reference(path):sha(path) for path in (log, errors) if path.is_file()})
-        json_write(receipt, record)
+        record=canonical_value(record,env=redaction_env)
+        write_private_artifact(folder,receipt.name,record,env=redaction_env)
         append_ledger(ROOT / '.execution/usage.jsonl', record)
         decision = None
         try:
@@ -319,9 +368,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     if not output.is_file():
         raise Blocked('Agent produced no structured result: ' + str(receipt))
     # An accidental credential echo must not persist in the final model-authored result.
-    clean = redact(output.read_text(), env, selection)
-    output.write_text(clean)
-    os.chmod(output, 0o600)
+    clean = redact(output.read_text(), redaction_env, selection)
+    if clean!=output.read_text():raise Blocked('Canonical result unexpectedly changed after hashing')
     try:
         result = json.loads(clean)
     except ValueError as error:
@@ -460,3 +508,37 @@ def usage_totals(path):
     return {'status': 'OBSERVED', 'groups': list(groups.values()),
             'time_semantics': 'Sum of agent durations; parallel durations are not wall-clock batch time',
             'billing': 'Token counters, not provider invoices; preflight costs are included separately'}
+
+
+def prepare_private_result(folder,session):
+    """Explicit noncanonical quarantine staging; never an exported artifact."""
+    from .check_selection import checked_root
+    folder=checked_root(folder)
+    if not re.fullmatch(r'[A-Za-z0-9-]+',session):raise Blocked('Invalid private result identity')
+    directory=folder/'.private-staging'
+    if directory.is_symlink():raise Blocked('Private staging alias refused')
+    directory.mkdir(mode=0o700,exist_ok=True);os.chmod(directory,0o700)
+    path=directory/(session+'.json');descriptor=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+        os.fchmod(descriptor,0o600)
+        if os.fstat(descriptor).st_mode&0o777!=0o600:raise Blocked('Private staging permissions unavailable')
+    finally:os.close(descriptor)
+    return path
+
+
+def publish_private_result(raw,output,env,selection,*,limit=1048576):
+    """Preserve private original bytes/hash; publish separately sanitized JSON."""
+    from .evidence import write_private_artifact
+    import hashlib
+    if raw.parent.is_symlink():raise Blocked('Private staging alias refused')
+    descriptor=os.open(raw,os.O_RDONLY|os.O_NOFOLLOW)
+    with os.fdopen(descriptor,'rb') as stream:
+        metadata=os.fstat(stream.fileno())
+        if metadata.st_mode&0o777!=0o600 or metadata.st_size>limit:raise Blocked('Untrusted result size/permissions unavailable')
+        data=stream.read(limit+1)
+    if len(data)>limit:raise Blocked('Untrusted result exceeds bound')
+    try:value=json.loads(data)
+    except (ValueError,UnicodeError):raise Blocked('Untrusted structured result invalid') from None
+    key=selection['provider_config'].get('api_key_env')
+    result=write_private_artifact(output.parent,output.name,value,env=env,sensitive_values=[env[key]] if key and env.get(key) else [])
+    return {'raw_sha256':hashlib.sha256(data).hexdigest(),'canonical_sha256':result['sha256'],'raw_state':'PRIVATE_NONCANONICAL_NOT_EXPORTABLE'}

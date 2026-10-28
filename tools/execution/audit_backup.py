@@ -128,6 +128,7 @@ def database_snapshot(source,target):
         # Normalize only the new immutable snapshot. RO verification must not
         # need mutable WAL/shm sidecars or omit committed source WAL pages.
         if output.execute('PRAGMA journal_mode=DELETE').fetchone()[0].lower()!='delete':raise Blocked('Snapshot journal normalization failed')
+    compact_database(target)
     os.chmod(target,0o600);database_check(target)
     with target.open('rb') as stream:os.fsync(stream.fileno())
     _fsync_directory(target.parent)
@@ -250,7 +251,7 @@ def _publish(destination,manifest,fault):
     if fault:fault('after_publication')
 
 
-def backup(directory,destination,*,fault=None):
+def backup(directory,destination,*,fault=None,sensitive_values=()):
     directory,destination=checked(directory),checked(destination)
     if destination==directory or directory in destination.parents:raise Blocked('Audit backup must be outside source')
     if destination.exists():raise Blocked('Backup destination must be new')
@@ -258,6 +259,7 @@ def backup(directory,destination,*,fault=None):
     with idle(directory),writer_fences(directory):
         if fault:fault('after_fences')
         execution_id,head,flags=_causal_state(directory)
+        _require_exportable(directory,sensitive_values)
         before=_inventory(directory);_capacity(directory,destination,before)
         _claim_destination(destination)
         json_write(destination/PARTIAL,{'schema':2,'publication':'INCOMPLETE'})
@@ -281,20 +283,24 @@ def backup(directory,destination,*,fault=None):
         return manifest
 
 
-def restore(source,destination,*,fault=None):
+def restore(source,destination,*,fault=None,sensitive_values=()):
     source,destination=checked(source),checked(destination)
     if destination.exists() or destination==source or source in destination.parents:raise Blocked('Restore target must be new and isolated; existing state is never overwritten')
     with idle(source),writer_fences(source):
-        manifest=verify(source);before=_inventory(source,archive=True);_capacity(source,destination,before)
+        manifest=verify(source);_require_exportable(source,sensitive_values);source_manifest_sha256=manifest['manifest_sha256']
+        before=_inventory(source,archive=True);_capacity(source,destination,before)
         _claim_destination(destination);json_write(destination/PARTIAL,{'schema':2,'publication':'INCOMPLETE'})
         if fault:fault('after_marker')
         for name in manifest['files']:
             copy_private(safe(source,name),safe(destination,name))
+            if name in DATABASES:compact_database(safe(destination,name))
             if fault:fault('after_file')
         if _inventory(source,archive=True)!=before:raise Blocked('Archive changed during isolated restore')
+        manifest={**manifest,'files':_inventory(destination,archive=True),'consistency':manifest['consistency']+'; derived_from_manifest_sha256='+source_manifest_sha256}
+        manifest['manifest_sha256']=stable({key:value for key,value in manifest.items() if key!='manifest_sha256'})
         _publish(destination,manifest,fault)
     return {'status':'AUDIT_RESTORED','destination':str(destination),'files':len(manifest['files']),
-        'execution_resumed':False,'recovery_required':manifest['recovery_required']}
+        'execution_resumed':False,'recovery_required':manifest['recovery_required'],'source_manifest_sha256':source_manifest_sha256}
 
 
 def retention_preview(directories,*,keep=1):
@@ -312,3 +318,75 @@ def retention_preview(directories,*,keep=1):
     return {'status':'PREVIEW_ONLY','deletion_supported':False,'protected':protected,
         'candidates':[{'path':path,'manifest_sha256':digest} for _,path,digest in eligible[keep:]],
         'kept':[path for _,path,_ in eligible[:keep]],'meaning':'No files removed; separate operator authority and policy required'}
+
+# Schema-aware export qualification; never regex-match raw SQLite pages.
+_PRIVACY_COLUMNS={
+ 'state.sqlite':{'tasks':{'id','status','owner','commit_id','detail','updated'},'leases':{'resource','owner','expires'},'events':{'seq','task','status','detail','at','owner','commit_id'},
+  'recovery_operations':{'plan_id','plan_sha256','owner','status','plan','authorization','expected','report'},'recovery_steps':{'plan_id','step_index','state','operation'},'recovery_ownership':{'singleton','plan_id','owner'}},
+ 'budgets.sqlite':{'calls':{'session','pool','task','role','kind','owner','allowance','tokens','state','updated','spent','price'},'stops':{'id','reason'},'adjustments':{'sequence','receipt_id','session','amount','correction_sha256','correction','approval','decision_id','created'},'accounting':{'unit'},'stop_sources':{'source_id','kind','causal_sha256','evidence_sha256','task','evidence_state','created'}},
+ 'trace.sqlite':{'events':{'seq','event','trace','task','session','role','body','digest'},'execution_identity':{'singleton','execution_id'}}}
+
+
+def quarantine_report(directory,*,sensitive_values=()):
+    """Classification only: preserve original bytes/hash, unknown schemas refuse."""
+    from .evidence import canonical_text,canonical_value,secret_values
+    from .notifications import TABLES
+    import json
+    directory=checked(directory);values=secret_values(configured=sensitive_values);findings=[]
+    schemas={name:dict(tables) for name,tables in _PRIVACY_COLUMNS.items()};schemas['trace.sqlite'].update(TABLES)
+    def unsafe(text):
+        if canonical_text(text,sensitive_values=values)!=text:return True
+        try:
+            value=json.loads(text)
+            return canonical_value(value,sensitive_values=values)!=value
+        except (ValueError,TypeError):return False
+    files=_inventory(directory)
+    if safe(directory,'manifest.json').is_file():files['manifest.json']=sha(directory/'manifest.json')
+    for reference,digest in files.items():
+        path=safe(directory,reference);reason=None
+        try:
+            if reference in DATABASES:
+                with closing(sqlite3.connect(path.absolute().as_uri()+'?mode=ro',uri=True,timeout=BUSY_SECONDS)) as db:
+                    entries=db.execute("SELECT name,type,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'").fetchall()
+                    for name,kind,table,sql in entries:
+                        if kind=='table':
+                            if name not in schemas[reference] or {row[1] for row in db.execute('PRAGMA table_info('+name+')')}!=schemas[reference][name]:reason='UNQUALIFIED_SQLITE_SCHEMA';break
+                        elif not (kind=='index' and name=='task_history' or kind=='trigger' and name in ('adjustments_no_update','adjustments_no_delete')):reason='UNQUALIFIED_SQLITE_SCHEMA';break
+                        if sql and unsafe(sql):reason='UNSAFE_SCHEMA_TEXT';break
+                    if reason is None:
+                        for name,kind,table,sql in entries:
+                            if kind!='table':continue
+                            columns=sorted(schemas[reference][name]);count=0
+                            for column in columns:
+                                # Read only approved scalar text; never materialize
+                                # unknown BLOB/oversize values or unapproved tables.
+                                query='SELECT typeof('+column+'),length(CAST('+column+' AS BLOB)),CASE WHEN typeof('+column+")='text' AND length(CAST("+column+' AS BLOB))<=1048576 THEN '+column+' ELSE NULL END FROM '+name
+                                for value_type,size,text in db.execute(query):
+                                    count+=1
+                                    if count>10000 or value_type=='blob' or size is not None and size>1048576:reason='UNQUALIFIED_SQLITE_VALUE';break
+                                    if text is not None and unsafe(text):reason='UNSAFE_SQLITE_TEXT';break
+                                if reason:break
+                            if reason:break
+            else:
+                if path.stat().st_size>2097152:reason='UNQUALIFIED_ARTIFACT_SIZE'
+                else:
+                    try:text=path.read_bytes().decode('utf-8')
+                    except UnicodeError:reason='UNQUALIFIED_BINARY_ARTIFACT'
+                    else:
+                        if unsafe(text):reason='UNSAFE_LEGACY_TEXT'
+        except (sqlite3.Error,OSError,ValueError):reason='UNQUALIFIED_EVIDENCE'
+        if reason:findings.append({'reference':reference,'sha256':digest,'reason':reason})
+    return {'status':'QUARANTINED_NON_EXPORTABLE' if findings else 'EXPORTABLE_AFTER_NEW_DATABASE_COMPACTION','findings':findings,
+        'originals_rewritten':False,'meaning':'Logical approved-column/text classification only; unknown/encoded PII and raw binary safety not proven'}
+
+
+def _require_exportable(directory,sensitive_values=()):
+    if quarantine_report(directory,sensitive_values=sensitive_values)['findings']:raise Blocked('Legacy evidence quarantined; preserve original bytes/hash, export refused')
+
+
+def compact_database(path):
+    """Only an exclusively owned NEW destination; never mutate original pages."""
+    with closing(sqlite3.connect(path,timeout=BUSY_SECONDS)) as db:
+        db.execute('PRAGMA journal_mode=DELETE');db.execute('VACUUM')
+    os.chmod(path,0o600)
+    with path.open('rb') as stream:os.fsync(stream.fileno())

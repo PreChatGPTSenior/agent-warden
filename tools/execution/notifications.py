@@ -31,7 +31,8 @@ def _require(condition):
 
 def _actor(value):
  _require(isinstance(value,str) and re.fullmatch(r'[A-Za-z0-9_.:@-]{1,128}',value) is not None)
- return value
+ from .evidence import canonical_text
+ return 'redacted-'+stable(value) if canonical_text(value)!=value else value
 
 
 def _source(kind,causal,evidence=None,task=None,evidence_state='OBSERVED_FAILURE'):
@@ -243,7 +244,7 @@ class Notifications:
    'delivery_semantics':'Local at-least-once callback; ambiguous retries can duplicate without a deduplicating destination','meaning':'Notification/ack state is not execution, recovery or budget authority'}
 
  def deliver(self,incident,sink,*,actor,retry=False,fault=None):
-  _actor(actor);_require(callable(sink));view=self.view();matching=[row for row in view['notifications'] if row['incident_id']==incident]
+  actor=_actor(actor);_require(callable(sink));view=self.view();matching=[row for row in view['notifications'] if row['incident_id']==incident]
   _require(len(matching)==1 and matching[0]['source_state']=='CURRENT')
   owner=uuid.uuid4().hex;attempt=uuid.uuid4().hex;live=(str(self.path),owner)
   # Publish current-process liveness before exposing the durable owner. Resolver
@@ -273,7 +274,7 @@ class Notifications:
    self._action(db,incident,'DELIVERY_'+state,actor,attempt=attempt)
 
  def resolve_delivery(self,incident,*,actor,confirm_stopped=None):
-  _actor(actor);_require(callable(confirm_stopped))
+  actor=_actor(actor);_require(callable(confirm_stopped))
   with self._db(write=True) as db:
    self._validate_rows(db);row=db.execute('SELECT * FROM notification_outbox WHERE incident_id=?',(incident,)).fetchone();_require(row is not None and row['delivery_state']=='DELIVERING')
    with _LOCK:_require((str(self.path),row['owner']) not in _LIVE)
@@ -283,7 +284,7 @@ class Notifications:
    self._action(db,incident,'AMBIGUOUS_ATTEMPT_RESOLVED_FOR_EXPLICIT_RETRY',actor,attempt=row['attempt'])
 
  def acknowledge(self,incident,*,actor):
-  _actor(actor)
+  actor=_actor(actor)
   with self._db(write=True) as db:
    self._validate_rows(db);_require(db.execute('SELECT 1 FROM notification_outbox WHERE incident_id=?',(incident,)).fetchone() is not None)
    ack=stable({'incident_id':incident,'actor':actor})

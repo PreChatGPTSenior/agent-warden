@@ -810,3 +810,84 @@ and source bytes. Validate symlink/existing target refusal before following targ
 metadata, and keep valid new nested destination positive controls. No unsafe retry
 or deletion. Original015 scope unchanged; final17 plus narrow maprefresh and one
 validation, frozen independent re-review before acceptance.
+
+## T0010-016 exact offline execution
+
+Admitted on015acceptance commitf59a73a. Define the canonical redaction and scoped
+role-environment contract before code, including bounded streaming, URL/userinfo/
+query handling, exact secret values, explicit provider credential and legacy export
+quarantine. Reuse existing dependencies; no new framework/provider. Never read real
+credentials or protected directories for test construction. Preserve original legacy
+bytes/hash facts; unsafe existing evidence cannot be silently sanitized and called
+the same original. Quarantine is an explicit non-exportable classification/report,
+not deletion or an automatic history rewrite. State detection limits honestly.
+
+Bind new tools/tests/test_evidence_privacy.py:
+EvidencePrivacyTest.test_argv_and_output_use_canonical_redaction,
+EvidencePrivacyTest.test_split_secret_and_url_credentials_redacted,
+EvidencePrivacyTest.test_provider_stream_and_exception_no_secret_persistence,
+EvidencePrivacyTest.test_role_environment_omits_unrelated_credentials,
+EvidencePrivacyTest.test_selected_provider_credential_required_not_invented,
+EvidencePrivacyTest.test_notification_payload_never_contains_canary,
+EvidencePrivacyTest.test_backup_refuses_unsafe_legacy_without_rewriting_history,
+EvidencePrivacyTest.test_sanitized_artifact_hashes_match_canonical_bytes,
+EvidencePrivacyTest.test_private_permissions_fail_closed,
+EvidencePrivacyTest.test_protected_and_secret_names_precede_metadata,
+EvidencePrivacyTest.test_symlink_alias_cannot_bypass_exclusion,
+EvidencePrivacyTest.test_quarantine_preserves_original_evidence_and_explains_block.
+Compatibility: AgentModelTest.test_secret_redaction,
+ProcessExecutionTest.test_output_sanitization_across_chunks_and_truncation,
+HistoryTest.test_secret_exclusion_precedes_metadata_access,
+AuditStorageTest.test_restore_retains_notification_and_recovery_history.
+Total16 exactmethods. Existing guards before imports, clean controlled environment,
+synthetic canaries, disposable SQLite/files and only the selected existing dummy
+process test. No realmodel/provider/network, no host credential scan, no protected
+name metadata (use fake entries for forbidden-name tests). Source scope original016
+plus narrow maprefresh. Testfirst, final16 +mapcheck, freeze for independentreview.
+
+### T0010-016 approved privacy contract
+
+Shared canonical sanitizer resides in existing evidence.py and is reused by process
+and model-runtime persistence. Exact configured secrets use explicitly supplied
+values only; known key patterns and URL userinfo/query/fragment are masked with
+bounded chunk handling before capture truncation. Sanitize before hashing canonical
+artifacts; never label raw hash as sanitized-byte identity. Bound stream records and
+report truncation/incomplete evidence honestly. No dependency or framework added.
+
+Environment is an explicit role allowlist: common supplied PATH,HOME,LANG,LC_ALL,TZ,
+TMPDIR,PYTHONDONTWRITEBYTECODE plus OPENSPEC_TELEMETRY/DO_NOT_TRACK; developer and
+test_engineer may add declared toolchain/cache/endpoints actually used by this repo.
+Review roles omit build/service capabilities; browser roles receive only declared
+browser cache/endpoints. Sole provider credential is the selected explicit key;
+missing required value blocks. CODEX_HOME is not inherited. HOME is not filesystem
+or auth-file isolation. Dropped unrelated secrets remain only in memory for masking
+possible echoed values, not in child environment or persisted diagnostics.
+
+Quarantine scans bounded admitted public text and schema-aware readonly SQLite
+whitelisted tables/columns; unknown schemas/columns/BLOBs fail closed before reading
+unapproved content. Never regex raw SQLite pages or scan real credentials. New
+private destination snapshots may be compacted before manifest hashing to avoid
+retaining deleted free-page content, with original source bytes/hash preserved.
+Legacy evidence remains non-exportable on failed privacy qualification; no silent
+rewrite or deletion. Restore must not bypass export qualification or claim a raw
+legacy binary copy safe merely because logical rows passed. Report heuristic limits
+for unknown/encoded secrets and personal data, and any unqualified legacy format.
+
+016 derived-copy clarification: restore may compact SQLite only in its exclusively
+owned new destination after logical privacy qualification. Regenerate the NEW
+manifest file hashes/digest, bind the original manifest digest in existing consistency
+provenance text and return source_manifest_sha256. Preserve original source files,
+manifest, event history/identity and their hashes. This is a derived audit copy, not
+byte-identical restoration. No schema-format bump or original manifest rewrite.
+Own synthetic deleted-canary fixtures check residual-byte removal; no real binary
+credential scan or raw-page regex is permitted.
+
+016 producer-boundary clarification: external output-last-message may write raw
+NONCANONICAL output only into an explicitly owned private run/.private-staging
+file (precreated0600 in0700directory, no symlinks, bounded size/read). Preserve its
+original bytes/hash without exporting or treating it as canonical evidence. Publish
+a separate sanitized final artifact before receipt/hash generation. Exclude the
+private staging name before audit/export metadata access; retained run facts must
+still prevent empty-history recreation. This is quarantine, not a claim that raw
+plaintext never exists locally. Existing bound privacy/capture/backup methods cover
+private staging containment and canonical/export canary absence; no new selector.

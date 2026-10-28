@@ -187,6 +187,8 @@ Backup/restore SHALL preserve consistent versioned evidence and validate isolate
 ### Requirement: WA-017 Private evidence and least privilege
 Canonical logs, reports, notifications and backups SHALL redact known secrets at the producer boundary, use private storage permissions and restrict inherited environment capabilities. Protected paths SHALL never be traversed or inspected.
 
+Canonical sanitized artifacts SHALL be hashed after sanitization. Role environments SHALL be explicitly allowlisted without ambient credential fallback. Legacy export qualification SHALL include schema-aware SQLite evidence as well as admitted text files; unknown formats SHALL remain blocked without rewriting original history.
+
 #### Scenario: WA-017-S1 Secret canaries and protected paths
 - **WHEN** fixture commands/errors contain synthetic secrets or references to a forbidden path
 - **THEN** canonical retained/exported evidence contains no canary values and forbidden metadata access never occurs; limitations of heuristic redaction remain explicit.
