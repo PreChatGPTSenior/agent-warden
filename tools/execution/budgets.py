@@ -216,6 +216,8 @@ class Budgets:
         with self.transaction() as db:
             from .history import verify_budget_adjustments
             verify_budget_adjustments(self.path)
+            from .core import recovery_guard
+            recovery_guard(self.path.parent)
             row = db.execute('SELECT reason FROM stops WHERE id=1').fetchone()
             if row:
                 raise Blocked('Budget stopped before finalization: ' + row[0])
@@ -230,6 +232,8 @@ class Budgets:
         with self.transaction() as db:
             from .history import verify_budget_adjustments
             verify_budget_adjustments(self.path)
+            from .core import recovery_guard
+            recovery_guard(self.path.parent)
             if db.execute('SELECT 1 FROM stops').fetchone():
                 raise Blocked('Budget stopped before reservation')
             rows = accounting_rows(db)

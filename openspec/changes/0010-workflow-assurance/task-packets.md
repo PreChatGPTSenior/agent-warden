@@ -587,3 +587,76 @@ Mechanical map refresh may update0010 source/WA-013 block/taskdigest and012 chec
 bindings. WA-013-S1/S2 must carry real fully qualified declared selectors (not[]);
 all completion remains NONE. Verify this in the one authorized map validation.
 Freeze after14 focused cases; no013 before independent/coordinator acceptance.
+
+## T0010-013 exact offline execution
+
+Admitted after accepted012 on312c4cb. Define the durable typed-apply contract in
+recovery-runbook before implementation. Only the two accepted012 operations may
+apply, only to disposable fixtures. Preserve stops/budgets/history; no arbitrary
+commands, paid work, merge, replay or self-approval. Exclusive durable ownership,
+CAS, per-step intent/outcome and honest interrupted/uncertain states are required.
+Do not claim cross-database atomicity. Default CLI remains dry-run/blocked when
+trusted host authority is unavailable; input files cannot install trusted adapters.
+Exercise actual disposable SQLite/history, not an in-memory-only imitation.
+
+Bind these exact new selectors in tools/tests/test_recovery_apply.py:
+RecoveryApplyTest.test_valid_plan_applies_typed_steps_with_history,
+RecoveryApplyTest.test_crash_before_and_after_each_durable_boundary,
+RecoveryApplyTest.test_duplicate_apply_never_repeats_effects,
+RecoveryApplyTest.test_concurrent_operators_cannot_both_apply,
+RecoveryApplyTest.test_state_drift_after_approval_blocks,
+RecoveryApplyTest.test_live_or_foreign_owner_cannot_release,
+RecoveryApplyTest.test_git_advance_blocks_without_merge,
+RecoveryApplyTest.test_unknown_effects_or_cost_remain_blocked,
+RecoveryApplyTest.test_partial_database_changes_require_reconciliation,
+RecoveryApplyTest.test_dry_run_default_and_apply_requires_authority,
+RecoveryApplyTest.test_budget_stop_and_history_preserved,
+RecoveryApplyTest.test_postcondition_failure_never_reports_complete,
+RecoveryApplyTest.test_expired_approval_during_steps_blocks.
+Compatibility: RecoveryPlanTest.test_valid_fully_bound_dry_run,
+RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected,
+RecoveryPlanTest.test_authenticated_author_blocks_self_review,
+BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop,
+HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent.
+Total18 exact methods; existing offline guards before imports, clean environment,
+no actual execution-state access. Record injected failure boundaries honestly;
+process-kill coverage is not implied by exception injection. Scope remains the
+original013 packet plus authorized mechanical requirement-map refresh. Freeze
+source hashes/red/green/step matrix for independent review before acceptance.
+
+### T0010-013 journal and ownership clarification
+
+Approved own-journal-delta rule: compare the original approved journal prefix and
+only exact known causal appends of this application. No blanket sequence offset,
+ignoring journal hash, or accepting unrelated events. Evidence/checkpoint/accounting
+bindings remain fixed. Budget-to-state serialization must avoid deadlocks with
+existing lock order. Existing writers refuse active recovery ownership; any crash
+keeps durable ownership blocked. A duplicate completed plan may return its retained
+receipt only after trusted identities/current poststate checks, with no effect; an
+interrupted or competing plan cannot replay or replace the owner. Extend existing
+013 fault/concurrency/drift tests with these subcases; no new method selector.
+
+### T0010-013 review-1 repair binding
+
+Two guarded disposable probes confirm acceptance-blocking projection bypasses:
+(1) restoring only pre-claim state.sqlite after interrupted recovery leaves newer
+retained history that verify_evidence rejects, but budget reserve/finalization admit;
+(2) an orphan APPLIED recovery_steps row is ignored by history verification and
+normal State mutation. No lost projection or retained uncertain step may be treated
+as a fresh/unowned execution. Repair both in existing013 scope, preserving safety
+stop/terminal usage recording. Validate bidirectional plan/step/event ownership.
+
+Add exact methods before fixing production behavior:
+RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization,
+RecoveryApplyTest.test_orphan_recovery_step_blocks_verification_and_writers,
+RecoveryApplyTest.test_intermediate_publication_failures_preserve_reconciliation.
+Total21 bound methods, retaining all18 prior methods. The last method covers each
+separate durable publication boundary hidden inside the earlier named phases:
+plan intent vs artifact staging/version/publish/completion, state step-intent vs
+journal intent, mutation vs lifecycle/outcome vs state step completion, journal
+completion vs state completion/owner release. Use bounded injected failures at
+actual write interfaces as needed; keep all existing evidence and honest effects
+uncertainty. Record a per-commit coverage matrix; do not claim power-loss proof.
+Readiness remains disposable SQLite/history only on same runtimes/guards. Tests
+first, retain behavioralRED from both probes, final21 after production changes,
+maprefresh then one mapping validation, freeze for independent re-review.

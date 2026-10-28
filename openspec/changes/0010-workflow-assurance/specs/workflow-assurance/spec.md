@@ -156,7 +156,7 @@ Recovery SHALL be read-only by default and SHALL require an independently review
 - **THEN** the plan cannot clear the stop, replay the action or mark the task DONE.
 
 ### Requirement: WA-014 Crash-safe recovery application
-Approved recovery application SHALL have exclusive ownership, durable intent, idempotent typed steps and rechecked preconditions. It SHALL preserve audit history and SHALL not claim cross-database/Git atomicity.
+Approved recovery application SHALL have exclusive ownership, durable intent, idempotent typed steps and rechecked preconditions. It SHALL preserve audit history and SHALL not claim cross-database/Git atomicity. During application, journal advancement SHALL be accepted only when every intervening event is an exact recorded causal append of that application; unrelated journal changes SHALL invalidate continuation. Approved evidence, checkpoint and accounting bindings SHALL remain unchanged. Interrupted ownership SHALL block normal task mutation, new spending and competing recovery until explicit reconciliation.
 
 #### Scenario: WA-014-S1 Crash or competing operator
 - **WHEN** recovery crashes before or after a step, or a second operator submits the same plan

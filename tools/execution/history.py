@@ -16,13 +16,13 @@ def read_rows(path, table):
     path=evidence_path(Path(path).parent,Path(path).name)
     if not Path(path).exists():
         return []
-    if table not in ('tasks', 'leases', 'calls', 'stops', 'events','adjustments'):
+    if table not in ('tasks', 'leases', 'calls', 'stops', 'events','adjustments','recovery_operations','recovery_steps','recovery_ownership'):
         raise Blocked('Unsupported audit table')
     with closing(sqlite3.connect(Path(path).absolute().as_uri() + '?mode=ro', uri=True)) as db:
         db.row_factory = sqlite3.Row
         if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise Blocked('SQLite integrity check failed')
-        if table=='adjustments' and not db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='adjustments'").fetchone():return []
+        if table in ('adjustments','recovery_operations','recovery_steps','recovery_ownership') and not db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",(table,)).fetchone():return []
         return [dict(row) for row in db.execute('SELECT * FROM ' + table)]
 
 
@@ -72,10 +72,13 @@ class History:
         if fresh:json_write(self.path.parent/'execution-identity.json',{'schema':1,'execution_id':execution_id})
         self.execution_id=execution_identity(self.path)
 
-    def append(self, event, *, trace=None, task=None, session=None, role=None, payload=None):
+    def append(self, event, *, trace=None, task=None, session=None, role=None, payload=None,recovery_owner=None):
+        from .core import recovery_guard
+        recovery_guard(self.path.parent,recovery_owner)
         with closing(sqlite3.connect(self.path, timeout=30)) as db:
             db.execute('PRAGMA synchronous=FULL')
             db.execute('BEGIN IMMEDIATE')
+            recovery_guard(self.path.parent,recovery_owner)
             prior = db.execute('SELECT seq,digest FROM events ORDER BY seq DESC LIMIT 1').fetchone()
             seq, previous = (prior[0] + 1, prior[1]) if prior else (1, '0' * 64)
             if execution_identity(self.path)!=self.execution_id:raise Blocked('Execution identity changed before append')
@@ -88,7 +91,7 @@ class History:
             db.commit()
             return {**body, 'sha256': digest}
 
-    def write_artifact(self,reference,value,*,trace=None,task=None):
+    def write_artifact(self,reference,value,*,trace=None,task=None,recovery_owner=None,fault=None):
         """Register intent, retain immutable version, publish, then record completion."""
         path=evidence_path(self.path.parent,reference)
         if not Path(reference).parts or (Path(reference).parts[0] not in TREES and reference not in {'policy.json','result.json','budget-stop.json'}):raise Blocked('Unapproved registered artifact namespace')
@@ -97,7 +100,10 @@ class History:
         digest=hashlib.sha256(raw).hexdigest()
         version='versions/'+digest+'/'+path.name
         payload={'reference':reference,'version_reference':version,'sha256':digest}
-        intent=self.append('artifact.staging',trace=trace,task=task,payload=payload)
+        if fault:fault('before_staging')
+        intent=self.append('artifact.staging',trace=trace,task=task,payload=payload,recovery_owner=recovery_owner)
+        if fault:fault('after_staging')
+        if fault:fault('before_version')
         immutable=evidence_path(self.path.parent,version)
         if immutable.exists():
             if sha(immutable)!=digest:raise Blocked('Immutable artifact version changed')
@@ -105,6 +111,8 @@ class History:
             immutable.parent.mkdir(parents=True,exist_ok=True)
             with immutable.open('xb') as stream:
                 os.chmod(immutable,0o600);stream.write(raw);stream.flush();os.fsync(stream.fileno())
+        if fault:fault('after_version')
+        if fault:fault('before_publish')
         import tempfile
         path.parent.mkdir(parents=True,exist_ok=True)
         descriptor,temporary=tempfile.mkstemp(prefix=path.name+'.',suffix='.staging',dir=path.parent)
@@ -114,7 +122,10 @@ class History:
             descriptor=os.open(folder,os.O_RDONLY)
             try:os.fsync(descriptor)
             finally:os.close(descriptor)
-        self.append('artifact.completed',trace=trace,task=task,payload={**payload,'staging_event_id':intent['event_id']})
+        if fault:fault('after_publish')
+        if fault:fault('before_completion')
+        self.append('artifact.completed',trace=trace,task=task,payload={**payload,'staging_event_id':intent['event_id']},recovery_owner=recovery_owner)
+        if fault:fault('after_completion')
         return path
 
 
@@ -173,6 +184,56 @@ def verify_budget_adjustments(path,events=None):
     return {'adjustments_verified':len(rows)}
 
 
+def verify_recovery_sagas(directory,events=None):
+    """Read-only row/evidence correlation; an interrupted saga is never resumed."""
+    directory=Path(directory);events=timeline(directory/'trace.sqlite') if events is None else events
+    rows=read_rows(directory/'state.sqlite','recovery_operations');steps=read_rows(directory/'state.sqlite','recovery_steps')
+    locks=read_rows(directory/'state.sqlite','recovery_ownership');indexed={};pending=[]
+    plan_ids={row['plan_id'] for row in rows}
+    if any(step['plan_id'] not in plan_ids for step in steps):raise Blocked('Orphan recovery step; potentially committed effect requires reconciliation')
+    for event in events:
+        if event['event'] not in {'recovery.apply.intent','recovery.step.intent','recovery.step.outcome','recovery.apply.completed'}:continue
+        plan_id=event['payload'].get('plan_id')
+        if not plan_id:raise Blocked('Unbound recovery event')
+        indexed.setdefault(plan_id,[]).append(event)
+    if set(indexed)-{row['plan_id'] for row in rows}:raise Blocked('Recovery history lost its durable plan projection')
+    for row in rows:
+        plan=json.loads(row['plan']);records=indexed.get(row['plan_id'],[])
+        if (plan.get('plan_sha256')!=row['plan_sha256'] or stable({k:v for k,v in plan.items() if k!='plan_sha256'})!=row['plan_sha256']
+                or any(event['trace']!=row['owner'] or event['payload'].get('plan_sha256')!=row['plan_sha256'] for event in records)):
+            raise Blocked('Recovery plan/owner projection mismatch')
+        intents=[event for event in records if event['event']=='recovery.apply.intent']
+        if len(intents)!=1:raise Blocked('Interrupted recovery plan intent publication')
+        payload=intents[0]['payload'];reference='batches/recovery/'+row['plan_id']+'.json'
+        if payload.get('artifact')!=reference:raise Blocked('Foreign recovery evidence namespace')
+        path=evidence_path(directory,reference)
+        if not path.is_file() or sha(path)!=payload.get('sha256'):raise Blocked('Missing/changed recovery plan evidence')
+        if json_read(path)!={'plan':plan,'authorization':json.loads(row['authorization'])}:raise Blocked('Recovery authority projection mismatch')
+        own_steps=[step for step in steps if step['plan_id']==row['plan_id']]
+        for step in own_steps:
+            index=step['step_index']
+            if type(index) is not int or not 0<=index<len(plan['operations']) or json.loads(step['operation'])!=plan['operations'][index]:raise Blocked('Recovery step projection mismatch')
+            starts=[event for event in records if event['event']=='recovery.step.intent' and event['payload'].get('step_index')==index]
+            outcomes=[event for event in records if event['event']=='recovery.step.outcome' and event['payload'].get('step_index')==index]
+            if len(starts)!=1 or starts[0]['payload'].get('operation_sha256')!=stable(plan['operations'][index]):raise Blocked('Interrupted recovery step intent')
+            if step['state']=='COMPLETED' and (len(outcomes)!=1 or outcomes[0]['payload'].get('operation_sha256')!=stable(plan['operations'][index])):raise Blocked('Recovery step outcome/projection mismatch')
+            if step['state'] not in ('INTENT','APPLIED','COMPLETED'):raise Blocked('Unknown recovery step state')
+        if any(event['event'].startswith('recovery.step.') and event['payload'].get('step_index') not in {step['step_index'] for step in own_steps} for event in records):raise Blocked('Recovery event lost its step projection')
+        completions=[event for event in records if event['event']=='recovery.apply.completed']
+        if row['status']=='COMPLETED':
+            if (len(completions)!=1 or len(own_steps)!=len(plan['operations']) or any(step['state']!='COMPLETED' for step in own_steps)
+                    or completions[0]['payload'].get('report')!=json.loads(row['report'])
+                    or any(lock['plan_id']==row['plan_id'] for lock in locks)):raise Blocked('Recovery completion projection mismatch')
+            expected=dict(completions[0]['payload'].get('expected',{}))
+            expected['journal']={'sequence':completions[0]['seq'],'sha256':completions[0]['sha256']}
+            if expected!=json.loads(row['expected']):raise Blocked('Recovery final journal projection mismatch')
+        else:
+            pending.append({'plan_id':row['plan_id'],'owner':row['owner'],'status':row['status']})
+            if len(locks)!=1 or locks[0]['plan_id']!=row['plan_id'] or locks[0]['owner']!=row['owner']:raise Blocked('Recovery ownership lost; explicit reconciliation required')
+    if any(lock['plan_id'] not in {row['plan_id'] for row in rows} for lock in locks):raise Blocked('Orphan recovery ownership')
+    return {'pending':pending,'plans_verified':len(rows)}
+
+
 def database_state(directory, events):
     """Cross-check retained evidence before any writer can recreate a lost database."""
     directory = Path(directory)
@@ -194,6 +255,9 @@ def database_state(directory, events):
             sessions.add(event['session'])
     rows = {row['id']: row for row in state}
     gaps = lifecycle_gaps
+    try:
+        if verify_recovery_sagas(directory,events)['pending']:gaps.append('Interrupted recovery saga; explicit reconciliation required')
+    except (Blocked,OSError,ValueError,KeyError) as error:gaps.append(str(error))
     try:verify_budget_adjustments(directory/'budgets.sqlite',events)
     except (Blocked,OSError,ValueError,KeyError) as error:gaps.append(str(error))
     for task in rows.keys() - latest.keys():
@@ -255,6 +319,7 @@ def recovery_status(directory,*,checkpoint_source=None,require_checkpoint=False)
             'blockers': blockers, 'tasks': state, 'leases': leases,
             'unfinished_invocations': list(pending.values()), 'unsettled_budgets': unsettled,
             'unfinished_integrations': list(integrations.values()),
+            'pending_recovery':[{'plan_id':row['plan_id'],'owner':row['owner'],'status':row['status']} for row in read_rows(directory/'state.sqlite','recovery_operations') if row['status']!='COMPLETED'],
             'budget_stops': stops, 'events_verified': len(events),'checkpoint_assurance':assurance,
             'note': 'No process killed, lease released, task replayed or budget reset. Readiness and live admission still required.'}
 

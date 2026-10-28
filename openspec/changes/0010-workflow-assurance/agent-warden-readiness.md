@@ -109,3 +109,14 @@ READY for this entire offline batch. Dependency acceptance still precedes each t
 recheck affected prerequisites when inputs/base/runner change. No business imports,
 application tests or provider requests were used for readiness. Initial SQLite probe
 was disposable preparation, not a production-state operation. No original repo edits.
+
+## T0010-013 affected readiness refresh
+
+2026-10-28 base312c4cb, clean worktree before this admission. Python3.14.8 and
+SQLite3.54.1 observed; sandbox-exec/ps present; disposable SQLite commit/reopenPASS;
+37.00GiB free. Production pools both0.00 and pricesempty observed. Weekly quota
+16%used/84%remaining. Original012–020 offline batch prerequisites remain applicable;
+application services/provider connectivity NOT CHECKED/NOT REQUIRED. READY for013
+disposable fixtures and18 exact methods. Actual recovery authority remains BLOCKED.
+The first policy lookup used obsolete filenames and found nothing; corrected to
+execution/agent-budgets.json and verified the actual policy before dispatch.

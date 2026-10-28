@@ -1,44 +1,35 @@
 # Agent Warden checkpoint — 2026-10-28
 
-Status: ACTIVE requested batch T0010-012–020; T0010-012 accepted; preparing T0010-013.
+ACTIVE requested batch012–020;013accepted, preparing014.
 Workspace:/Users/viktoryia/IdeaProjects/agent-warden.
-Branch:codex/t0010-workflow-assurance. Prior checkpoint commit877b7ce is superseded
-by the accepted011 repair commit containing this document; resolve its exact hash
-with Git rather than treating the historical96aeb83 reference as current HEAD.
+Branch:codex/t0010-workflow-assurance.
 
 ## Accepted
 
-009:commit9ac6577,36 focused cases;010:commit96aeb83,15 focused cases.
-011:independent review4 plus coordinator acceptance,32 focused cases PASS4.347s.
-See agent-warden-011-acceptance.md for final behavior, evidence/source hashes and
-limitations. All reviewed P1 findings are closed within this scoped offline task.
-OnlySETTLED calls accept cost corrections; active/unknown calls reject without
-releasing reservations. Unknown usage recovery is a later explicitly approved flow.
+009:9ac6577 (36focused);010:96aeb83 (15focused);011:cc8e048
+(32focused, review4);012:312c4cb (14focused, review2).
+013:21focusedPASS19.232s, review2 plus coordinator acceptance; this checkpoint
+will be included in its acceptance commit. See task-specific acceptance documents.
+013 closes two proven P1 projection/admission bypasses and intermediate durability
+coverage gaps. Every incomplete recovery retains ownership; no automatic replay.
 
 ## Resume
 
-Developer and reviewer idle after012acceptance. No competing writer allowed. Developer /root/warden_developer uses
- gpt-6.1-sol medium; reviewer /root/warden_reviewer_resume uses gpt-6.1-sol high.
-User explicitly authorized continuing012–020 until quota boundaries. Refreshed001
-readiness covers that offline batch oncc8e048;012 has12 bound focused tests.
-Next after developer freeze:independent review, coordinator acceptance, then013.
-Read current AGENTS/spec/packet; preserve one writer, tests first, frozen independent
-review, coordinator acceptance last.013–020 remain unstarted:approved application,
-notifications,backup/restore,privacy,operator report,combined faults,final qualification,
-then PR. No push/PR/merge or real launch occurred in this resumed task.
+Next014durable notifications, then015storage/backup,016privacy,017operatorreport,
+018combinedfaults,019finalqualification,020newPR(no merge). Exactselectors and
+affectedreadiness must be bound before each dispatch. Developer gpt-6.1-sol medium,
+reviewer gpt-6.1-sol high, coordinator accepts last; one writer and frozen reviews.
+Wholebatch012–020 readiness recorded;013fixtures rechecked on312c4cb. Both agents
+idle after013acceptance. No later task implemented yet.
 
-## Limits
+## Limits and evidence
 
-Latest observed weekly quota6%used/94%remaining; re-read before future dispatch.
-Current session policy:graceful stop at40%remaining; full stop before35%remaining.
-Historical35/30 thresholds and quota65%used are superseded observations.
-Production Codex/OpenRouter budgets0.00/pricesempty. Native tokens/costUNKNOWN.
-No provider/OpenRouter/invoice calls, appservices or production recovery. Original
-Stone Shelter repositories unchanged. Protected directory forbidden to all agents.
-Approval seam remains fixture-only; no external checkpoint/provider hard-cap claim.
-Application qualification blocked by absent legacy baseline; ownership map is not
-proof of application scenario completion. Final combined offline qualification019
-has not run. Private red/green/review evidence remains under.cache/t0010-subscription-run.
-
-012accepted2026-10-28:14focusedmethods, independentreview2+coordinator; see012acceptance.
-Next013requires exacttestbinding and affectedreadiness refresh. Quota limits40/35remaining.
+Latest observed weekly quota25%used/75%remaining; re-read before next dispatch.
+Graceful stop40%remaining; complete stop before35%. Unknown quota blocks dispatch.
+Production Codex/OpenRouter pools0.00/pricesempty. Native tokens/cost UNKNOWN.
+No provider/OpenRouter/API/invoice/model probes, appservices or actual recovery.
+Original Stone Shelter repos unchanged; engineering-log prohibited to all agents.
+No remote publication yet. Private evidence .cache/t0010-subscription-run/009–013.
+Approval/liveness/checkpoint authority is fixture-only; exception faults are not
+power-loss or process-kill proof. Missing external application baseline still blocks
+application acceptance. Final qualification019 remains NOT_RUN.

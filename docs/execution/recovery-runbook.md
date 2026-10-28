@@ -180,3 +180,61 @@ The CLI has none of the four trusted adapters and remains default-deny. Test
 attestations are fixture-only; no deployed creator identity infrastructure is
 claimed. A future executor must obtain fresh canonical provenance along with all
 other state/approval checks before an independently authorized application.
+
+## 8. WA-014 disposable typed application saga (T0010-013)
+
+Application is available only through a separately trusted host integration; the
+standalone CLI supplies no identity/approval/observation adapters and cannot apply
+from files alone. Its default is the T0010-012 dry-run. The accepted two operations
+and all four host trust boundaries remain unchanged. No accounting correction,
+stop clearing, command execution, merge, task DONE or model replay is introduced.
+
+Exclusive ownership is a durable singleton in `state.sqlite`, bound to immutable
+plan ID/digest and a fresh apply owner. Plan and per-step records are persistent
+SQLite rows, not in-memory flags. A different plan ID cannot bypass pending
+ownership. Normal task writers and new model reservations/finalization refuse while
+ownership is active. Safety stop writers and terminal usage remain allowed; their
+new facts cause observation drift and recovery stays blocked. Budget serialization
+precedes task serialization, matching existing finalization order. Only the apply
+owner may perform its typed task/lease CAS mutations.
+
+Initial validation authenticates canonical author, reviewer and operator, exact
+preconditions and expiry before any apply metadata write. Under budget/task
+serialization the executor rechecks fresh state, actual SQL task/lease rows and
+accounting uncertainty before persisting ownership. The durable phases are:
+
+1. Claim ownership and record the immutable plan/verified decisions in state SQLite.
+2. Publish causal apply intent plus registered immutable plan/provenance evidence.
+3. For each typed operation, persist a step intent, publish its causal intent,
+   revalidate fresh observations/expiry, perform exact SQL CAS with its applied
+   marker in one state transaction, publish the task lifecycle/step outcome, then
+   mark that step complete. No operation is inferred from a missing receipt.
+4. Compare full predicted postconditions and preserved accounting/stop facts,
+   publish completion, then record completed receipt and release ownership.
+
+This is a saga across SQLite/history/artifact durability boundaries. A failure after
+claim preserves ownership and all prior facts, reports reconciliation required and
+never retries automatically, including when an effect may have committed without
+its outcome. Failures before claim cause no operational mutation. Completed
+identical duplicate requests may return the saved receipt after rechecking trusted
+provenance/approvals and current poststate, without repeating effects. Conflicting
+reuse of plan identity or interrupted duplicates refuse; a fresh plan cannot steal
+ownership. Owner replacement/resumption requires a future explicit reconciliation
+contract, not timestamps, saved PID assertions or automatic recovery.
+
+A plan binds the approved journal prefix. During its own saga only the exact causal
+appends emitted by that executor may advance the expected head; unrelated events,
+prefix hashes or execution identity changes block. Original evidence/checkpoint/
+accounting bindings remain fixed; an observer must bind the originally verified
+collections rather than silently redefine them to include new recovery artifacts.
+Expected task/lease deltas are exactly the plan operations. Per-step snapshots and
+actual SQL CAS both apply. The final head is retained with the saved receipt.
+
+Recovery inspection cross-checks plan/step/provenance rows against retained causal
+intent/outcome/completion and artifacts, exposes interrupted sagas and never treats
+unknown event types as completed repairs. History retains the original task owner
+for `task.retry_enabled`, preserving the prior owned claim. No source ref or budget
+is altered. Fault tests inject exceptions at named before/after durability phases;
+this qualifies interruption handling, not process-kill or filesystem power-loss
+coverage. Current liveness and approval adapters remain fixture-only, not a deployed
+production authority or permission to run actual recovery.

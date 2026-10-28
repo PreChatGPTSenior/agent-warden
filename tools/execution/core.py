@@ -284,26 +284,47 @@ def select_tasks(request):
  selected|={next(t['id'] for t in ts if t['change']==by[i]['change'] and t['kind']=='readiness') for i in list(selected)}
  return [t for t in ts if t['id'] in selected]
 
+def recovery_guard(directory,owner=None):
+ """Normal writers cannot cross durable recovery ownership; never steal by expiry."""
+ from .audit_paths import evidence_path
+ if owner is None:
+  from .history import verify_recovery_sagas
+  verify_recovery_sagas(directory)
+ path=evidence_path(Path(directory),'state.sqlite')
+ if not path.exists():return
+ with sqlite3.connect(path.absolute().as_uri()+'?mode=ro',uri=True) as db:
+  tables={row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+  lock=db.execute('SELECT plan_id,owner FROM recovery_ownership WHERE singleton=1').fetchone() if 'recovery_ownership' in tables else None
+  pending=db.execute("SELECT plan_id,owner FROM recovery_operations WHERE status!='COMPLETED'").fetchall() if 'recovery_operations' in tables else []
+  if lock and lock[1]!=owner:raise Blocked('Active recovery ownership requires explicit reconciliation')
+  if pending and (not lock or any(row!=(lock[0],owner) for row in pending)):raise Blocked('Interrupted recovery must not be bypassed')
+
 class State:
  """One local transactional task ledger, shared by worktrees and coordinator threads."""
  def __init__(self,path):
   self.path=Path(path);self.path.parent.mkdir(parents=True,exist_ok=True)
-  with self.db() as db:
+  with self.db(read_only=True) as db:
    db.execute('CREATE TABLE IF NOT EXISTS tasks(id TEXT PRIMARY KEY,status TEXT NOT NULL,owner TEXT,commit_id TEXT,detail TEXT,updated REAL NOT NULL)')
    db.execute('CREATE TABLE IF NOT EXISTS leases(resource TEXT PRIMARY KEY,owner TEXT NOT NULL,expires REAL NOT NULL)')
    db.execute('CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY,task TEXT,status TEXT,detail TEXT,at REAL)')
+   db.execute('CREATE TABLE IF NOT EXISTS recovery_operations(plan_id TEXT PRIMARY KEY,plan_sha256 TEXT NOT NULL,owner TEXT NOT NULL,status TEXT NOT NULL,plan TEXT NOT NULL,authorization TEXT NOT NULL,expected TEXT NOT NULL,report TEXT)')
+   db.execute('CREATE TABLE IF NOT EXISTS recovery_steps(plan_id TEXT NOT NULL,step_index INTEGER NOT NULL,state TEXT NOT NULL,operation TEXT NOT NULL,PRIMARY KEY(plan_id,step_index))')
+   db.execute('CREATE TABLE IF NOT EXISTS recovery_ownership(singleton INTEGER PRIMARY KEY CHECK(singleton=1),plan_id TEXT NOT NULL,owner TEXT NOT NULL)')
    columns={r[1] for r in db.execute('PRAGMA table_info(events)')}
    for column in ('owner','commit_id'):
     if column not in columns:db.execute('ALTER TABLE events ADD COLUMN '+column+' TEXT')
  @contextlib.contextmanager
- def db(self):
+ def db(self,*,recovery_owner=None,read_only=False):
   db=sqlite3.connect(self.path,timeout=30);db.execute('PRAGMA busy_timeout=30000');db.execute('PRAGMA synchronous=FULL')
   try:
-   db.execute('BEGIN IMMEDIATE');yield db;db.commit()
+   db.execute('BEGIN IMMEDIATE')
+   if not read_only:
+    recovery_guard(self.path.parent,recovery_owner)
+   yield db;db.commit()
   except BaseException:db.rollback();raise
   finally:db.close()
  def status(self):
-  with self.db() as db:return {r[0]:{'status':r[1],'owner':r[2],'commit':r[3],'detail':r[4]} for r in db.execute('SELECT id,status,owner,commit_id,detail FROM tasks')}
+  with self.db(read_only=True) as db:return {r[0]:{'status':r[1],'owner':r[2],'commit':r[3],'detail':r[4]} for r in db.execute('SELECT id,status,owner,commit_id,detail FROM tasks')}
  def claim(self,task,owner,ttl=21600):
   with self.db() as db:
    row=db.execute('SELECT status FROM tasks WHERE id=?',(task['id'],)).fetchone()

@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "2866940b1aaf205c0010c3598a36abe236849c76c14c66b1fa97de97f75f549f"
+      "sha256": "1a44f3901fff112cec091206be97adf9bd968f422a51eba6601bd08d477f7b7f"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "c36d7d5bcb06339f5b05f831c84990c6fc52762828972d51548fbae5753b058a"
+      "sha256": "7de01cbf0ada72fcb4d00f6fa61db5103d2de1bd30dfc6ac10cbb212e592979a"
     },
     {
       "namespace": "maintenance",
@@ -993,7 +993,7 @@
       "id": "WA-014",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-014 Crash-safe recovery application",
-      "sha256": "4e3b944d7804d5a633e7e2dad97b89e64ea6e32a270882a92cf3b760cb00e913",
+      "sha256": "34f8c8f2a6344fb7d63de6b13efa470f06cdccea5f8e79ecb5a135b6d01dcfb6",
       "baseline_id": null
     },
     {
@@ -7289,7 +7289,29 @@
       "owners": [
         {
           "task": "T0010-013",
-          "checks": []
+          "checks": [
+            "BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop",
+            "HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent",
+            "RecoveryApplyTest.test_budget_stop_and_history_preserved",
+            "RecoveryApplyTest.test_concurrent_operators_cannot_both_apply",
+            "RecoveryApplyTest.test_crash_before_and_after_each_durable_boundary",
+            "RecoveryApplyTest.test_dry_run_default_and_apply_requires_authority",
+            "RecoveryApplyTest.test_duplicate_apply_never_repeats_effects",
+            "RecoveryApplyTest.test_expired_approval_during_steps_blocks",
+            "RecoveryApplyTest.test_git_advance_blocks_without_merge",
+            "RecoveryApplyTest.test_intermediate_publication_failures_preserve_reconciliation",
+            "RecoveryApplyTest.test_live_or_foreign_owner_cannot_release",
+            "RecoveryApplyTest.test_orphan_recovery_step_blocks_verification_and_writers",
+            "RecoveryApplyTest.test_partial_database_changes_require_reconciliation",
+            "RecoveryApplyTest.test_postcondition_failure_never_reports_complete",
+            "RecoveryApplyTest.test_state_drift_after_approval_blocks",
+            "RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization",
+            "RecoveryApplyTest.test_unknown_effects_or_cost_remain_blocked",
+            "RecoveryApplyTest.test_valid_plan_applies_typed_steps_with_history",
+            "RecoveryPlanTest.test_authenticated_author_blocks_self_review",
+            "RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected",
+            "RecoveryPlanTest.test_valid_fully_bound_dry_run"
+          ]
         }
       ],
       "evidence": []
@@ -7305,7 +7327,29 @@
       "owners": [
         {
           "task": "T0010-013",
-          "checks": []
+          "checks": [
+            "BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop",
+            "HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent",
+            "RecoveryApplyTest.test_budget_stop_and_history_preserved",
+            "RecoveryApplyTest.test_concurrent_operators_cannot_both_apply",
+            "RecoveryApplyTest.test_crash_before_and_after_each_durable_boundary",
+            "RecoveryApplyTest.test_dry_run_default_and_apply_requires_authority",
+            "RecoveryApplyTest.test_duplicate_apply_never_repeats_effects",
+            "RecoveryApplyTest.test_expired_approval_during_steps_blocks",
+            "RecoveryApplyTest.test_git_advance_blocks_without_merge",
+            "RecoveryApplyTest.test_intermediate_publication_failures_preserve_reconciliation",
+            "RecoveryApplyTest.test_live_or_foreign_owner_cannot_release",
+            "RecoveryApplyTest.test_orphan_recovery_step_blocks_verification_and_writers",
+            "RecoveryApplyTest.test_partial_database_changes_require_reconciliation",
+            "RecoveryApplyTest.test_postcondition_failure_never_reports_complete",
+            "RecoveryApplyTest.test_state_drift_after_approval_blocks",
+            "RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization",
+            "RecoveryApplyTest.test_unknown_effects_or_cost_remain_blocked",
+            "RecoveryApplyTest.test_valid_plan_applies_typed_steps_with_history",
+            "RecoveryPlanTest.test_authenticated_author_blocks_self_review",
+            "RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected",
+            "RecoveryPlanTest.test_valid_fully_bound_dry_run"
+          ]
         }
       ],
       "evidence": []
