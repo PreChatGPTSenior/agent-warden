@@ -66,3 +66,23 @@ Production limits both0.00. Weekly quota55%used/45%remaining. Exact21 offline me
 bound in packet; no JDK/application/provider dependencies. Those services remain
 NOT CHECKED/NOT STARTED, no impact on disposable accounting/process fixtures.
 READY for011 fixtures and one read-only mapping validation; LIVE remains BLOCKED.
+
+## 2026-10-28 resume: T0010-001 readiness for T0010-011 review3
+
+Current committed candidate877b7ce on codex/t0010-workflow-assurance; initial worktree
+clean. All7 attempt3 source hashes match; retained red/green/selectors/handoff present.
+Python3.14.8, sandbox-exec and ps observed; offline guards present; disposable storage
+probePASS;37.02GiB free. Production pools0.00/pricesempty. Weekly quota0%used/100%
+remaining at admission. Application services/JDK/providers NOT CHECKED and NOT NEEDED
+for read-only source/evidence review. READY for independent offline review3 and
+coordinator inspection only. Any concrete new probe requires a bounded admission;
+no unchanged passing suite rerun. T0010-012 is outside this resumed batch.
+The old checkpoint NOT_COMMITTED/HEAD96aeb83 is superseded by user's later checkpoint
+commit877b7ce; that commit did not imply task acceptance or independent review.
+
+The resumed review reproduced one new P1 using only a disposable guarded accounting
+fixture. Reviewer stopped; developer repair4 is admitted within updated WA-012 and
+exact32 methods in the appended packet. Production prerequisites are unchanged;
+Python/guards/storage sufficient for those same offline accounting/history fixtures.
+Updated user quota policy for this session:graceful stop at40%remaining, full stop
+before35%; former35/30 thresholds are historical. No T0010-012 execution admitted.

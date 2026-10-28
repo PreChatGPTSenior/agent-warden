@@ -502,3 +502,31 @@ to retained evidence; do not merely document sequence as trustworthy. Preserve
 append-only history and fail closed for unqualified old evidence. No broader work.
 Freeze after30 focused cases and mechanical map refresh; coordinator may stop before
 acceptance to preserve quota. No012 execution is authorized during this repair.
+
+## T0010-011 review-3 terminal correction eligibility (2026-10-28)
+
+Independent guarded probe reproduces P1: a RUNNING invocation estimated10 corrected
+to5 then later settled90 retains exposure5 and admits another100 against pool150.
+Coordinator resolves eligibility conservatively: only SETTLED invocations accept
+cost corrections. RESERVED/RUNNING/UNKNOWN reject, preserving existing facts and
+reserved exposure. WA-012 is clarified before implementation; approved recovery of
+unknown usage remains012–013, not implicit authority in this internal accounting seam.
+Check state under the ledger transaction before recording correction intent/evidence.
+
+Add BudgetReconciliationTest.test_active_or_unknown_correction_is_rejected and
+BudgetReconciliationTest.test_rejected_active_correction_cannot_hide_later_usage
+(total32 focused methods). Subcases cover RESERVED/RUNNING/UNKNOWN, no adjustment
+or correction journal creation on rejection, unknown allowance/stop preservation,
+late final usage and refused oversubscription, plus a positive settled correction.
+Update existing test_missing_final_usage_remains_reserved only to expect rejected
+correction, retaining reservation/stop assertions. This is the explicit clarified
+eligibility requirement, not weakening an existing negative assertion.
+
+Repair write scope:tools/execution/budgets.py and tools/tests/test_budget_reconciliation.py;
+request any further production file change before editing. Coordinator owns spec/
+packet/readiness/status docs. Narrow execution/requirement-map.json amendment may
+refresh current0010 source digest, WA-012 requirement digest and0010 task source/
+011 check binding, preserving all stable IDs, other specs and completion NONE.
+Behavioral RED first, minimal repair,32 focused offline cases, one mapping validation,
+freeze source hashes/handoff. No providers/services/production policy changes or012.
+Session quota:graceful stop at40%remaining, complete stop before35%remaining.

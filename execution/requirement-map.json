@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "a5808b757026c16aab3fcd496294dab26b5a445b63d547582d233ef1304511b6"
+      "sha256": "7421f8a517fad43a77fb2698684fdae7710eadfef5beb7d413b03324ebc8f43a"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "0732579c95c3b43ce761d7463b1f9279cdc95d1af7e03fa3b8897bf6c79be64b"
+      "sha256": "4093613bb8297b7f12c8ebefdc3cefd88919cccb8c340d5f25fe6d9c3f39487d"
     },
     {
       "namespace": "maintenance",
@@ -977,7 +977,7 @@
       "id": "WA-012",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-012 Budget exposure and cost reconciliation",
-      "sha256": "fc5b25875bf604018f5eff65941e80c5315ffe0a0d4552a41d03ade7d7ad50a4",
+      "sha256": "d543bcd4c8782efb32bfa3aaea43b4844f616f820775ab8dbf1f4e7e3156217b",
       "baseline_id": null
     },
     {
@@ -7130,6 +7130,7 @@
         {
           "task": "T0010-011",
           "checks": [
+            "BudgetReconciliationTest.test_active_or_unknown_correction_is_rejected",
             "BudgetReconciliationTest.test_adjustment_rollback_is_detected",
             "BudgetReconciliationTest.test_adjustments_are_attributable_append_only",
             "BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected",
@@ -7142,6 +7143,7 @@
             "BudgetReconciliationTest.test_late_cost_adjustment",
             "BudgetReconciliationTest.test_malformed_currency_and_cost_rejected",
             "BudgetReconciliationTest.test_missing_final_usage_remains_reserved",
+            "BudgetReconciliationTest.test_rejected_active_correction_cannot_hide_later_usage",
             "BudgetReconciliationTest.test_reopen_preserves_adjustment_history",
             "BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock",
             "BudgetReconciliationTest.test_rounding_boundary_is_conservative",
@@ -7177,6 +7179,7 @@
         {
           "task": "T0010-011",
           "checks": [
+            "BudgetReconciliationTest.test_active_or_unknown_correction_is_rejected",
             "BudgetReconciliationTest.test_adjustment_rollback_is_detected",
             "BudgetReconciliationTest.test_adjustments_are_attributable_append_only",
             "BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected",
@@ -7189,6 +7192,7 @@
             "BudgetReconciliationTest.test_late_cost_adjustment",
             "BudgetReconciliationTest.test_malformed_currency_and_cost_rejected",
             "BudgetReconciliationTest.test_missing_final_usage_remains_reserved",
+            "BudgetReconciliationTest.test_rejected_active_correction_cannot_hide_later_usage",
             "BudgetReconciliationTest.test_reopen_preserves_adjustment_history",
             "BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock",
             "BudgetReconciliationTest.test_rounding_boundary_is_conservative",

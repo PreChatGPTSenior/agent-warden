@@ -291,8 +291,8 @@ class Budgets:
         with self.transaction() as db:
             verify_budget_adjustments(self.path)
             row=db.execute('SELECT * FROM calls WHERE session=?',(correction['session'],)).fetchone()
-            if row is None or row['pool']!=correction['pool'] or row['state']=='NOT_STARTED':
-                raise Blocked('Correction session/pool has no potentially started invocation')
+            if row is None or row['pool']!=correction['pool'] or row['state']!='SETTLED':
+                raise Blocked('Cost correction requires a matching SETTLED invocation; uncertain usage requires separate recovery')
             prior=db.execute('SELECT * FROM adjustments WHERE receipt_id=?',(correction['receipt_id'],)).fetchone()
             if prior:
                 if prior['correction_sha256']!=digest or json.loads(prior['approval'])!=verified:

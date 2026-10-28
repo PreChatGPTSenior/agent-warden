@@ -134,7 +134,7 @@ Coverage SHALL reference stable requirement/scenario IDs and a revision/digest o
 - **THEN** package/trace validation rejects stale or ambiguous mappings; legacy baseline membership cannot satisfy the new requirement.
 
 ### Requirement: WA-012 Budget exposure and cost reconciliation
-Separate pools SHALL reserve admitted exposure atomically, preserve uncertain usage and record estimated versus verified cost with provenance. Unsupported hard bounds SHALL not be represented as guaranteed spend ceilings.
+Separate pools SHALL reserve admitted exposure atomically, preserve uncertain usage and record estimated versus verified cost with provenance. Unsupported hard bounds SHALL not be represented as guaranteed spend ceilings. Cost corrections SHALL be applied only to invocations in SETTLED state. RESERVED, RUNNING and UNKNOWN invocations SHALL reject corrections without changing observations, reservations or stop state; independently approved recovery of unknown usage is outside this accounting seam.
 
 #### Scenario: WA-012-S1 Concurrent admission and unknown cost
 - **WHEN** simultaneous calls would exceed the pool exposure envelope or a prior invocation has unreconciled usage

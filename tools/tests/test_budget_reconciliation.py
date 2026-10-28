@@ -51,7 +51,8 @@ class BudgetReconciliationTest(unittest.TestCase):
         self.apply(self.correction('0.000010','refund'))
         self.assertEqual('0.000190',snapshot(self.path,self.policy)['pools']['codex']['available_usd'])
     def test_missing_final_usage_remains_reserved(self):
-        self.settle(13,False);self.apply(self.correction('0.000005'))
+        self.settle(13,False)
+        with self.assertRaisesRegex(Blocked,'SETTLED'):self.apply(self.correction('0.000005'))
         state=snapshot(self.path,self.policy);self.assertEqual('0.000100',state['pools']['codex']['charged_exposure_usd'])
         self.assertEqual(1,state['pools']['codex']['unsettled_calls'])
         with self.assertRaises(Blocked):self.budget.guard([self.selection])
@@ -218,3 +219,40 @@ class BudgetReconciliationTest(unittest.TestCase):
                 db.execute('DROP TRIGGER adjustments_no_update');db.execute('UPDATE adjustments SET sequence=sequence+100');db.execute('UPDATE adjustments SET sequence=103-sequence')
             with self.assertRaises(Blocked):verify_budget_adjustments(copy/'budgets.sqlite')
         self.assertEqual('0.000060',snapshot(self.path,self.policy)['pools']['codex']['charged_exposure_usd'])
+    def test_active_or_unknown_correction_is_rejected(self):
+        from execution.history import History,timeline
+        for state in ('RESERVED','RUNNING','UNKNOWN'):
+            with self.subTest(state=state),tempfile.TemporaryDirectory() as temporary:
+                directory=Path(temporary).resolve();History(directory/'trace.sqlite')
+                budget=Budgets(directory/'budgets.sqlite',self.policy,approval_verifier=self.approve)
+                budget.reserve('call',self.selection,'T0010-011','developer','fixture')
+                if state!='RESERVED':
+                    budget.observe('call',{'known_input_tokens':10,'known_output_tokens':0,
+                        'status':'COMPLETE' if state=='RUNNING' else 'PARTIAL_OR_UNAVAILABLE'},final=state=='UNKNOWN')
+                before=budget.receipt('call');events=timeline(directory/'trace.sqlite')
+                with self.assertRaisesRegex(Blocked,'SETTLED'):
+                    budget.reconcile_cost(self.correction('0.000005'),approval={'decision':'operator-fixture'})
+                self.assertEqual(before,budget.receipt('call'))
+                self.assertEqual(events,timeline(directory/'trace.sqlite'))
+                self.assertFalse((directory/'model-preflight').exists())
+                self.assertEqual([],budget.receipt('call')['adjustments'])
+                current=snapshot(directory/'budgets.sqlite',self.policy)
+                self.assertEqual('0.000100',current['pools']['codex']['charged_exposure_usd'])
+                if state=='UNKNOWN':
+                    self.assertIsNotNone(current['stop_reason'])
+                    with self.assertRaises(Blocked):budget.guard([self.selection])
+    def test_rejected_active_correction_cannot_hide_later_usage(self):
+        for settings in self.policy['pools'].values():settings['limit_usd']='0.000150'
+        self.budget=Budgets(self.path,self.policy,approval_verifier=self.approve)
+        self.reserve();self.budget.observe('call',{'known_input_tokens':10,'known_output_tokens':0,'status':'COMPLETE'})
+        rejected=False
+        try:self.apply(self.correction('0.000005'))
+        except Blocked:rejected=True
+        self.budget.observe('call',{'known_input_tokens':90,'known_output_tokens':0,'status':'COMPLETE'},final=True)
+        with self.assertRaises(Blocked):self.reserve('uncovered-extra')
+        self.assertTrue(rejected)
+        self.assertEqual('0.000090',snapshot(self.path,self.policy)['pools']['codex']['charged_exposure_usd'])
+        # A correction approved after settlement covers the completed invocation.
+        self.apply(self.correction('0.000005','settled-receipt'))
+        self.reserve('covered-extra')
+        self.assertEqual('0.000105',snapshot(self.path,self.policy)['pools']['codex']['charged_exposure_usd'])
