@@ -733,3 +733,80 @@ fail closed. Keep valid multi-attempt failed/unknown/resolved/retry/ack controls
 No new source paths or capabilities. Bounded thread events with guaranteed release/
 join, existing guards/disposable SQLite only. Final16 after repair, narrowmapping
 refresh and one validation, freeze for independent re-review.
+
+## T0010-015 exact offline execution
+
+Admitted on accepted014 commit754e870. Before code define versioned manifest,
+capacity/bounded-contention policy, publication/restore semantics and retention
+preview in recovery-runbook. Keep originals intact on every failure. No automatic
+deletion/cleanup of real backups and no in-place restore. Failed/partial destinations
+must never appear complete; explicitly separate forensic preservation from verified
+restorable evidence. Account for newly retained notification and recovery tables.
+Source quiescence/consistency must cover those independent writers, not just the
+coordinator lock. If approved scope cannot enforce that, propose a narrow amendment
+before changing it. Never claim atomic snapshots of uncontrolled external files.
+
+Bind in new tools/tests/test_audit_storage.py:
+AuditStorageTest.test_capacity_admission_before_destination_creation,
+AuditStorageTest.test_enospc_preserves_source_and_never_publishes_success,
+AuditStorageTest.test_sqlite_contention_is_bounded,
+AuditStorageTest.test_partial_backup_is_not_restorable,
+AuditStorageTest.test_manifest_version_and_checksum_rejected,
+AuditStorageTest.test_manifest_inventory_is_complete,
+AuditStorageTest.test_missing_required_artifact_refuses_restore,
+AuditStorageTest.test_existing_or_active_destination_is_preserved,
+AuditStorageTest.test_private_permissions_and_secret_path_exclusion,
+AuditStorageTest.test_retention_preview_refuses_unsettled_evidence,
+AuditStorageTest.test_restore_retains_notification_and_recovery_history,
+AuditStorageTest.test_concurrent_source_mutation_cannot_publish_inconsistent_backup.
+Compatibility from tools/tests/test_agent_history.py:
+HistoryTest.test_backup_restore_retains_history_hashes_and_detects_modified_artifact,
+HistoryTest.test_backup_blocks_active_coordinator_and_never_overwrites,
+HistoryTest.test_backup_excludes_secret_files_and_restores_public_evidence_only,
+HistoryTest.test_required_secret_evidence_cannot_be_silently_dropped.
+Total16 exactmethods; existingguards/cleanenv/disposableSQLite/files and bounded
+threads only. Inject ENOSPC, never fill hostdisk; secretcanaries synthetic, forbidden
+names excluded BEFORE metadata. No real secrets/protected paths read for tests.
+No process/provider/network calls, operationalrestore or deletion. Original015
+write scope plus narrowmappingrefresh; testsfirst16/mapvalidation/frozenreview.
+
+### T0010-015 approved storage contract
+
+Use schema2 exact-inventory manifest with execution identity/journal binding and
+audit-only nonresumable scope; schema1 requires explicit separate re-export, never
+silent upgrade. Coordinator lock plus budget-to-state-to-trace SQLite write fences,
+bounded deadlines and separate readonly backup readers. Capacity admission before
+creating a destination. Validate new notification projections as part of archive
+qualification; corrupt projections reject and uncertain sources protect retention.
+
+Strict backup may preserve a structurally verified blocked audit (budget stop,
+UNKNOWN usage, retained leases) with recovery_required explicitly recorded. Missing,
+staged, inconsistent or pending-recovery projections rejected by current evidence
+verification are not silently downgraded into a verified archive; originals remain
+for separate forensic recovery. No forensic-export capability is claimed here.
+
+Publication is an explicit commit boundary after payload validation/durability;
+pre-publication failures never verify complete. A response failure after durable
+publication may leave a valid copy and must not be reported as no effect or deleted
+to retry. Preserve partial markers before publication, never advertise partial
+archives as restorable. Restore only into new isolated directory, never resumes
+execution. Retention is preview only; unverified, recovery-required, unacknowledged
+or uncertain evidence remains protected. No deletion API or deployed encryption/
+offhostcheckpoint claim. Existing16 methods include these bounded faultsubcases.
+
+### T0010-015 review-1 destination ownership repair
+
+Reviewer confirmed P1 on disposable backup AND restore: after capacity admission,
+another creator makes the final destination and a same-name artifact; nonexclusive
+_mkdir_private accepts it and copying overwrites that artifact while reporting
+COMPLETE/AUDIT_RESTORED. Original source bytes remain intact, but destination
+ownership was not acquired atomically.
+
+Add AuditStorageTest.test_concurrent_destination_creation_never_overwrites, total17
+exact methods. Reproduce both races before fixing production code. Claim final
+destination exclusively (existing parents may be reused, final directory may not),
+fail before any marker/payload write if another creator won, preserve its sentinel
+and source bytes. Validate symlink/existing target refusal before following target
+metadata, and keep valid new nested destination positive controls. No unsafe retry
+or deletion. Original015 scope unchanged; final17 plus narrow maprefresh and one
+validation, frozen independent re-review before acceptance.

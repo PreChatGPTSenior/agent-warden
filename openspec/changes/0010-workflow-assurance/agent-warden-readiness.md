@@ -135,3 +135,13 @@ environment operation through the real orchestrator wrapper. Existing Python/SQL
 and offlineguards suffice; no services/network/process startup is involved. Source
 hooks for orchestrate/apply_recovery are narrowly authorized in the task packet;
 this does not qualify live use. Quota27%used/73%remaining at implementation admission.
+
+## T0010-015 affected readiness refresh
+
+2026-10-28 base754e870 clean. Python3.14.8/SQLite3.54.1 observed; disposable
+commit/reopenPASS;33.88GiBfree; zero productionpools/pricesempty verified.
+Wholebatch012–020 installedguards remain applicable. No actual storageprovider,
+applicationservice, key, encryptedvolume or offhostcheckpoint is required for
+these fault fixtures; those components NOT CHECKED/NOT QUALIFIED. READY for015
+16 scopedoffline methods and mechanicalmap validation, not operationalrestore.
+Quota lastobserved38%used/62%remaining;40/35remainingstops continue.

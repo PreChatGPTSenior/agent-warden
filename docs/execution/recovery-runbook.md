@@ -238,3 +238,64 @@ is altered. Fault tests inject exceptions at named before/after durability phase
 this qualifies interruption handling, not process-kill or filesystem power-loss
 coverage. Current liveness and approval adapters remain fixture-only, not a deployed
 production authority or permission to run actual recovery.
+
+## 9. WA-016 bounded audit snapshot, restore and retention contract
+
+Only audit data is copied; execution never resumes. Schema-2 manifests are required;
+legacy schema-1/unknown versions reject explicitly, without silently upgrading files.
+A complete manifest binds exact permitted inventory, payload hashes, database schema
+fingerprints, execution identity, journal head, source-scope hash, snapshot recovery
+requirements and the nonresumable audit-only boundary. Notification/recovery tables
+are retained inside their existing three databases and causally validated.
+
+The coordinator lock is necessary but insufficient. Backup also obtains SQLite
+`BEGIN IMMEDIATE` writer fences in budget -> state -> trace order for every existing
+database, with a bounded acquisition deadline. Notifications are fenced at trace;
+safety/terminal writes wait rather than being discarded. The fence connections do
+not modify data. Separate read-only connections take SQLite backup snapshots; backup
+is never called from a source connection holding its own write transaction. Backup
+progress has a deadline and busy retry interval. Registered artifact staging or
+inconsistent projections reject; committed immutable artifact hashes and exact
+inventory are checked before/after copying. Uncontrolled external files are not
+claimed atomically frozen; detected mutations refuse publication. There is no
+pretend transaction spanning three databases and the filesystem.
+
+Capacity is admitted before creating the destination, using snapshot page counts,
+permitted artifact sizes, conservative copy/manifest overhead and a free-space
+reserve. Disk-full/busy/checksum/inventory failures preserve originals and never
+report successful publication. New target directories/files are private. Protected
+and secret names are excluded before metadata; required secret evidence causes
+refusal rather than silent omission. Symlink references reject. No real secrets,
+keys, models or external storage are looked up or provisioned by these checks.
+
+A new destination first contains `manifest.partial.json`, which is itself the
+partial marker. Payload files/databases are copied and durably flushed, then the
+complete candidate manifest is durably written under that partial filename. Its
+payload is verified before publication. The final single atomic rename moves that
+partial filename to `manifest.json`, followed by directory fsync; this simultaneously
+publishes the manifest and removes the partial marker. Before rename, the directory
+is never a verified/restorable archive. A failure after rename may have a valid
+published copy: preserve it, report publication uncertainty, inspect rather than
+delete or blindly retry. No failed destination or user data is automatically cleaned
+up. Exception injection does not establish power-loss durability guarantees.
+
+Structurally consistent stopped/blocked/leased/UNKNOWN audit state can be copied,
+with `recovery_required` and preserved unresolved facts; it remains nonresumable.
+Missing/staged/inconsistent evidence or pending recovery projections that fail
+existing verification refuse this strict backup. Originals remain for a separately
+authorized forensic-preservation plan; this command does not claim a forensic
+export. Corrupt notification projections reject, and missing-source/ambiguous or
+unacknowledged notification facts remain explicit and protected from retention.
+
+Restore verifies schema/version, exact inventory/hashes, database integrity and
+identity before creating a new isolated destination. It copies rather than repairs
+facts and never overwrites an existing/active execution. Restored audit verification
+is not environment/Git/application/accounting reconciliation or resume permission.
+Source and destination preserve all notification/recovery history and stop state.
+
+Retention is preview-only over explicitly supplied archive paths. Keep unverified,
+unsettled, recovery-required, unacknowledged or uncertain notification evidence; no
+actual deletion interface is implemented. Even a proposed candidate is not deletion
+authority. Independently retained off-host checkpoints, encrypted private backups,
+key custody/rotation, source/worktree/application-volume protection and real storage
+failure qualification remain operator prerequisites, not deployed features.

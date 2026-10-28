@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "95e01f91336dcf48892956740b1569612aa27525baba1df68a4f16607d42543b"
+      "sha256": "fd99b116956f0518b1ac46deb36a5651a8455c7988a880710ca18b6d3bf4415d"
     },
     {
       "namespace": "maintenance",
@@ -7398,7 +7398,25 @@
       "owners": [
         {
           "task": "T0010-015",
-          "checks": []
+          "checks": [
+            "AuditStorageTest.test_capacity_admission_before_destination_creation",
+            "AuditStorageTest.test_concurrent_destination_creation_never_overwrites",
+            "AuditStorageTest.test_concurrent_source_mutation_cannot_publish_inconsistent_backup",
+            "AuditStorageTest.test_enospc_preserves_source_and_never_publishes_success",
+            "AuditStorageTest.test_existing_or_active_destination_is_preserved",
+            "AuditStorageTest.test_manifest_inventory_is_complete",
+            "AuditStorageTest.test_manifest_version_and_checksum_rejected",
+            "AuditStorageTest.test_missing_required_artifact_refuses_restore",
+            "AuditStorageTest.test_partial_backup_is_not_restorable",
+            "AuditStorageTest.test_private_permissions_and_secret_path_exclusion",
+            "AuditStorageTest.test_restore_retains_notification_and_recovery_history",
+            "AuditStorageTest.test_retention_preview_refuses_unsettled_evidence",
+            "AuditStorageTest.test_sqlite_contention_is_bounded",
+            "HistoryTest.test_backup_blocks_active_coordinator_and_never_overwrites",
+            "HistoryTest.test_backup_excludes_secret_files_and_restores_public_evidence_only",
+            "HistoryTest.test_backup_restore_retains_history_hashes_and_detects_modified_artifact",
+            "HistoryTest.test_required_secret_evidence_cannot_be_silently_dropped"
+          ]
         }
       ],
       "evidence": []
@@ -7414,7 +7432,25 @@
       "owners": [
         {
           "task": "T0010-015",
-          "checks": []
+          "checks": [
+            "AuditStorageTest.test_capacity_admission_before_destination_creation",
+            "AuditStorageTest.test_concurrent_destination_creation_never_overwrites",
+            "AuditStorageTest.test_concurrent_source_mutation_cannot_publish_inconsistent_backup",
+            "AuditStorageTest.test_enospc_preserves_source_and_never_publishes_success",
+            "AuditStorageTest.test_existing_or_active_destination_is_preserved",
+            "AuditStorageTest.test_manifest_inventory_is_complete",
+            "AuditStorageTest.test_manifest_version_and_checksum_rejected",
+            "AuditStorageTest.test_missing_required_artifact_refuses_restore",
+            "AuditStorageTest.test_partial_backup_is_not_restorable",
+            "AuditStorageTest.test_private_permissions_and_secret_path_exclusion",
+            "AuditStorageTest.test_restore_retains_notification_and_recovery_history",
+            "AuditStorageTest.test_retention_preview_refuses_unsettled_evidence",
+            "AuditStorageTest.test_sqlite_contention_is_bounded",
+            "HistoryTest.test_backup_blocks_active_coordinator_and_never_overwrites",
+            "HistoryTest.test_backup_excludes_secret_files_and_restores_public_evidence_only",
+            "HistoryTest.test_backup_restore_retains_history_hashes_and_detects_modified_artifact",
+            "HistoryTest.test_required_secret_evidence_cannot_be_silently_dropped"
+          ]
         }
       ],
       "evidence": []

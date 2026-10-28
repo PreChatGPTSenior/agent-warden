@@ -1,5 +1,6 @@
 """Local durable workflow journal and read-only recovery inspection; never replays tools."""
 from contextlib import closing
+from contextvars import ContextVar
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,9 @@ from .core import Blocked, safe, sha, stable,json_read,json_write
 from .audit_paths import retained_artifacts, secret_path,public_artifacts,evidence_path,TREES,LEAVES
 from .evidence import verify_report,REVIEW_ROLES
 
+
+# Only audit publication may validate bytes in its exact owned new destination.
+_AUDIT_PAYLOAD_CONTEXT=ContextVar('owned_audit_payload',default=None)
 
 def read_rows(path, table):
     path=evidence_path(Path(path).parent,Path(path).name)
@@ -303,6 +307,7 @@ def recovery_status(directory,*,checkpoint_source=None,require_checkpoint=False)
     active = [row for row in state if row['status'] in ('CLAIMED', 'DEVELOPING')]
     unsettled = [row for row in calls if row['state'] in ('RESERVED', 'RUNNING', 'UNKNOWN')]
     blockers = list(gaps)
+    if evidence_path(directory,'manifest.partial.json').exists():blockers.append('Incomplete audit publication; execution must not resume')
     try:verify_evidence(directory,events)
     except (Blocked,OSError,ValueError,KeyError) as error:blockers.append(str(error))
     from .checkpoints import verify_checkpoint
@@ -329,6 +334,8 @@ def recovery_status(directory,*,checkpoint_source=None,require_checkpoint=False)
 def verify_evidence(directory, events=None):
     """Validate indexed raw events and terminal receipts; paths remain inside the audit copy."""
     directory = Path(directory)
+    owned_partial=_AUDIT_PAYLOAD_CONTEXT.get()==directory
+    if evidence_path(directory,'manifest.partial.json').exists() and not owned_partial:raise Blocked('Incomplete audit publication; evidence not qualified')
     events = timeline(directory / 'trace.sqlite') if events is None else events
     gaps = database_state(directory, events)[-1]
     if gaps: raise Blocked('Incomplete audit database set: ' + '; '.join(gaps))
@@ -493,7 +500,8 @@ def verify_evidence(directory, events=None):
                 or (command.get('side_effect') and actual.get('status')!='EXITED')
                 or any(actual.get(key)!=expected.get(key) for key in ('execution_id','status','returncode'))):
             raise Blocked('Interrupted/inconsistent command; observed-state reconciliation required')
-    retained={str(path.relative_to(directory)) for path in public_artifacts(directory)}
+    retained={str(path.relative_to(directory)) for path in public_artifacts(directory)
+              if not (owned_partial and str(path.relative_to(directory))=='manifest.partial.json')}
     for name in ('policy.json','result.json','budget-stop.json'):
         if evidence_path(directory,name).exists():retained.add(name)
     unexplained=retained-indexed
