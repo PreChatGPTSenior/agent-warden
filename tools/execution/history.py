@@ -88,6 +88,8 @@ class History:
             digest = stable(body)
             db.execute('INSERT INTO events VALUES (?,?,?,?,?,?,?,?)',
                        (seq, event, trace, task, session, role, json.dumps(body), digest))
+            from .notifications import capture_history_event
+            capture_history_event(db,body,digest)
             db.commit()
             return {**body, 'sha256': digest}
 

@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "1a44f3901fff112cec091206be97adf9bd968f422a51eba6601bd08d477f7b7f"
+      "sha256": "95e01f91336dcf48892956740b1569612aa27525baba1df68a4f16607d42543b"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "7de01cbf0ada72fcb4d00f6fa61db5103d2de1bd30dfc6ac10cbb212e592979a"
+      "sha256": "1a579ec04dc258621c54800348e8df7f24a509f29448ba1cd9b6f4e6ecc5d8a2"
     },
     {
       "namespace": "maintenance",
@@ -1001,7 +1001,7 @@
       "id": "WA-015",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-015 Durable stop notification",
-      "sha256": "381f9f7489ac0175d08ca1490a31be027d23a43d4d1530d7a051ef5ea392005d",
+      "sha256": "328bc3dd8eb5f58cb220d770a3c88aecbad6989ee3a6fce6cff9cf3ec6e4e414",
       "baseline_id": null
     },
     {
@@ -7365,7 +7365,24 @@
       "owners": [
         {
           "task": "T0010-014",
-          "checks": []
+          "checks": [
+            "RecoveryApplyTest.test_budget_stop_and_history_preserved",
+            "RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization",
+            "StopNotificationTest.test_cli_local_view_and_ack",
+            "StopNotificationTest.test_concurrent_delivery_has_single_owner",
+            "StopNotificationTest.test_crash_before_delivery_ack_retains_pending",
+            "StopNotificationTest.test_distinct_stop_reasons_preserve_causality",
+            "StopNotificationTest.test_duplicate_source_is_deduplicated",
+            "StopNotificationTest.test_enqueue_survives_reopen",
+            "StopNotificationTest.test_environment_failure_before_stage_is_notified",
+            "StopNotificationTest.test_failed_local_delivery_remains_visible",
+            "StopNotificationTest.test_manual_ack_does_not_clear_stop",
+            "StopNotificationTest.test_notification_during_recovery_preserves_owner",
+            "StopNotificationTest.test_partial_outbox_rollback_cannot_hide_live_attempt",
+            "StopNotificationTest.test_retry_cannot_invoke_model_or_recovery",
+            "StopNotificationTest.test_stop_before_enqueue_reconciles_after_restart",
+            "StopNotificationTest.test_unknown_usage_remains_blocked"
+          ]
         }
       ],
       "evidence": []

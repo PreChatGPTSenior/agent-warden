@@ -660,3 +660,76 @@ uncertainty. Record a per-commit coverage matrix; do not claim power-loss proof.
 Readiness remains disposable SQLite/history only on same runtimes/guards. Tests
 first, retain behavioralRED from both probes, final21 after production changes,
 maprefresh then one mapping validation, freeze for independent re-review.
+
+## T0010-014 exact offline execution
+
+Admitted after accepted013 on013edfe. Before implementation define in this packet's
+implementation handoff the exact durable source-to-notification contract, distinct
+reason taxonomy and local delivery/ack interface. Notification persistence must
+work even when normal task/history writers are blocked by recovery ownership.
+Never bypass that ownership for task/work mutation. Delivery retries have no
+model/recovery capability; acknowledgement does not clear stop or grant admission.
+Crash between durable stop and enqueue must be recoverable from retained source,
+not require replaying its underlying action. Missing source evidence remains
+uncertain. Do not claim external delivery or exactly-once effects for a failed
+callback without a deduplicating destination. No new database/dependency/sink
+without a concrete approved contract; reuse accepted SQLite/audit boundaries.
+
+Bind exact methods in new tools/tests/test_stop_notifications.py:
+StopNotificationTest.test_stop_before_enqueue_reconciles_after_restart,
+StopNotificationTest.test_enqueue_survives_reopen,
+StopNotificationTest.test_crash_before_delivery_ack_retains_pending,
+StopNotificationTest.test_duplicate_source_is_deduplicated,
+StopNotificationTest.test_failed_local_delivery_remains_visible,
+StopNotificationTest.test_manual_ack_does_not_clear_stop,
+StopNotificationTest.test_unknown_usage_remains_blocked,
+StopNotificationTest.test_distinct_stop_reasons_preserve_causality,
+StopNotificationTest.test_concurrent_delivery_has_single_owner,
+StopNotificationTest.test_cli_local_view_and_ack,
+StopNotificationTest.test_notification_during_recovery_preserves_owner,
+StopNotificationTest.test_retry_cannot_invoke_model_or_recovery.
+Compatibility: RecoveryApplyTest.test_budget_stop_and_history_preserved and
+RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization.
+Total14 exactmethods; guards beforeimports, cleanenvironment, disposableSQLite
+only, no external delivery/network/provider. Tests first; original014 scope plus
+narrow maprefresh, one mappingvalidation, frozenhandoff for independentreview.
+
+### T0010-014 source integration amendment
+
+Approved notification-only tables in existing trace.sqlite and atomic stop-source
+rows in budgets.sqlite; these do not confer task/history mutation authority.
+Persist source before outbox, reconcile from retained source after interruption.
+At-least-once local delivery with causal incident ID and durable attempt/ack history;
+uncertain delivery requires explicit notification-only retry, never automatic
+owner stealing. Fixed reason codes and hashed sensitive details; diagnostics from
+invalid history remain explicitly unverified and cannot authorize work.
+
+Narrow additional write scope: tools/apply_recovery.py for real denied/interrupted
+CLI notification; tools/orchestrate.py for typed environment failure capture around
+actual readiness/setup/probe calls before stage.completed can exist. Generic
+task/gate failure must not be guessed to be environment/supervision failure from
+exception text. Existing invocation.finished INTERRUPTED/TIMED_OUT is a supported
+supervisor source; unrelated FAILED must not be relabelled. Exact source mapping
+and unintegrated callers must be reported honestly before implementation.
+
+Add StopNotificationTest.test_environment_failure_before_stage_is_notified.
+Total15 exactmethods, preserving prior14; no real environment/provider startup.
+Test uses failing fixture dependency and real notification persistence. Additional
+frameworks, new databases and external message delivery remain out of scope.
+
+### T0010-014 review-1 repair binding
+
+A guarded reviewer probe confirmed a notification-only P2: restoring the outbox
+projection to a prior FAILED attempt while retaining a newer live STARTED attempt
+allows a third retry and reports DELIVERED with the live STARTED fact unresolved.
+This is not a budget/model authority bypass, but violates exclusive delivery and
+truthful retained-history projection. Preserve all facts and reject stale pointers.
+
+Add StopNotificationTest.test_partial_outbox_rollback_cannot_hide_live_attempt,
+for total16 exact methods. Behavioral RED before code repair. Validate latest causal
+attempt/action projection and ensure every unresolved STARTED attempt is the current
+owned attempt; outbox rollback, detached pending attempts and false terminal views
+fail closed. Keep valid multi-attempt failed/unknown/resolved/retry/ack controls.
+No new source paths or capabilities. Bounded thread events with guaranteed release/
+join, existing guards/disposable SQLite only. Final16 after repair, narrowmapping
+refresh and one validation, freeze for independent re-review.

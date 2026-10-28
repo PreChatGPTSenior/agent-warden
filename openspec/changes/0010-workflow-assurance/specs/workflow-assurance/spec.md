@@ -167,7 +167,7 @@ Approved recovery application SHALL have exclusive ownership, durable intent, id
 - **THEN** the plan's result, actor identities, evidence and remaining stops are recorded; completion does not independently raise budgets or authorize new paid work.
 
 ### Requirement: WA-015 Durable stop notification
-Stops and uncertain outcomes SHALL produce persistent notifications with deduplication, delivery state and acknowledgement. Notification delivery SHALL not replay the underlying action.
+Stops and uncertain outcomes SHALL produce persistent notifications with deduplication, delivery state and acknowledgement. Notification delivery SHALL not replay the underlying action. Durable sources SHALL permit notification reconstruction after a crash before enqueue. Environment failures before stage completion SHALL still produce a typed source. Notification acknowledgement SHALL not clear the stop or confer execution/recovery authority; invalid-history diagnostics SHALL remain explicitly unverified.
 
 #### Scenario: WA-015-S1 Restart and failed delivery
 - **WHEN** a stop occurs before delivery and the coordinator restarts

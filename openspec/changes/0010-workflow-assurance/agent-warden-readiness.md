@@ -120,3 +120,18 @@ application services/provider connectivity NOT CHECKED/NOT REQUIRED. READY for01
 disposable fixtures and18 exact methods. Actual recovery authority remains BLOCKED.
 The first policy lookup used obsolete filenames and found nothing; corrected to
 execution/agent-budgets.json and verified the actual policy before dispatch.
+
+## T0010-014 affected readiness refresh
+
+2026-10-28 base013edfe, cleanworktree. Python3.14.8/SQLite3.54.1 observed;
+disposablecommit/reopenPASS;34.89GiBfree. Existing offlineguards unchanged.
+Productionpools0.00/pricesempty verified; weeklyquota25%used/75%remaining.
+Wholebatch012–020 offlineprerequisites remain applicable; applicationservices,
+externalnotifications/providers NOT CHECKED/NOT REQUIRED. READY for014local
+outbox fixtures and14 exactmethods. No actual operationalstate is used.
+
+014 source-integration amendment admits15 exactmethods, including a failing fake
+environment operation through the real orchestrator wrapper. Existing Python/SQLite
+and offlineguards suffice; no services/network/process startup is involved. Source
+hooks for orchestrate/apply_recovery are narrowly authorized in the task packet;
+this does not qualify live use. Quota27%used/73%remaining at implementation admission.

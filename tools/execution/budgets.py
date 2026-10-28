@@ -162,7 +162,7 @@ class Budgets:
             if not db.execute('SELECT 1 FROM calls LIMIT 1').fetchone(): db.execute('DELETE FROM accounting')
             if not db.execute('SELECT 1 FROM accounting').fetchone(): db.execute('INSERT INTO accounting VALUES (?)', (self.policy['unit'],))
             if db.execute("SELECT 1 FROM calls WHERE state IN ('RESERVED','RUNNING','UNKNOWN') LIMIT 1").fetchone():
-                self.stop(db, 'Unsettled prior invocation; explicit accounting reconciliation required')
+                self.stop(db, 'Unsettled prior invocation; explicit accounting reconciliation required',kind='USAGE_UNKNOWN')
             amount = 'spent' if self.policy['unit'] == 'usd' else 'tokens'
             for row in db.execute('SELECT pool,SUM(' + amount + ') AS spent FROM calls GROUP BY pool'):
                 if row['spent'] > 0 and row['spent'] >= limits(self.policy, row['pool'])[0]:
@@ -183,8 +183,10 @@ class Budgets:
             db.close()
 
     @staticmethod
-    def stop(db, reason):
+    def stop(db, reason,*,kind='BUDGET_STOP',causal=None):
         db.execute('INSERT OR IGNORE INTO stops VALUES (1,?)', (reason,))
+        from .notifications import capture_budget_stop
+        capture_budget_stop(db,reason,kind=kind,causal=causal)
 
     def check_stop(self):
         from .history import verify_budget_adjustments
@@ -264,7 +266,7 @@ class Budgets:
                 spent = max(row['spent'], spent)
                 state = ('SETTLED' if final else 'RUNNING') if complete else 'UNKNOWN'
                 if not complete:
-                    self.stop(db, 'Incomplete model usage; reservation retained for reconciliation')
+                    self.stop(db, 'Incomplete model usage; reservation retained for reconciliation',kind='USAGE_UNKNOWN',causal={'session':session})
                 if spent >= row['allowance']:
                     self.stop(db, 'Invocation budget allowance reached: ' + session)
             db.execute('UPDATE calls SET tokens=?,spent=?,state=?,updated=? WHERE session=?',
