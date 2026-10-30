@@ -1,3 +1,10 @@
+## Current Agent Warden qualification — 2026-10-30
+
+The0010 offline verification now covers383 selected methods using the initial run
+plus185 affected-method passes after reviewed fixture compatibility corrections.
+Strict OpenSpec11/11 and maintenance mapping pass. Independent high review and coordinator acceptance completed; see [current scope, failure history and limits](execution/0010-qualification.md).
+Historical results below retain their original scope and do not assert live readiness.
+
 # Preparation verification
 
 ## Supervised subscription follow-up

@@ -27,7 +27,7 @@ import orchestrate as engine
 
 
 class WorkflowTest(unittest.TestCase):
-    def exercise(self, reject_review=False, budget_stop_at=None):
+    def exercise(self, reject_review=False, budget_stop_at=None, *, reject_after_tests=False, retry_rejected=False, drift_at_integration=False):
         temporary = tempfile.TemporaryDirectory(); self.addCleanup(temporary.cleanup)
         root = Path(temporary.name).resolve() / 'repository'; root.mkdir()
         History(root/'.execution/trace.sqlite')
@@ -51,7 +51,7 @@ class WorkflowTest(unittest.TestCase):
                 'kind': 'implementation', 'depends_on': [], 'exclusive_resources': ['fixture'],
                 'requirements': ['R003'], 'acceptance': ['A01'], 'write_paths': ['feature.txt'],
                 'environment': [], 'checks': [{'adapter': 'fixture'}], 'browser_required': True,
-                'max_attempts': 1, 'timeout_seconds': 5}
+                'max_attempts': 2 if retry_rejected else 1, 'timeout_seconds': 5}
         models = load([task['id']]); receipts = {}
         # Synthetic admission exists ONLY in this isolated test; live preflight is never called.
         evidence = root / '.execution/model-preflight/fixture-admission.json'; History(root/'.execution/trace.sqlite').write_artifact('model-preflight/fixture-admission.json', {'mode': 'OFFLINE_FIXTURE'})
@@ -75,15 +75,16 @@ class WorkflowTest(unittest.TestCase):
         class FakeModel:
             def __init__(inner, argv, **kwargs):
                 output = Path(argv[argv.index('--output-last-message') + 1])
-                role = output.name.split('-')[0]; calls.append(role)
+                input_path = next(output.parent.parent.glob('*-' + output.stem + '.input.json'))
+                role = input_path.name.removesuffix('-' + output.stem + '.input.json'); calls.append(role)
                 workspace = Path(kwargs['cwd'])
                 if role == 'developer': (workspace / 'feature.txt').write_text('after')
-                rejected = reject_review and role == 'code_review'
+                rejected = (reject_review and role == 'code_review') or (reject_after_tests and role == 'browser_review' and (not retry_rejected or calls.count('browser_review') == 1))
                 value = {'status': 'CHANGES_REQUESTED' if rejected else 'APPROVED',
                          'summary': 'Fixture reviewer found missing coverage' if rejected else 'Fixture evidence satisfies assigned contribution',
                          'findings': ['Fixture missing coverage'] if rejected else [], 'evidence': ['R003', 'A01']}
                 if role != 'developer':
-                    contract=json.loads(output.with_name(output.name.replace('.result.json','.input.json')).read_text())['context']['review_contract']
+                    contract=json.loads(input_path.read_text())['context']['review_contract']
                     value.update(schema=2,kind='review',**{key:contract[key] for key in
                         ('task','candidate','attempt','run_id','role','contract_sha256','requirements','acceptance')})
                     value['evidence']=[{'reference':reference,'sha256':digest} for reference,digest in contract['artifacts'].items()]
@@ -107,7 +108,10 @@ class WorkflowTest(unittest.TestCase):
             raw = run / (stage_name + '-fixture.json'); json_write(raw, {'mode': 'OFFLINE_FIXTURE'})
             return report(run, stage_name, task, candidate, [raw], **extra)
         def static(task, tree, run, env, candidate, names, *, trusted_root=None, stack=None): return fixture_report('static', task, run, candidate)
-        def tests(task, tree, run, env, stack, candidate): return fixture_report('tests', task, run, candidate, tests=1)
+        def tests(task, tree, run, env, stack, candidate):
+            result = fixture_report('tests', task, run, candidate, tests=1)
+            if drift_at_integration and run.name == 'integration': (tree / 'feature.txt').write_text('drift after tests')
+            return result
         def browser(task, tree, run, env, stack, candidate):
             from execution.evidence import context, monitor_artifacts, complete_monitor
             for name in monitor_artifacts('browser'):
@@ -132,10 +136,10 @@ class WorkflowTest(unittest.TestCase):
             stack.enter_context(patch.object(engine, 'static_gate', side_effect=static))
             selected = stack.enter_context(patch.object(engine, 'selected_tests', side_effect=tests))
             stack.enter_context(patch.object(engine, 'browser', side_effect=browser))
-            if reject_review or budget_stop_at:
-                with self.assertRaises(Blocked): engine.work(task, state, coordinator, {})
+            if reject_review or budget_stop_at or (reject_after_tests and not retry_rejected) or drift_at_integration:
+                with self.assertRaises(Blocked): engine.work(task, state, coordinator, dict(os.environ))
                 if reject_review: selected.assert_not_called()
-            else: engine.work(task, state, coordinator, {})
+            else: engine.work(task, state, coordinator, dict(os.environ))
         return root, state, calls, coordinator
 
     def test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done(self):

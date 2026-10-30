@@ -83,7 +83,7 @@ time.sleep(20)
             h=self.start();self.assertEqual('ADMISSION_FAILED',h.wait()['status'])
         self.assertEqual('ADMISSION_FAILED',json.loads(self.receipt.read_text())['status'])
     def test_output_backpressure_is_bounded(self):
-        h=self.start('import os; [(os.write(1,b"x"*8192),os.write(2,b"y"*8192)) for _ in range(128)]',output_limit=1024)
+        h=self.start('import os; [(os.write(1,b"safe stdout "*683+b"\\n"),os.write(2,b"safe stderr "*683+b"\\n")) for _ in range(128)]',output_limit=1024,timeout=15)
         r=h.wait();self.assertEqual('EXITED',r['status']);self.assertEqual(0,r['returncode'])
         self.assertEqual((1024,1024),(len(r['stdout']),len(r['stderr'])));self.assertTrue(r['stdout_truncated']);self.assertTrue(r['stderr_truncated'])
     def test_missing_terminal_receipt_is_interrupted(self):

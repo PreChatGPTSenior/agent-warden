@@ -91,7 +91,8 @@ class MaintenanceTest(unittest.TestCase):
         output = Path(argv[argv.index('--output-last-message') + 1])
         result = {'status': 'APPROVED', 'summary': 'Offline fixture result', 'findings': [], 'evidence': ['fixture-only']}
         if reviewing:
-            contract=json.loads(output.with_name(output.name.replace('.result.json','.input.json')).read_text())['context']['review_contract']
+            input_path = output.parent.parent / ('code_review-' + output.stem + '.input.json')
+            contract=json.loads(input_path.read_text())['context']['review_contract']
             result.update(schema=2,kind='review',**{key:contract[key] for key in
                 ('task','candidate','attempt','run_id','role','contract_sha256','requirements','acceptance')})
             result['evidence']=[{'reference':reference,'sha256':digest} for reference,digest in contract['artifacts'].items()]
@@ -293,9 +294,12 @@ class MaintenanceTest(unittest.TestCase):
         packet = self.packet(); context = self.context(packet)
         developer = self.invoke(packet, context=context); checks = self.checks()
         (self.root / next(iter(checks['artifact_hashes']))).write_text('tampered')
-        with self.assertRaisesRegex(Blocked, 'check evidence changed'):
+        before = timeline(self.root / '.execution/trace.sqlite')
+        with self.assertRaisesRegex(Blocked, '^Unresolved execution: reconcile before any maintenance invocation$'):
             self.invoke(packet, 'code_review', context, developer, checks)
         self.assertEqual(1, len(self.started))
+        self.assertEqual(before, timeline(self.root / '.execution/trace.sqlite'))
+        self.assertFalse((self.root / '.execution/runs/maintenance-fixture/code_review/handoff.json').exists())
 
     def test_budget_stop_between_roles_prevents_reviewer(self):
         packet = self.packet(); context = self.context(packet)

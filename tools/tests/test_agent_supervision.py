@@ -78,12 +78,17 @@ class SupervisionTest(unittest.TestCase):
         parent_code = '''import pathlib,sys
 import execution.agent_runtime as runtime
 from execution.budgets import Budgets
-from execution.supervision import launch
+from execution import processes
+from execution.history import History
 root=pathlib.Path(sys.argv[1]); runtime.ROOT=root
+History(root/'.execution/trace.sqlite')
+real_start=processes.start
 def harmless(argv,**kwargs):
-    assert argv[0]=='codex'
-    return launch([sys.executable,'-c',sys.argv[2],str(root)],**kwargs)
-runtime.launch=harmless
+    assert pathlib.Path(argv[0]).name=='codex'
+    dummy=[sys.executable,'-c',sys.argv[2],str(root)]
+    kwargs['admission']=processes.admit_command(dummy,kwargs['cwd'],policy_id='fixture-reviewed-nondetaching-command')
+    return real_start(dummy,**kwargs)
+processes.start=harmless
 budget=Budgets(root/'.execution/budgets.sqlite',{'schema':1,'unit':'input_plus_output_tokens','pools':{
     pool:{'limit_tokens':100,'invocation_allowance_tokens':50} for pool in ('codex','openrouter')}})
 selection={'model':'offline-fixture','reasoning_effort':'medium','provider_config':{'kind':'builtin','provider_id':'openai'}}
@@ -92,7 +97,10 @@ runtime.invoke(selection,'T0002-002','developer',root,root/'.execution/runs/atte
         parent = subprocess.Popen([sys.executable,'-c',parent_code,str(self.root),CHILD],
                                   env=self.env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         try:
-            self.wait_file(self.root/'heartbeat')
+            try:self.wait_file(self.root/'heartbeat')
+            except AssertionError:
+                if parent.poll() is not None:self.fail('Fixture coordinator exited before heartbeat: '+parent.stderr.read().decode('utf-8',errors='replace'))
+                raise
             parent.kill(); parent.wait(timeout=2)
             time.sleep(.6); self.assert_stopped()
             report = recovery_status(self.root/'.execution')

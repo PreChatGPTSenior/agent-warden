@@ -87,14 +87,10 @@ it must not bypass production runtime budget gates. Do not connect OpenRouter.
 
 ## Current task boundary
 
-T0010-017 was accepted for the documented offline fixture scope on 2026-10-30
-following tests-first implementation, complete independent review, bounded
-corrections, explicit coordinator reassessment of the final unit-label issue,
-and coordinator verification. See
-[the acceptance record](../openspec/changes/0010-workflow-assurance/agent-warden-017-acceptance.md).
-T0010-017 changes are included in its authorized commit. The user authorized
-T0010-018–020 next, subject to refreshed batch readiness.
-The latest user instruction requires stopping at30% remaining.
+T0010-018–019 were accepted for offline scope on2026-10-30 after independent review
+and coordinator qualification. T0010-020 PR publication is authorized and in progress.
+No merge or live worker run is authorized. Stop at30% subscription remaining.
+See [qualification](execution/0010-qualification.md) for evidence and live blockers.
 
 ## Future tooling task, not implemented here
 

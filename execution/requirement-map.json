@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "1554d560645833b728de62f3f18bc02ddbbd1258057ce54e1eb7bad04c418aaf"
+      "sha256": "352ca0bebc0c06d91e7b1dad91c27fb8c4e622bd7f43ddf014b0fbf212da850d"
     },
     {
       "namespace": "maintenance",
@@ -75,7 +75,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
-      "sha256": "a1de992d07443d7b23e79c89a0278c6b5e1fa2c3a920b4eb9efc9edf2cd9416d"
+      "sha256": "835c119fc43d0bf56adc422ad101a6701fb588a64e16683885b9da075068e973"
     },
     {
       "namespace": "maintenance",
@@ -977,7 +977,7 @@
       "id": "WA-012",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-012 Budget exposure and cost reconciliation",
-      "sha256": "d543bcd4c8782efb32bfa3aaea43b4844f616f820775ab8dbf1f4e7e3156217b",
+      "sha256": "753193a413ce73be410cb16d2516b2f57c8c9da6111cf276b757728585b64eef",
       "baseline_id": null
     },
     {
@@ -993,7 +993,7 @@
       "id": "WA-014",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-014 Crash-safe recovery application",
-      "sha256": "34f8c8f2a6344fb7d63de6b13efa470f06cdccea5f8e79ecb5a135b6d01dcfb6",
+      "sha256": "cbf7dc86fc45103babcb3f381bd8ec8c089a9b034373dc3be643fcc8357725a6",
       "baseline_id": null
     },
     {
@@ -1001,7 +1001,7 @@
       "id": "WA-015",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-015 Durable stop notification",
-      "sha256": "328bc3dd8eb5f58cb220d770a3c88aecbad6989ee3a6fce6cff9cf3ec6e4e414",
+      "sha256": "6634a20e9bd30744ae7630048316900c23911ccef978220443b32ef939f5283a",
       "baseline_id": null
     },
     {
@@ -1017,7 +1017,7 @@
       "id": "WA-017",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "### Requirement: WA-017 Private evidence and least privilege",
-      "sha256": "8d20b2e99a452b90f0b338b042d2ad59a4c8ebf5b319fbb11d4ce1cfabc7ffd1",
+      "sha256": "4bfb2f1b8959e05f5e9dfa282033513376d511262ca76bea6322344994896c8d",
       "baseline_id": null
     },
     {
@@ -6747,7 +6747,9 @@
       "owners": [
         {
           "task": "T0010-002",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_changed_check_artifact_blocks_review"
+          ]
         }
       ],
       "evidence": []
@@ -6763,7 +6765,9 @@
       "owners": [
         {
           "task": "T0010-002",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_changed_check_artifact_blocks_review"
+          ]
         }
       ],
       "evidence": []
@@ -6779,7 +6783,9 @@
       "owners": [
         {
           "task": "T0010-002",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_changed_check_artifact_blocks_review"
+          ]
         }
       ],
       "evidence": []
@@ -6795,7 +6801,9 @@
       "owners": [
         {
           "task": "T0010-002",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_changed_check_artifact_blocks_review"
+          ]
         }
       ],
       "evidence": []
@@ -6811,7 +6819,9 @@
       "owners": [
         {
           "task": "T0010-002",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_changed_check_artifact_blocks_review"
+          ]
         }
       ],
       "evidence": []
@@ -6843,7 +6853,18 @@
       "owners": [
         {
           "task": "T0010-004",
-          "checks": []
+          "checks": [
+            "CandidateChecksTest.test_empty_and_truncated_runtime_pins_block",
+            "CandidateChecksTest.test_invalid_candidate_build_and_container_configs_never_static_scope_pass",
+            "CandidateChecksTest.test_mixed_valid_configuration_runs_all_families_on_candidate",
+            "CandidateChecksTest.test_package_validation_uses_candidate_data_and_trusted_runner",
+            "CandidateChecksTest.test_root_package_dependency_change_preserves_trusted_scripts",
+            "CandidateChecksTest.test_root_package_enforcement_scripts_cannot_become_noops",
+            "CandidateChecksTest.test_runtime_version_mismatch_blocks_using_candidate_pins",
+            "CandidateChecksTest.test_static_resource_positive_control_does_not_claim_yaml_validation",
+            "CandidateChecksTest.test_toolchain_uses_candidate_runtime_lock",
+            "CandidateChecksTest.test_unsupported_spring_yaml_blocks_even_when_maven_succeeds"
+          ]
         }
       ],
       "evidence": []
@@ -6859,7 +6880,18 @@
       "owners": [
         {
           "task": "T0010-004",
-          "checks": []
+          "checks": [
+            "CandidateChecksTest.test_empty_and_truncated_runtime_pins_block",
+            "CandidateChecksTest.test_invalid_candidate_build_and_container_configs_never_static_scope_pass",
+            "CandidateChecksTest.test_mixed_valid_configuration_runs_all_families_on_candidate",
+            "CandidateChecksTest.test_package_validation_uses_candidate_data_and_trusted_runner",
+            "CandidateChecksTest.test_root_package_dependency_change_preserves_trusted_scripts",
+            "CandidateChecksTest.test_root_package_enforcement_scripts_cannot_become_noops",
+            "CandidateChecksTest.test_runtime_version_mismatch_blocks_using_candidate_pins",
+            "CandidateChecksTest.test_static_resource_positive_control_does_not_claim_yaml_validation",
+            "CandidateChecksTest.test_toolchain_uses_candidate_runtime_lock",
+            "CandidateChecksTest.test_unsupported_spring_yaml_blocks_even_when_maven_succeeds"
+          ]
         }
       ],
       "evidence": []
@@ -6875,7 +6907,12 @@
       "owners": [
         {
           "task": "T0010-005",
-          "checks": []
+          "checks": [
+            "EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative",
+            "EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read",
+            "EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state",
+            "EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle"
+          ]
         }
       ],
       "evidence": []
@@ -6891,7 +6928,12 @@
       "owners": [
         {
           "task": "T0010-005",
-          "checks": []
+          "checks": [
+            "EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative",
+            "EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read",
+            "EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state",
+            "EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle"
+          ]
         }
       ],
       "evidence": []
@@ -6907,7 +6949,12 @@
       "owners": [
         {
           "task": "T0010-005",
-          "checks": []
+          "checks": [
+            "EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative",
+            "EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read",
+            "EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state",
+            "EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle"
+          ]
         }
       ],
       "evidence": []
@@ -6923,7 +6970,12 @@
       "owners": [
         {
           "task": "T0010-005",
-          "checks": []
+          "checks": [
+            "EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative",
+            "EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read",
+            "EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state",
+            "EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle"
+          ]
         }
       ],
       "evidence": []
@@ -6939,7 +6991,12 @@
       "owners": [
         {
           "task": "T0010-006",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_reviewer_mutation_invalidates_result",
+            "MaintenanceTest.test_two_role_handoff_uses_existing_metered_runtime",
+            "ReviewEvidenceTest.test_clean_no_findings_control_preserves_emitted_approval",
+            "ReviewEvidenceTest.test_runtime_compatibility_probe_is_nonreview_and_usage_model_stays_unknown"
+          ]
         }
       ],
       "evidence": []
@@ -6955,7 +7012,12 @@
       "owners": [
         {
           "task": "T0010-006",
-          "checks": []
+          "checks": [
+            "MaintenanceTest.test_reviewer_mutation_invalidates_result",
+            "MaintenanceTest.test_two_role_handoff_uses_existing_metered_runtime",
+            "ReviewEvidenceTest.test_clean_no_findings_control_preserves_emitted_approval",
+            "ReviewEvidenceTest.test_runtime_compatibility_probe_is_nonreview_and_usage_model_stays_unknown"
+          ]
         }
       ],
       "evidence": []
@@ -6971,7 +7033,11 @@
       "owners": [
         {
           "task": "T0010-007",
-          "checks": []
+          "checks": [
+            "HistoryReconciliationTest.test_claim_only_or_foreign_owner_cannot_explain_terminal_state",
+            "HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent",
+            "HistoryTest.test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore"
+          ]
         }
       ],
       "evidence": []
@@ -6987,7 +7053,11 @@
       "owners": [
         {
           "task": "T0010-007",
-          "checks": []
+          "checks": [
+            "HistoryReconciliationTest.test_claim_only_or_foreign_owner_cannot_explain_terminal_state",
+            "HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent",
+            "HistoryTest.test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore"
+          ]
         }
       ],
       "evidence": []
@@ -7003,7 +7073,11 @@
       "owners": [
         {
           "task": "T0010-007",
-          "checks": []
+          "checks": [
+            "HistoryReconciliationTest.test_claim_only_or_foreign_owner_cannot_explain_terminal_state",
+            "HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent",
+            "HistoryTest.test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore"
+          ]
         }
       ],
       "evidence": []
@@ -7019,7 +7093,12 @@
       "owners": [
         {
           "task": "T0010-008",
-          "checks": []
+          "checks": [
+            "ProcessExecutionTest.test_normal_exit",
+            "ProcessExecutionTest.test_output_backpressure_is_bounded",
+            "SupervisionTest.test_normal_exit_preserves_output_and_exit_status",
+            "SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting"
+          ]
         }
       ],
       "evidence": []
@@ -7035,7 +7114,12 @@
       "owners": [
         {
           "task": "T0010-008",
-          "checks": []
+          "checks": [
+            "ProcessExecutionTest.test_normal_exit",
+            "ProcessExecutionTest.test_output_backpressure_is_bounded",
+            "SupervisionTest.test_normal_exit_preserves_output_and_exit_status",
+            "SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting"
+          ]
         }
       ],
       "evidence": []
@@ -7051,7 +7135,12 @@
       "owners": [
         {
           "task": "T0010-008",
-          "checks": []
+          "checks": [
+            "ProcessExecutionTest.test_normal_exit",
+            "ProcessExecutionTest.test_output_backpressure_is_bounded",
+            "SupervisionTest.test_normal_exit_preserves_output_and_exit_status",
+            "SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting"
+          ]
         }
       ],
       "evidence": []
@@ -7067,7 +7156,12 @@
       "owners": [
         {
           "task": "T0010-008",
-          "checks": []
+          "checks": [
+            "ProcessExecutionTest.test_normal_exit",
+            "ProcessExecutionTest.test_output_backpressure_is_bounded",
+            "SupervisionTest.test_normal_exit_preserves_output_and_exit_status",
+            "SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting"
+          ]
         }
       ],
       "evidence": []
@@ -7161,7 +7255,13 @@
             "BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt",
             "HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance",
             "HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks",
-            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted"
+            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted",
+            "MoneyTest.test_concurrent_usd_reservations_are_independent_between_pools",
+            "MoneyTest.test_missing_and_expired_price_block_before_reservation",
+            "MoneyTest.test_token_history_cannot_silently_reset_when_switching_to_usd",
+            "MoneyTest.test_unknown_usage_holds_dollars_and_does_not_become_free",
+            "MoneyTest.test_usd_exact_limit_and_overrun_stop_both_pools",
+            "MoneyTest.test_usd_settlement_keeps_tokens_price_snapshot_and_unknown_invoice"
           ]
         }
       ],
@@ -7173,7 +7273,7 @@
       "requirement": "WA-012",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "#### Scenario: WA-012-S2 Actual-cost adjustment",
-      "sha256": "ea82ec3271f711ab68aa6db75811b98bcb9943a6334cf2dc180f4b83030e1869",
+      "sha256": "16398e2dc800f14abfb59a2d8289d1e0d4385ca40a6dc62195fc7ceff7f9b50e",
       "baseline_id": null,
       "owners": [
         {
@@ -7210,7 +7310,13 @@
             "BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt",
             "HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance",
             "HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks",
-            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted"
+            "HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted",
+            "MoneyTest.test_concurrent_usd_reservations_are_independent_between_pools",
+            "MoneyTest.test_missing_and_expired_price_block_before_reservation",
+            "MoneyTest.test_token_history_cannot_silently_reset_when_switching_to_usd",
+            "MoneyTest.test_unknown_usage_holds_dollars_and_does_not_become_free",
+            "MoneyTest.test_usd_exact_limit_and_overrun_stop_both_pools",
+            "MoneyTest.test_usd_settlement_keeps_tokens_price_snapshot_and_unknown_invoice"
           ]
         }
       ],
@@ -7322,7 +7428,7 @@
       "requirement": "WA-014",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "#### Scenario: WA-014-S2 Controlled completion",
-      "sha256": "53c36678b52c9bda01cb44739a7514203a6a30753b7ab89105be0264d96bdd18",
+      "sha256": "e267ea8d893b416d01babfbe6ba36040338c8f3f94a8de8e7a75cf6079d6fe7a",
       "baseline_id": null,
       "owners": [
         {
@@ -7360,7 +7466,7 @@
       "requirement": "WA-015",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "#### Scenario: WA-015-S1 Restart and failed delivery",
-      "sha256": "275339a5cd5d87c913ec6d9679e687d75ea655548a8c7aeb62123afee522558a",
+      "sha256": "cc0e599f6e7a70fdbce3f4f694f1d9dc2fa072f9d9a02c2a9a257b3c5a1daf29",
       "baseline_id": null,
       "owners": [
         {
@@ -7461,7 +7567,7 @@
       "requirement": "WA-017",
       "source": "openspec/changes/0010-workflow-assurance/specs/workflow-assurance/spec.md",
       "anchor": "#### Scenario: WA-017-S1 Secret canaries and protected paths",
-      "sha256": "1e38aba87576809a5491773b7c3772cebf9ef3413085a15a7a8bc58c2994903c",
+      "sha256": "119383df4e665dc4e08f3af0b3bcac6adf472a50a29063ee0ffa39e7cc37437d",
       "baseline_id": null,
       "owners": [
         {
@@ -7550,7 +7656,21 @@
       "owners": [
         {
           "task": "T0010-018",
-          "checks": []
+          "checks": [
+            "OfflineBoundaryTest.test_child_network_denied_by_operating_system",
+            "OfflineBoundaryTest.test_guard_installation_is_idempotent_across_module_aliases",
+            "OfflineBoundaryTest.test_host_network_and_real_model_process_are_denied",
+            "WorkflowAssuranceTest.test_candidate_drift_invalidates_prior_verification",
+            "WorkflowAssuranceTest.test_offline_guards_cover_descendant_network_and_models",
+            "WorkflowAssuranceTest.test_rejected_review_prevents_integration_and_retry_has_new_identity",
+            "WorkflowAssuranceTest.test_reservation_artifact_and_coordinator_sigkill_remain_blocked",
+            "WorkflowAssuranceTest.test_zero_budget_stops_before_fake_provider",
+            "WorkflowTest.test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done",
+            "WorkflowTest.test_gate_evidence_and_backups_survive_relocation_but_reject_loss_or_tampering",
+            "WorkflowTest.test_reviewer_rejection_records_reason_and_prevents_tests_merge_and_done",
+            "WorkflowTest.test_stop_after_intent_blocks_merge_and_done",
+            "WorkflowTest.test_stop_during_merge_preserves_git_side_effect_without_done"
+          ]
         }
       ],
       "evidence": []

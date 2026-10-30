@@ -16,7 +16,7 @@ from execution.money import dollars, estimate, micros
 class MoneyTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
-        self.path = Path(self.tmp.name) / 'budgets.sqlite'
+        self.path = Path(self.tmp.name).resolve() / 'budgets.sqlite'
         self.selection = {'model': 'fixture', 'provider_config': {'kind': 'builtin', 'provider_id': 'openai'}}
         self.router = {'model': 'fixture', 'provider_config': {'kind': 'responses', 'base_url': 'https://openrouter.ai/api/v1'}}
         self.price = {'basis': 'configured_estimate', 'source': 'https://example.invalid/fixture-only',

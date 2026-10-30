@@ -39,7 +39,7 @@ class CandidateChecksTest(unittest.TestCase):
                     self.calls.append((argv, kwargs))
                     raise Blocked('Fake analyzer rejects invalid candidate input')
                 with patch.object(gates, 'command', side_effect=reject), \
-                        patch.object(gates.subprocess, 'run', side_effect=reject), \
+                        patch.object(gates, 'command_result', side_effect=reject), \
                         patch.object(gates.static_analysis, 'run_gate', side_effect=reject), \
                         patch.object(environment, 'command', side_effect=reject):
                     with self.assertRaises((Blocked, ValueError)):
@@ -89,13 +89,15 @@ class CandidateChecksTest(unittest.TestCase):
             self.calls.append(argv)
             return {'node': 'v24.21.0', 'npm': '11.19.0', 'python3': 'Python 3.14.8'}[argv[0]]
         with patch.object(environment, 'command', side_effect=fake), \
-                patch.object(environment.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='', stderr='openjdk version "23.0.2" 2025-01-21')):
+                patch.object(environment, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'','stderr':'openjdk version "23.0.2" 2025-01-21'}):
             checks = environment.toolchain({'JAVA_HOME': '/fixture-jdk'}, candidate_root=self.tree)
         self.assertEqual(['24.21.0', '11.19.0', '3.14.8', '23.0.2'], [c['expected'] for c in checks])
 
     def test_package_validation_uses_candidate_data_and_trusted_runner(self):
         self.put('execution/tasks.json', '{INVALID')
-        with self.assertRaises(ValueError): validate_execution.validate(candidate_root=self.tree)
+        with patch.object(validate_execution, 'validate_mapping', return_value={'baseline_mapping':'AVAILABLE'}) as mapping:
+            with self.assertRaises(ValueError): validate_execution.validate(candidate_root=self.tree)
+        mapping.assert_called_once_with(self.tree, namespace=None)
 
     def test_package_adapter_passes_candidate_to_trusted_validator(self):
         self.task['checks'] = [{'adapter': 'package', 'selector': 'package'}]
@@ -124,12 +126,12 @@ class CandidateChecksTest(unittest.TestCase):
         for name in names: self.put(name, 'valid recording fixture')
         stack = {'worktree': str(self.tree), 'project': 'fixture', 'env_file': str(self.run/'stack.env')}
         def external(argv, **kwargs):
-            self.calls.append((argv, kwargs)); return SimpleNamespace(returncode=0, stdout='ok', stderr='')
+            self.calls.append((argv, kwargs)); return {'status':'EXITED','returncode':0,'stdout':'ok','stderr':''}
         def analyzer(packet, java_home):
             self.calls.append(('analyzer', json.loads(packet.read_text())))
             path = self.run/'analyzer.json'; path.write_text('{}')
             return {'status': 'PASS', 'checks': {}}, path
-        with patch.object(gates.subprocess, 'run', side_effect=external), \
+        with patch.object(gates, 'command_result', side_effect=external), \
                 patch.object(environment, 'command', side_effect=lambda argv, **kw: (self.calls.append((argv, kw)) or 'ok')), \
                 patch.object(gates, 'toolchain', return_value=[]) as tools, \
                 patch.object(gates.static_analysis, 'run_gate', side_effect=analyzer), \
@@ -151,7 +153,7 @@ class CandidateChecksTest(unittest.TestCase):
     def test_runtime_version_mismatch_blocks_using_candidate_pins(self):
         self.put('execution/runtime-lock.json', json.dumps({'node': 'wrong', 'npm': 'wrong', 'python': 'wrong', 'jdk': 'wrong'}))
         with patch.object(environment, 'command', return_value='actual'), \
-                patch.object(environment.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='', stderr='version "actual"')):
+                patch.object(environment, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'','stderr':'version "actual"'}):
             with self.assertRaisesRegex(Blocked, 'Pinned toolchain mismatch'):
                 environment.toolchain({'JAVA_HOME': '/fixture-jdk'}, candidate_root=self.tree)
 
@@ -206,8 +208,8 @@ class CandidateChecksTest(unittest.TestCase):
         for script in ('check', 'check:specs', 'precheck', 'postcheck:specs'):
             changed = json.loads(json.dumps(trusted)); changed['scripts'][script] = 'true'
             self.put('package.json', json.dumps(changed))
-            def success(argv, **kw): return SimpleNamespace(returncode=0, stdout='ok', stderr='')
-            with self.subTest(script=script), patch.object(gates.subprocess, 'run', side_effect=success):
+            def success(argv, **kw): return {'status':'EXITED','returncode':0,'stdout':'ok','stderr':''}
+            with self.subTest(script=script), patch.object(gates, 'command_result', side_effect=success):
                 with self.assertRaisesRegex(Blocked, 'Enforcement'):
                     self.static(['package.json'])
 
@@ -215,19 +217,19 @@ class CandidateChecksTest(unittest.TestCase):
         trusted = json.loads((gates.ROOT/'package.json').read_text())
         trusted['devDependencies']['fixture-dependency'] = '1.2.3'
         self.put('package.json', json.dumps(trusted))
-        with patch.object(gates.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='ok', stderr='')) as calls:
+        with patch.object(gates, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'ok','stderr':''}) as calls:
             self.assertEqual('PASS', self.static(['package.json'])['status'])
         self.assertTrue(any('ci' in call.args[0] for call in calls.call_args_list))
 
     def test_unsupported_spring_yaml_blocks_even_when_maven_succeeds(self):
         self.put('stone-shelter-api/src/main/resources/application.yml', 'spring: [unterminated')
-        with patch.object(gates.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='ok', stderr='')):
+        with patch.object(gates, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'ok','stderr':''}):
             with self.assertRaisesRegex(Blocked, 'Unmapped executable configuration'):
                 self.static(['stone-shelter-api/src/main/resources/application.yml'])
 
     def test_static_resource_positive_control_does_not_claim_yaml_validation(self):
         self.put('stone-shelter-api/src/main/resources/static/images/logo.png', 'fixture asset')
-        with patch.object(gates.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='ok', stderr='')):
+        with patch.object(gates, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'ok','stderr':''}):
             self.assertEqual('PASS', self.static(['stone-shelter-api/src/main/resources/static/images/logo.png'])['status'])
 
     def test_empty_and_truncated_runtime_pins_block(self):
@@ -236,7 +238,7 @@ class CandidateChecksTest(unittest.TestCase):
             output = {'node': 'v24.21.0', 'npm': '11.19.0', 'python3': 'Python 3.14.8'}
             if node: output['node'] = 'v124.21.0'
             with self.subTest(node=node), patch.object(environment, 'command', side_effect=lambda argv, **kw: output[argv[0]]), \
-                    patch.object(environment.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout='', stderr='openjdk version "23.0.2"')):
+                    patch.object(environment, 'command_result', return_value={'status':'EXITED','returncode':0,'stdout':'','stderr':'openjdk version "23.0.2"'}):
                 with self.assertRaisesRegex(Blocked, 'Pinned toolchain'):
                     environment.toolchain({'JAVA_HOME': '/fixture'}, candidate_root=self.tree)
 

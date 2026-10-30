@@ -181,15 +181,22 @@ os._exit(17)
         self.assertFalse(budget.path.exists())
 
     def test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore(self):
-        from execution.gates import retain_static_artifacts
+        from execution.gates import retain_static_artifacts, report as stage_report
         cache = self.root / 'disposable-cache'; cache.mkdir()
         report = cache / 'pmd.xml'; report.write_text('<pmd/>')
-        run = self.directory / 'runs/attempt'; run.mkdir(parents=True)
+        run = self.directory / 'runs/attempt/candidate'; run.mkdir(parents=True)
         retained = retain_static_artifacts(run, [report]); report.unlink()
-        stage = {'artifact_hashes':{str(retained[0]):sha(retained[0])}}
-        envelope = run / 'static.json'; json_write(envelope, stage)
-        self.journal.append('stage.completed', payload={'stage':'static','report':stage,
-            'artifact':str(envelope),'sha256':sha(envelope)})
+        packet = {**self.task, 'checks':[], 'environment':[], 'browser_required':False}
+        state = State(self.directory / 'state.sqlite'); state.claim(packet, 'attempt')
+        self.journal.append('task.claimed',trace='attempt',task=self.task['id'],payload={'owner':'attempt','packet':packet})
+        self.journal.append('cycle.started',trace='attempt',task=self.task['id'],payload={'cycle':'runs/attempt/candidate','candidate':'candidate'})
+        stage = stage_report(run, 'static', packet, 'candidate', retained)
+        envelope = run / 'static.json'
+        self.journal.append('stage.completed',trace='attempt',task=self.task['id'],payload={'stage':'static','report':stage,
+            'artifact':str(envelope),'sha256':sha(envelope),'owner':'attempt','cycle':'runs/attempt/candidate','candidate':'candidate'})
+        state.set(self.task['id'], 'BLOCKED', 'attempt', detail='Completed artifact fixture')
+        self.journal.append('task.blocked',trace='attempt',task=self.task['id'],payload={'reason':'Completed artifact fixture'})
+        state.release('attempt')
         destination = self.root / 'complete-backup'; backup(self.directory, destination)
         restored = self.root / 'restored'; restore(destination, restored)
         self.assertEqual('VERIFIED', verify_evidence(restored)['status'])

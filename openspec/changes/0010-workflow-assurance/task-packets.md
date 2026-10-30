@@ -949,3 +949,190 @@ canonical artifacts, preserving existing historical rows and hash chain semantic
 Unsafe control identities/roots must reject before journal, reservation or launch;
 safe IDs remain unchanged while event payloads are canonicalized.
 Requirements/maps refreshed narrowly; no017, commits, production or provider calls.
+
+## T0010-018–020 admitted offline verification (2026-10-30)
+
+Readiness covers the entire T0010-018–020 batch at base `239a9f1`; coordinator
+admitted this batch after local fixture capability checks and separate GitHub
+publication readiness. No live/application qualification is authorized.
+
+T0010-018 binds these exact methods in `test_workflow_assurance.WorkflowAssuranceTest`:
+`WorkflowAssuranceTest.test_reservation_artifact_and_coordinator_sigkill_remain_blocked`,
+`WorkflowAssuranceTest.test_rejected_review_prevents_integration_and_retry_has_new_identity`,
+`WorkflowAssuranceTest.test_candidate_drift_invalidates_prior_verification`,
+`WorkflowAssuranceTest.test_offline_guards_cover_descendant_network_and_models`,
+`WorkflowAssuranceTest.test_zero_budget_stops_before_fake_provider`.
+Tests-only RED evidence is fault-harness calibration against the normal positive
+control, not a claimed production defect. The positive control must finish normally;
+the crash case must interrupt at the actual persisted boundary.
+
+T0010-019 runs one guarded aggregate of these exact classes, with guards installed
+before imports and a disposable HOME, global Git configuration disabled:
+`test_maintenance_dispatch.MaintenanceTest`,
+`test_maintenance_dispatch.OfflineBoundaryTest`,
+`test_agent_history.HistoryTest`, `test_agent_workflow.WorkflowTest`,
+`test_agent_budgets.BudgetTest`, `test_agent_supervision.SupervisionTest`,
+`test_agent_models.AgentModelTest`, `test_agent_money.MoneyTest`,
+`test_candidate_checks.CandidateChecksTest`,
+`test_evidence_resources.EvidenceResourcesTest`,
+`test_review_evidence.ReviewEvidenceTest`,
+`test_history_reconciliation.HistoryReconciliationTest`,
+`test_process_execution.ProcessExecutionTest`, `test_command_journal.CommandJournalTest`,
+`test_requirement_traceability.RequirementTraceabilityTest`,
+`test_budget_reconciliation.BudgetReconciliationTest`,
+`test_recovery_plans.RecoveryPlanTest`, `test_recovery_apply.RecoveryApplyTest`,
+`test_stop_notifications.StopNotificationTest`, `test_audit_storage.AuditStorageTest`,
+`test_evidence_privacy.EvidencePrivacyTest`, `test_execution_report.ExecutionReportTest`,
+`test_workflow_assurance.WorkflowAssuranceTest`.
+
+Exact commands from the repository root (the private runner contains only this
+explicit selector list and guard/bootstrap setup):
+
+```sh
+env -i PATH=/usr/local/bin:/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools:tools/tests python3 .cache/t0010-subscription-run/018/attempt-1/019-offline.py
+env -i PATH=/usr/local/bin:/usr/bin:/bin OPENSPEC_TELEMETRY=0 node_modules/.bin/openspec validate --all --strict
+env -i PATH=/usr/local/bin:/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools python3 tools/validate_execution.py --traceability-only --namespace maintenance
+```
+
+Additional scoped package checks are read-only JSON parsing of templates and
+execution policy declarations, `validate_models`/`validate_budgets`, zero pool
+limits with absent prices, protected-aware `execution.core.identity`, and
+`git diff --check -- . ':!engineering-log' ':!engineering-log/**'`.
+The inherited full npm/application package check is excluded: its external immutable
+application baseline is absent. No application-stack, real provider, paid model,
+actual recovery or independent destination qualification is claimed.
+
+T0010-018 compatibility selection amendment: after final focused execution began,
+the coordinator explicitly admitted the five existing methods of the modified
+workflow fixture: `WorkflowTest.test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done`,
+`WorkflowTest.test_reviewer_rejection_records_reason_and_prevents_tests_merge_and_done`,
+`WorkflowTest.test_stop_after_intent_blocks_merge_and_done`,
+`WorkflowTest.test_stop_during_merge_preserves_git_side_effect_without_done`,
+`WorkflowTest.test_gate_evidence_and_backups_survive_relocation_but_reject_loss_or_tampering`.
+This checks the actual private-result input envelope and controlled child environment
+compatibility; it is not the T0010-019 aggregate. The final focused run has an
+externally enforced 600-second wall deadline; expiry is failure, never success.
+
+## T0010-018 review-1 correction — parent sendmsg denial
+
+R018-1 returns the guard for a missing parent `socket.sendmsg` audit event.
+Scope remains the authorized guard and existing guard test; no production changes.
+Add synthetic `sys.audit` sendto/sendmsg negative controls (no sockets created,
+no bytes sent), demonstrate RED before the deny-set fix, then deny sendmsg while
+preserving descendant checks. Readiness rechecks the frozen candidate/dependencies
+and current quota; existing verified local capabilities suffice for these four
+bounded tests. Bind the following exact selectors before execution:
+
+- `WorkflowAssuranceTest.test_offline_guards_cover_descendant_network_and_models`
+- `OfflineBoundaryTest.test_guard_installation_is_idempotent_across_module_aliases`
+- `OfflineBoundaryTest.test_host_network_and_real_model_process_are_denied`
+- `OfflineBoundaryTest.test_child_network_denied_by_operating_system`
+
+Use clean environment, disposable HOME, installed guards before imports, and an
+explicit 60-second wall limit. Preserve attempt-1 proof at its original hashes;
+do not claim its ten methods were rerun on the corrected candidate. Attempt-2
+contains fresh RED/green/source hashes and the correction handoff; final affected
+aggregate qualification remains T0010-019 after independent corrective review.
+
+## T0010-006 owning fixture compatibility return before final qualification
+
+Coordinator authorizes only `tools/tests/test_maintenance_dispatch.py` fake_launch
+reviewing-branch compatibility with the already accepted private result contract.
+Read the actual `.private-staging/<session>.json` output session and sibling parent
+role/session input envelope; consume that envelope's trusted review_contract and
+continue writing to the exact raw argv path. Preserve all assertions and argv.
+No production changes, compatibility exemption or obsolete-path shim is allowed.
+
+Readiness covers this owning T0010-002/006 return within the admitted 018–020 batch:
+accepted guard/dependency identities remain unchanged, pinned local runtime and
+sandbox capabilities apply, and fresh quota is below the 70% used boundary.
+Before the fix, run exactly
+`MaintenanceTest.test_two_role_handoff_uses_existing_metered_runtime` RED.
+After the minimal fix, run that method plus
+`MaintenanceTest.test_reviewer_mutation_invalidates_result` GREEN, with installed
+guards, clean environment/disposable HOME and a 120-second wall limit. Preserve
+all failed evidence and freeze source identities for independent review. Do not
+run the T0010-019 aggregate or edit production code under this return.
+
+## T0010-002 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_maintenance_dispatch.MaintenanceTest.test_changed_check_artifact_blocks_review`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-004 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_candidate_checks.CandidateChecksTest.test_empty_and_truncated_runtime_pins_block`
+- `test_candidate_checks.CandidateChecksTest.test_invalid_candidate_build_and_container_configs_never_static_scope_pass`
+- `test_candidate_checks.CandidateChecksTest.test_mixed_valid_configuration_runs_all_families_on_candidate`
+- `test_candidate_checks.CandidateChecksTest.test_package_validation_uses_candidate_data_and_trusted_runner`
+- `test_candidate_checks.CandidateChecksTest.test_root_package_dependency_change_preserves_trusted_scripts`
+- `test_candidate_checks.CandidateChecksTest.test_root_package_enforcement_scripts_cannot_become_noops`
+- `test_candidate_checks.CandidateChecksTest.test_runtime_version_mismatch_blocks_using_candidate_pins`
+- `test_candidate_checks.CandidateChecksTest.test_static_resource_positive_control_does_not_claim_yaml_validation`
+- `test_candidate_checks.CandidateChecksTest.test_toolchain_uses_candidate_runtime_lock`
+- `test_candidate_checks.CandidateChecksTest.test_unsupported_spring_yaml_blocks_even_when_maven_succeeds`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-005 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_evidence_resources.EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative`
+- `test_evidence_resources.EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read`
+- `test_evidence_resources.EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state`
+- `test_evidence_resources.EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-006 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_review_evidence.ReviewEvidenceTest.test_runtime_compatibility_probe_is_nonreview_and_usage_model_stays_unknown`
+- `test_review_evidence.ReviewEvidenceTest.test_clean_no_findings_control_preserves_emitted_approval`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-007 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_history.HistoryTest.test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore`
+- `test_history_reconciliation.HistoryReconciliationTest.test_claim_only_or_foreign_owner_cannot_explain_terminal_state`
+- `test_history_reconciliation.HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-008 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_supervision.SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting`
+- `test_process_execution.ProcessExecutionTest.test_output_backpressure_is_bounded`
+- `test_process_execution.ProcessExecutionTest.test_normal_exit`
+- `test_agent_supervision.SupervisionTest.test_normal_exit_preserves_output_and_exit_status`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-011 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_money.MoneyTest.test_missing_and_expired_price_block_before_reservation`
+- `test_agent_money.MoneyTest.test_token_history_cannot_silently_reset_when_switching_to_usd`
+- `test_agent_money.MoneyTest.test_unknown_usage_holds_dollars_and_does_not_become_free`
+- `test_agent_money.MoneyTest.test_usd_exact_limit_and_overrun_stop_both_pools`
+- `test_agent_money.MoneyTest.test_usd_settlement_keeps_tokens_price_snapshot_and_unknown_invoice`
+- `test_agent_money.MoneyTest.test_concurrent_usd_reservations_are_independent_between_pools`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-013 documentation-only strict validation return
+
+Coordinator admits verbatim relocation of detailed constraints in WA-012/014/015/017 into existing scenario requirement-wide notes, retaining every ID and SHALL clause. Owning tasks T0010-011/013/014/016; scope is the current spec and narrow source/block-digest map refresh. Root runs strict validation and mapping after freeze; no warning suppression or requirement weakening.
