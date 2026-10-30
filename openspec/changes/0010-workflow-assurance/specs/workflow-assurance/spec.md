@@ -144,8 +144,14 @@ Separate pools SHALL reserve admitted exposure atomically, preserve uncertain us
 - **WHEN** a valid provider receipt or approved accounting evidence corrects an estimate
 - **THEN** an attributable adjustment is appended, prior observations remain available, and duplicate receipts cannot double-charge or double-credit the ledger.
 
+##### Requirement-wide constraints
+
+These constraints apply to every WA-012 operation.
+
+Cost corrections SHALL be applied only to invocations in SETTLED state. RESERVED, RUNNING and UNKNOWN invocations SHALL reject corrections without changing observations, reservations or stop state; independently approved recovery of unknown usage is outside this accounting seam.
+
 ### Requirement: WA-013 Approved recovery plans
-Recovery SHALL be read-only by default and SHALL require an independently reviewed, separately operator-approved immutable plan before application. Validation SHALL bind approval to exact preconditions and typed operations.
+Recovery SHALL be read-only by default and SHALL require an independently reviewed, separately operator-approved immutable plan before application. Validation SHALL bind approval to exact preconditions and typed operations. Author identity SHALL be established by trusted host provenance bound to the exact plan; a document-supplied author name alone SHALL NOT establish independence from the authenticated reviewer and operator.
 
 #### Scenario: WA-013-S1 Stale or fabricated approval
 - **WHEN** plan contents, Git state, relevant history, evidence or approval validity differ from the approved values, or approval comes only from an agent-authored assertion
@@ -166,12 +172,24 @@ Approved recovery application SHALL have exclusive ownership, durable intent, id
 - **WHEN** every approved step and postcondition is verified
 - **THEN** the plan's result, actor identities, evidence and remaining stops are recorded; completion does not independently raise budgets or authorize new paid work.
 
+##### Requirement-wide constraints
+
+These constraints apply to every WA-014 operation.
+
+During application, journal advancement SHALL be accepted only when every intervening event is an exact recorded causal append of that application; unrelated journal changes SHALL invalidate continuation. Approved evidence, checkpoint and accounting bindings SHALL remain unchanged. Interrupted ownership SHALL block normal task mutation, new spending and competing recovery until explicit reconciliation.
+
 ### Requirement: WA-015 Durable stop notification
 Stops and uncertain outcomes SHALL produce persistent notifications with deduplication, delivery state and acknowledgement. Notification delivery SHALL not replay the underlying action.
 
 #### Scenario: WA-015-S1 Restart and failed delivery
 - **WHEN** a stop occurs before delivery and the coordinator restarts
 - **THEN** the local operator view retains the stop and retries only notification delivery, with visible failure status and no silent acknowledgement.
+
+##### Requirement-wide constraints
+
+These constraints apply to every WA-015 operation.
+
+Durable sources SHALL permit notification reconstruction after a crash before enqueue. Environment failures before stage completion SHALL still produce a typed source. Notification acknowledgement SHALL not clear the stop or confer execution/recovery authority; invalid-history diagnostics SHALL remain explicitly unverified.
 
 ### Requirement: WA-016 Qualified storage and audit restoration
 Backup/restore SHALL preserve consistent versioned evidence and validate isolated restores. Disk exhaustion, lock contention and retention SHALL fail safely. Active/unreconciled evidence SHALL not be automatically deleted.
@@ -190,6 +208,16 @@ Canonical logs, reports, notifications and backups SHALL redact known secrets at
 #### Scenario: WA-017-S1 Secret canaries and protected paths
 - **WHEN** fixture commands/errors contain synthetic secrets or references to a forbidden path
 - **THEN** canonical retained/exported evidence contains no canary values and forbidden metadata access never occurs; limitations of heuristic redaction remain explicit.
+
+##### Requirement-wide constraints
+
+These constraints apply to every WA-017 operation.
+
+Canonical sanitized artifacts SHALL be hashed after sanitization. Role environments SHALL be explicitly allowlisted without ambient credential fallback. Legacy export qualification SHALL include schema-aware SQLite evidence as well as admitted text files; unknown formats SHALL remain blocked without rewriting original history.
+
+Canonical JSON SHALL sanitize decoded member names, including nested/escaped known secrets, before publication or streaming. Duplicate names or distinct names colliding after sanitization SHALL block that artifact/record without silently merging audit facts; private originals and their identities SHALL remain preserved. Malformed object/array records SHALL fail closed rather than publish a text fallback containing escaped known secrets.
+
+Runtime streams SHALL reject configured secret values containing newline or carriage return before reading or emitting any record. Runtime journal event identities, context and payload SHALL be canonicalized at their producer with the complete explicit secret policy before hashing and append, preserving prior historical rows. Unsafe invocation control identities or roots SHALL reject before journal creation, budget reservation or launch. Legacy structured export classification SHALL reject duplicate member names, inspect every JSONL record and refuse malformed object/array content without changing source bytes or publishing a destination.
 
 ### Requirement: WA-018 Operator-readable execution history
 A read-only report SHALL reconstruct requirement-to-outcome links, actor decisions, recorded actions, checks, budget changes and recovery from persistent evidence. Unknown/unobserved facts SHALL remain labelled unknown.

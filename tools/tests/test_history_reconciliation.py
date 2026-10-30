@@ -173,20 +173,20 @@ class HistoryReconciliationTest(unittest.TestCase):
                 with self.assertRaises(Blocked):verify_evidence(self.directory)
     def test_claim_only_or_foreign_owner_cannot_explain_terminal_state(self):
         state=State(self.directory/'state.sqlite')
-        self.history.append('task.claimed',trace='claimant',task='claimed-only',payload={'owner':'claimant'})
+        self.history.append('task.claimed',trace='claimant',task='T0010-901',payload={'owner':'claimant'})
         for status in ['BLOCKED','RETRY','DONE']:
             with self.subTest(status=status):
-                state.set('claimed-only',status,'claimant')
+                state.set('T0010-901',status,'claimant')
                 self.assertEqual('RECOVERY_REQUIRED',recovery_status(self.directory)['status'])
-        state.set('foreign','BLOCKED','foreign-owner')
-        self.history.append('task.blocked',trace='claimant',task='foreign',payload={})
+        state.set('T0010-902','BLOCKED','foreign-owner')
+        self.history.append('task.blocked',trace='claimant',task='T0010-902',payload={})
         self.assertEqual('RECOVERY_REQUIRED',recovery_status(self.directory)['status'])
     def test_journaled_blocked_and_retry_rows_are_consistent(self):
         state=State(self.directory/'state.sqlite')
         for status,event in [('BLOCKED','task.blocked'),('RETRY','task.retry_enabled')]:
             with self.subTest(status=status):
-                state.set('journaled',status,'journal-owner')
-                if status=='BLOCKED':self.history.append('task.claimed',trace='journal-owner',task='journaled',payload={'owner':'journal-owner'})
-                self.history.append(event,trace='journal-owner',task='journaled',payload={})
+                state.set('T0010-903',status,'journal-owner')
+                if status=='BLOCKED':self.history.append('task.claimed',trace='journal-owner',task='T0010-903',payload={'owner':'journal-owner'})
+                self.history.append(event,trace='journal-owner',task='T0010-903',payload={})
                 self.assertEqual('NO_UNRESOLVED_EXECUTION',recovery_status(self.directory)['status'])
                 self.assertEqual('VERIFIED',verify_evidence(self.directory)['status'])

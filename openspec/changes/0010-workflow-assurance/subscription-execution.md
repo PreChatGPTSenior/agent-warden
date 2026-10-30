@@ -1,4 +1,23 @@
-# Supervised subscription execution amendment
+# Current Agent Warden batch authorization (2026-10-26)
+
+The user now authorizes sequential T0010-009–020 implementation in Agent Warden,
+using native gpt-6.1-sol medium developer and gpt-6.1-sol high independent reviewer,
+plus coordinator review. T0010-008 is already accepted in the imported baseline.
+The source Stone Shelter repositories remain untouched. The requested final new
+PR is in agent-warden, never an automatic merge. Production budgets stay zero,
+OpenRouter is forbidden, and real application/provider/recovery activation is not
+part of this authorization. Task-scoped commits and the final PR are included.
+
+The user requires a 30% remaining floor. Conservatively begin graceful shutdown
+at 35% weekly subscription remaining (65% used): stop new dispatch, interrupt
+active roles for checkpointing, and aim to finish before 30% remaining. Save resumable
+state. Poll before every dispatch/repair and approximately every 30 seconds while
+roles work. If quota is unavailable, do not dispatch. Other account work and
+in-flight consumption can change it between polls; no exact hard cap is claimed.
+Native per-agent token counts/cost remain UNKNOWN where the host does not expose them.
+This current instruction supersedes the historical thresholds below.
+
+# Historical supervised subscription execution amendment
 
 ## Explicit authorization and scope
 

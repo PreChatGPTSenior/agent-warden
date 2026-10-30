@@ -22,11 +22,21 @@ import threading
 import time
 import uuid
 from .supervision import launch, close_lease, write_receipt
+from .core import Blocked
 
 TERMINAL = {'EXITED','SPAWN_FAILED','ADMISSION_FAILED','TIMED_OUT','CANCELLED','INTERRUPTED'}
 BOUNDARY = 'non-detaching-process-group'
 ASSURANCE = 'TRUSTED_COMMAND_PROCESS_GROUP'
 _ADMISSION_SEAL = object()
+_COMMAND_LOCK = threading.RLock()
+_OWNED_COMMANDS = {}
+FINALIZATION_WAIT_SECONDS = 2.0
+
+
+class FinalizationPending(Blocked):
+    def __init__(self, handle):
+        super().__init__('Current owner is finalizing; completion must be revalidated')
+        self.handle = handle
 _SECRET_NAME = re.compile(r'TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_KEY|ACCESS_KEY|PRIVATE_KEY', re.I)
 
 
@@ -105,25 +115,8 @@ def read_outcome(receipt, execution_id=None):
     return {'schema':1,'execution_id':execution_id,'status':'INTERRUPTED','returncode':None}
 
 
-class _Sanitizer:
-    def __init__(self, values):
-        self.values = sorted(values,key=len,reverse=True)
-        self.pending = b''
-    def feed(self, chunk, *, final=False):
-        if not self.values: return chunk
-        self.pending += chunk
-        output = bytearray()
-        while self.pending:
-            partial = any(value.startswith(self.pending) and len(value)>len(self.pending) for value in self.values)
-            if partial and not final: break
-            match = next((value for value in self.values if self.pending.startswith(value)),None)
-            if match is not None:
-                output.extend(b'[REDACTED]'); self.pending = self.pending[len(match):]
-            elif partial:
-                output.extend(b'[REDACTED]'); self.pending = b''
-            else:
-                output.append(self.pending[0]); self.pending = self.pending[1:]
-        return bytes(output)
+# Shared boundary also protects core command argv canonicalization.
+from .evidence import CanonicalStream as _Sanitizer
 
 
 def _sensitive_values(env, configured):
@@ -138,6 +131,7 @@ def _sensitive_values(env, configured):
 
 class ProcessHandle:
     def __init__(self, receipt, execution_id, timeout, output_limit, *, sensitive_values=(), admission=None, started_at=None):
+        self.creator_pid = os.getpid()
         self.receipt = Path(receipt)
         self.execution_id = execution_id
         self.timeout = timeout
@@ -151,6 +145,12 @@ class ProcessHandle:
         self._sanitizers = {name:_Sanitizer(sensitive_values) for name in self._output}
         self._capture_errors = set()
         self._result = None
+        self._wait_lock = threading.Lock()
+        self._wait_started = threading.Event()
+        self._wait_done = threading.Event()
+        self._wait_error = False
+        self._finalizer_lock = threading.Lock()
+        self._finalizer = None
     def _capture(self, name, chunk):
         room = self.output_limit - len(self._output[name])
         self._output[name].extend(chunk[:room])
@@ -191,6 +191,36 @@ class ProcessHandle:
         # intent makes read_outcome fail closed until finalization succeeds.
         write_receipt(self.receipt,result)
     def wait(self):
+        # Per-handle serialization prevents independent admission and the owner
+        # from reaping/closing the same lease concurrently. Never a global lock.
+        with self._wait_lock:
+            self._wait_started.set()
+            self._wait_done.clear()
+            self._wait_error = False
+            try:return self._finish()
+            except BaseException:
+                self._wait_error = True
+                raise
+            finally:self._wait_done.set()
+
+    def finish_for_admission(self, timeout):
+        """Await attributable completion outside admission, with one bounded deadline.
+
+        If the supervisor exits before its caller invokes wait(), this handle
+        owns the finalizer too. Completion notification is never approval: the
+        caller must revalidate safe journal, capture and terminal evidence.
+        """
+        if self.creator_pid!=os.getpid() or self._wait_error:return False
+        with self._finalizer_lock:
+            if not self._wait_started.is_set() and self._finalizer is None:
+                def finish():
+                    try:self.wait()
+                    except BaseException:pass  # _wait_error retains uncertainty.
+                self._finalizer=threading.Thread(target=finish,daemon=True)
+                self._finalizer.start()
+        return self._wait_done.wait(timeout)
+
+    def _finish(self):
         if self._result is not None: return dict(self._result)
         if self.supervisor is not None:
             try: self.supervisor.wait(timeout=self.timeout + 3)
@@ -218,13 +248,54 @@ class ProcessHandle:
             result[name+'_truncated'] = self._truncated[name]
         self._result = result
         return dict(result)
+    def verified_completion_pending(self, receipt):
+        """Recognize this current owner's fully checked normal result, never reap here.
+
+        wait() caches only after supervisor reaping, lease closure and complete
+        capture validation. The durable receipt must still match that exact
+        cached evidence; an exited process alone supplies no such permission.
+        """
+        result=self._result
+        if (self.creator_pid!=os.getpid() or not isinstance(result,dict)
+                or self.supervisor is None or self.supervisor.poll()!=0
+                or getattr(self.supervisor,'parent_lease_fd',None) is not None
+                or self._capture_errors or any(thread.is_alive() for thread in self._threads)
+                or result.get('status')!='EXITED' or result.get('returncode')!=0
+                or result.get('capture_errors') or result.get('execution_id')!=self.execution_id):
+            return False
+        actual=read_outcome(receipt,self.execution_id)
+        return (actual.get('status')=='EXITED' and actual.get('returncode')==0
+                and actual.get('assurance')==ASSURANCE and actual.get('admission')==self.admission
+                and all(key in result and result[key]==value for key,value in actual.items()))
+
     def cancel(self):
         if self.supervisor is not None and self.supervisor.poll() is None: self.supervisor.terminate()
     def close(self):
         self.cancel(); self.wait()
 
 
-def start(argv, *, cwd, env, timeout, receipt, output_limit=65536, sensitive_values=(), admission=None):
+class ProcessSetupFailure(Blocked):
+    """An already-owned launch failed adapter setup; its usage remains uncertain."""
+    def __init__(self, handle):
+        super().__init__('Postlaunch process setup failed; reconciliation required')
+        self.handle = handle
+        self.may_have_started = True
+        self.cleanup_completed = False
+
+
+def _cleanup_setup_failure(failure):
+    errors = []
+    try: failure.handle.cancel()
+    except BaseException: errors.append('cancellation')
+    try: failure.handle.wait()
+    except BaseException: errors.append('reaping/evidence')
+    for channel in ('stdin','stdout','stderr'):
+        try: getattr(failure.handle.supervisor,channel).close()
+        except (AttributeError,OSError,ValueError): pass
+    failure.cleanup_completed = not errors
+
+
+def start(argv, *, cwd, env, timeout, receipt, output_limit=65536, sensitive_values=(), admission=None, external_stream=False, _failure_owner=None):
     cwd, proof = _approval(admission,argv,cwd)
     if (type(timeout) not in (int,float) or not math.isfinite(timeout) or timeout<=0
             or type(output_limit) is not int or output_limit<0):
@@ -247,8 +318,201 @@ def start(argv, *, cwd, env, timeout, receipt, output_limit=65536, sensitive_val
         write_receipt(path,{'schema':1,'execution_id':execution_id,'status':'ADMISSION_FAILED','returncode':125,
                            'started_at':started,'finished_at':time.time(),'assurance':ASSURANCE,'admission':proof})
         return handle
-    handle.supervisor.stdin.close()
-    for name in ('stdout','stderr'):
-        thread = threading.Thread(target=handle._drain,args=(name,getattr(handle.supervisor,name)),daemon=True)
-        handle._threads.append(thread); thread.start()
-    return handle
+    try:
+        if external_stream:
+            return handle
+        handle.supervisor.stdin.close()
+        for name in ('stdout','stderr'):
+            thread = threading.Thread(target=handle._drain,args=(name,getattr(handle.supervisor,name)),daemon=True)
+            thread.start()
+            handle._threads.append(thread)
+        return handle
+    except BaseException as error:
+        failure = ProcessSetupFailure(handle)
+        failure.__cause__ = error
+        if _failure_owner is not None:
+            # Core already owns the durable intent and transfers this exact
+            # handle to its outer cleanup boundary after releasing admission.
+            _failure_owner(failure)
+        _cleanup_setup_failure(failure)
+        raise failure from error
+
+
+class CommandJournal:
+    """Durable local causal records. Unfinished side effects require operator reconciliation.
+
+    This is retained local evidence, not an independently anchored audit store.
+    No automatic replay or repair is performed by the command service.
+    """
+    def __init__(self, root):
+        from .check_selection import checked_root
+        from .history import History
+        self.root = checked_root(root)
+        if self.root.name != 'commands' or self.root.parent.name != '.execution':
+            raise ValueError('Command journal requires the retained commands namespace')
+        self.history = History(self.root.parent/'trace.sqlite')
+        self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    def write(self, action_id, value):
+        if not re.fullmatch(r'[a-zA-Z0-9-]+', action_id):
+            raise ValueError('Invalid command action identity')
+        from .check_selection import checked_root
+        checked_root(self.root/'processes')
+        # The supervisor owns the live receipt. Register only its final bytes;
+        # publishing a STARTING snapshot could overwrite a racing terminal write.
+        receipts=(self.root/'processes').glob(action_id+'.process.json*') if value.get('events', [{}])[-1].get('event')=='outcome' else ()
+        for path in receipts:
+            if path.is_symlink(): raise ValueError('Symlink process evidence')
+            self.history.write_artifact('commands/processes/'+path.name,path.read_bytes(),
+                                       trace=value.get('parent_action'),task=value.get('task'))
+        self.history.write_artifact('commands/'+action_id+'.json',value,
+                                   trace=value.get('parent_action'),task=value.get('task'))
+        directory = os.open(self.root, os.O_RDONLY)
+        try: os.fsync(directory)
+        finally: os.close(directory)
+    def require_reconciled(self):
+        """Validate safe indexed evidence before using current-process ownership.
+
+        The registry is an in-memory lifetime handle, never a persisted PID,
+        worker assertion or restart permission. A restored record has no lease.
+        """
+        from .core import Blocked, sha
+        from .history import timeline
+        from .audit_paths import evidence_path
+        from .check_selection import checked_root
+        published, staging = {}, {}
+        for event in timeline(self.history.path):
+            payload=event['payload']
+            reference=payload.get('reference','')
+            if not isinstance(reference,str) or not reference.startswith('commands/'):continue
+            if event['event']=='artifact.staging':
+                staging[event['event_id']]=event
+            elif event['event']=='artifact.completed':
+                intent=staging.pop(payload.get('staging_event_id'),None)
+                if (not intent or any(payload.get(key)!=intent['payload'].get(key)
+                        for key in ('reference','version_reference','sha256'))
+                        or event['task']!=intent['task'] or event['trace']!=intent['trace']):
+                    raise Blocked('Unregistered command evidence')
+                version=payload.get('version_reference','')
+                if not version.startswith('versions/'+payload['sha256']+'/'):
+                    raise Blocked('Invalid immutable command version')
+                version_path=evidence_path(self.root.parent,version)
+                if sha(version_path)!=payload['sha256']:raise Blocked('Changed immutable command evidence')
+                published[reference]=event
+        if staging:raise Blocked('Interrupted command evidence publication; reconciliation required')
+        for reference,indexed in published.items():
+            retained=evidence_path(self.root.parent,reference)
+            if not retained.is_file() or sha(retained)!=indexed['payload']['sha256']:
+                raise Blocked('Missing/changed indexed command evidence')
+        owned_receipts=set()
+        with os.scandir(self.root) as entries:
+            for entry in entries:
+                # Prune protected names before metadata, including indirect aliases.
+                if entry.name.lower()=='engineering-log':continue
+                path=evidence_path(self.root,entry.name)
+                if entry.name=='processes':
+                    checked_root(path)
+                    continue
+                if not re.fullmatch(r'[0-9a-f]{32}\.json',entry.name):
+                    raise Blocked('Unindexed/malformed command evidence')
+                action=entry.name[:-5]
+                reference='commands/'+entry.name
+                indexed=published.get(reference)
+                if indexed is None or sha(path)!=indexed['payload']['sha256']:
+                    raise Blocked('Unindexed/changed command evidence')
+                value=json.loads(path.read_text())
+                records=value.get('events',[])
+                names=[record.get('event') for record in records]
+                if (value.get('schema')!=1 or value.get('action_id')!=action
+                        or names not in (['intent','started'],['intent','started','outcome'])
+                        or any(record.get('action_id')!=action for record in records)
+                        or any(type(record.get('at')) not in (int,float) or not math.isfinite(record['at']) for record in records)
+                        or not all(isinstance(value.get(key),str) and value[key].strip()
+                                   for key in ('actor','task','parent_action','candidate','cwd','policy'))
+                        or indexed['trace']!=value['parent_action'] or indexed['task']!=value['task']):
+                    raise Blocked('Invalid command causality; reconciliation required')
+                receipt=self.root/'processes'/(action+'.process.json')
+                if names==['intent','started']:
+                    owned=_OWNED_COMMANDS.get((str(self.root),action))
+                    if (isinstance(owned,ProcessHandle) and owned.creator_pid==os.getpid()
+                            and owned.receipt==receipt and owned.execution_id==records[1].get('execution_id')
+                            and owned.verified_completion_pending(evidence_path(self.root.parent,'commands/processes/'+receipt.name))):
+                        owned_receipts.add(receipt.name)
+                        continue
+                    if (isinstance(owned,ProcessHandle) and owned.creator_pid==os.getpid()
+                            and owned.receipt==receipt and owned.execution_id==records[1].get('execution_id')
+                            and owned.supervisor is not None and owned.supervisor.poll()==0
+                            and owned._result is None and not owned._wait_error and not owned._capture_errors):
+                        safe_process=evidence_path(self.root.parent,'commands/processes/'+receipt.name)
+                        current=read_outcome(safe_process,owned.execution_id)
+                        if (current.get('status')=='EXITED' and current.get('returncode')==0
+                                and current.get('assurance')==ASSURANCE and current.get('admission')==owned.admission):
+                            raise FinalizationPending(owned)
+                    if (isinstance(owned,ProcessHandle) and owned.creator_pid==os.getpid() and owned.receipt==receipt
+                            and owned.execution_id==records[1].get('execution_id')
+                            and owned.supervisor is not None
+                            and owned.supervisor.poll() is None
+                            and getattr(owned.supervisor,'parent_lease_fd',None) is not None):
+                        safe_process=evidence_path(self.root.parent,'commands/processes/'+receipt.name)
+                        current=json.loads(safe_process.read_text())
+                        lease=owned.supervisor.parent_lease_fd
+                        try:os.fstat(lease)
+                        except OSError:raise Blocked('Owned supervisor lease is no longer live')
+                        if (current.get('schema')!=1 or current.get('execution_id')!=owned.execution_id
+                                or current.get('status') not in {'STARTING','EXITED'}
+                                or current.get('assurance')!=ASSURANCE or current.get('admission')!=owned.admission
+                                or (current.get('status')=='EXITED' and read_outcome(safe_process,owned.execution_id)['status']!='EXITED')):
+                            raise Blocked('Interrupted/foreign live process evidence requires reconciliation')
+                        owned_receipts.add(receipt.name)
+                        continue
+                    raise Blocked('Unfinished command requires observed-state reconciliation')
+                process_reference='commands/processes/'+receipt.name
+                indexed_process=published.get(process_reference)
+                safe_receipt=evidence_path(self.root.parent,process_reference)
+                if indexed_process is None or sha(safe_receipt)!=indexed_process['payload']['sha256']:
+                    raise Blocked('Missing/changed indexed process outcome')
+                actual=read_outcome(safe_receipt,records[1].get('execution_id'))
+                outcome=records[-1].get('outcome',{})
+                if (actual['status']=='INTERRUPTED'
+                        or (value.get('side_effect') and actual['status']!='EXITED')
+                        or any(actual.get(key)!=outcome.get(key) for key in ('execution_id','status','returncode'))):
+                    raise Blocked('Interrupted command requires observed-state reconciliation')
+        receipts=checked_root(self.root/'processes')
+        if receipts.exists():
+            with os.scandir(receipts) as entries:
+                for entry in entries:
+                    if entry.name.lower()=='engineering-log':continue
+                    reference='commands/processes/'+entry.name
+                    path=evidence_path(self.root.parent,reference)
+                    if reference in published:continue
+                    if entry.name in owned_receipts:continue
+                    # Atomic live-receipt temporary files are owned only while
+                    # an admitted handle in this exact directory holds its lease.
+                    if owned_receipts and entry.name.startswith('.process-') and path.is_file():continue
+                    raise Blocked('Unindexed process evidence requires reconciliation')
+
+
+class JournalHandle:
+    def __init__(self, handle, journal, record):
+        self.handle, self.journal, self.record = handle, journal, record
+        self.supervisor = handle.supervisor
+        self._result = None
+    def wait(self):
+        if self._result is not None: return dict(self._result)
+        result = self.handle.wait()
+        record = {**self.record,'events':[*self.record['events'],
+                  {'event':'outcome','action_id':self.record['action_id'],'at':time.time(),'outcome':result}]}
+        with _COMMAND_LOCK:
+            try:self.journal.write(record['action_id'], record)
+            finally:_OWNED_COMMANDS.pop((str(self.journal.root),record['action_id']),None)
+            self.record = record
+            self._result = result
+        return dict(result)
+    def publish_output_artifacts(self, artifacts):
+        with _COMMAND_LOCK:
+            record={**self.record,'output_artifacts':dict(artifacts)}
+            self.journal.write(record['action_id'],record)
+            self.record=record
+    def cancel(self): self.handle.cancel()
+    def close(self):
+        self.cancel()
+        return self.wait()

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Analyze the actual compiled application and require its server-side quality gate."""
-import argparse,base64,json,os,subprocess,time,urllib.parse,urllib.request
+import argparse,base64,json,os,time,urllib.parse,urllib.request
 from pathlib import Path
-from execution.core import ROOT,Blocked,identity,json_read,json_write
+from execution.core import ROOT,Blocked,identity,json_read,json_write,command_result,scoped_commands
 import sonarqube_lab as server
 
 SCANNER='sonarsource/sonar-scanner-cli:12.3.0.4285_8.1.0@sha256:47956b669bf486bdad919e1cbd0533223515aa0b6d1d31763e5a3754942df6d7'
@@ -25,6 +25,7 @@ def configure_gate(credentials):
  # First complete release uses all code as new code through a reference baseline set in T0001-002.
  return desired
 
+@scoped_commands
 def main():
  p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--candidate',required=True);p.add_argument('--output',required=True);args=p.parse_args()
  try:
@@ -43,8 +44,9 @@ def main():
     '-Dsonar.exclusions=**/*.test.ts,**/*.test.tsx,**/mocks/**','-Dsonar.java.binaries=stone-shelter-api/target/classes',
     '-Dsonar.coverage.jacoco.xmlReportPaths=stone-shelter-api/target/site/jacoco/jacoco.xml','-Dsonar.javascript.lcov.reportPaths=stone-shelter-ui/coverage/lcov.info',
     '-Dsonar.working.directory=/evidence/scanner','-Dsonar.qualitygate.wait=true','-Dsonar.qualitygate.timeout=300']
-  with (evidence/'scanner.log').open('w') as log:r=subprocess.run(argv,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=1200)
-  if r.returncode:raise Blocked('Application Sonar scanner/gate failed')
+  r=command_result(argv,cwd=tree,env=env,timeout=1200)
+  (evidence/'scanner.log').write_text(r['stdout']+r['stderr'])
+  if r['status']!='EXITED' or r['returncode']:raise Blocked('Application Sonar scanner/gate failed')
   metadata=dict(line.split('=',1) for line in (evidence/'scanner/report-task.txt').read_text().splitlines() if '=' in line)
   task=server.api('/api/ce/task?id='+urllib.parse.quote(metadata['ceTaskId']),credentials=credentials)['task']
   if task['status']!='SUCCESS' or not task.get('analysisId'):raise Blocked('Sonar analysis not complete')
@@ -56,6 +58,6 @@ def main():
   if gate['status']!='OK' or identity(tree)!=args.candidate:raise Blocked('Sonar gate failed or candidate changed')
   json_write(output,{'candidate':args.candidate,'quality_gate':'OK','analysis_id':task['analysisId'],'ce_task_id':metadata['ceTaskId'],'conditions':gate.get('conditions',[]),'measures':values,'scope':'actual compiled application; full-release thresholds required in addition to configured new-code gate'})
   return 0
- except (Blocked,OSError,ValueError,KeyError,subprocess.TimeoutExpired) as e:
+ except (Blocked,OSError,ValueError,KeyError) as e:
   print(json.dumps({'status':'BLOCKED','reason':str(e)}));return 2
 if __name__=='__main__':raise SystemExit(main())

@@ -8,6 +8,7 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 import maintenance
@@ -36,6 +37,7 @@ class MaintenanceTest(unittest.TestCase):
                      'templates/maintenance-task.schema.json', 'templates/maintenance-handoff.schema.json',
                      'tools/execution/agent_runtime.py', 'tools/execution/model_policy.py',
                      'tools/execution/core.py', 'tools/execution/history.py', 'tools/execution/budgets.py',
+                     'tools/execution/processes.py',
                      'tools/execution/money.py', 'tools/execution/audit_paths.py', 'tools/execution/supervision.py',
                      'tools/execution/evidence.py', 'tools/execution/check_selection.py',
                      'templates/agent-result.schema.json', 'tools/execution/checkpoints.py'):
@@ -89,7 +91,8 @@ class MaintenanceTest(unittest.TestCase):
         output = Path(argv[argv.index('--output-last-message') + 1])
         result = {'status': 'APPROVED', 'summary': 'Offline fixture result', 'findings': [], 'evidence': ['fixture-only']}
         if reviewing:
-            contract=json.loads(output.with_name(output.name.replace('.result.json','.input.json')).read_text())['context']['review_contract']
+            input_path = output.parent.parent / ('code_review-' + output.stem + '.input.json')
+            contract=json.loads(input_path.read_text())['context']['review_contract']
             result.update(schema=2,kind='review',**{key:contract[key] for key in
                 ('task','candidate','attempt','run_id','role','contract_sha256','requirements','acceptance')})
             result['evidence']=[{'reference':reference,'sha256':digest} for reference,digest in contract['artifacts'].items()]
@@ -106,7 +109,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def invoke(self, packet, role='developer', context=None, previous=None, checks=None):
         context = context or self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch), \
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                 patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
             return maintenance.dispatch_role(packet, role, self.workspace,
                 self.root / '.execution/runs/maintenance-fixture' / role,
@@ -142,7 +145,7 @@ class MaintenanceTest(unittest.TestCase):
     def test_source_and_policy_changes_invalidate_packet(self):
         for name in (CHANGE + '/task-packets.md', 'execution/agent-models.json',
                      'execution/runtime-lock.json', 'execution/agent-budgets.json',
-                     'tools/execution/agent_runtime.py', 'templates/maintenance-task.schema.json',
+                     'tools/execution/agent_runtime.py', 'tools/execution/processes.py', 'templates/maintenance-task.schema.json',
                      'tools/execution/evidence.py', 'tools/execution/check_selection.py',
                      'templates/agent-result.schema.json', 'tools/execution/checkpoints.py'):
             packet = self.packet(); path = self.root / name; before = path.read_bytes()
@@ -291,9 +294,12 @@ class MaintenanceTest(unittest.TestCase):
         packet = self.packet(); context = self.context(packet)
         developer = self.invoke(packet, context=context); checks = self.checks()
         (self.root / next(iter(checks['artifact_hashes']))).write_text('tampered')
-        with self.assertRaisesRegex(Blocked, 'check evidence changed'):
+        before = timeline(self.root / '.execution/trace.sqlite')
+        with self.assertRaisesRegex(Blocked, '^Unresolved execution: reconcile before any maintenance invocation$'):
             self.invoke(packet, 'code_review', context, developer, checks)
         self.assertEqual(1, len(self.started))
+        self.assertEqual(before, timeline(self.root / '.execution/trace.sqlite'))
+        self.assertFalse((self.root / '.execution/runs/maintenance-fixture/code_review/handoff.json').exists())
 
     def test_budget_stop_between_roles_prevents_reviewer(self):
         packet = self.packet(); context = self.context(packet)
@@ -347,7 +353,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def test_direct_api_is_locked_without_fixture_qualification_patch(self):
         packet = self.packet(); context = self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch):
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)):
             with self.assertRaisesRegex(Blocked, 'unqualified'):
                 maintenance.dispatch_role(packet, 'developer', self.workspace,
                     self.root / '.execution/runs/maintenance-fixture/developer', **context)
@@ -378,7 +384,7 @@ class MaintenanceTest(unittest.TestCase):
                 (self.workspace, self.root / '.execution/runs/another-attempt/code_review'),
                 (other, self.root / '.execution/runs/maintenance-fixture/code_review')):
             with self.subTest(workspace=workspace, folder=folder), \
-                    patch.object(runtime, 'launch', self.fake_launch), \
+                    patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                     patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
                 with self.assertRaisesRegex(Blocked, 'handoff'):
                     maintenance.dispatch_role(packet, 'code_review', workspace, folder,
@@ -397,7 +403,7 @@ class MaintenanceTest(unittest.TestCase):
 
     def test_attempt_folder_has_fixed_role_leaf(self):
         packet = self.packet(); context = self.context(packet)
-        with patch.object(runtime, 'launch', self.fake_launch), \
+        with patch('execution.processes.start', side_effect=fake_executor_start(self.fake_launch)), \
                 patch.object(maintenance, '_LIVE_EXECUTION_QUALIFIED', True, create=True):
             with self.assertRaises(Blocked):
                 maintenance.dispatch_role(packet, 'developer', self.workspace,

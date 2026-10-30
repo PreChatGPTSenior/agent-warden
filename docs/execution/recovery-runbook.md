@@ -105,3 +105,197 @@ All must be recorded before requesting a first bounded retry:
 5. The user authorizes the exact retry and any billable preflight. Start with one task and observe its full lifecycle before permitting wider scheduling.
 
 After these conditions are met, `retry --execute` is a separately authorized state transition and `run --execute` is a separately authorized execution. Neither command is performed by this runbook. If uncertainty remains, the correct decision is REMAIN_BLOCKED.
+
+## 7. WA-013 typed proposal and dry-run contract (T0010-012)
+
+This contract defines validation only. No plan application, retry, lease release,
+stop clearing, command execution or accounting mutation is provided by this ticket.
+The two allowed operations are deliberately bounded preparation transitions for a
+future separately authorized T0010-013 executor:
+
+| Operation | Exact fields | Preconditions from fresh trusted observation | Predicted postcondition |
+|---|---|---|---|
+| `enable_task_retry` | `type`, `task`, `owner`, `from_status: BLOCKED`, `to_status: RETRY` | Exactly one matching task is BLOCKED with the same owner; no unknown spending, unresolved external effects or live lease | Only that task's status becomes RETRY; all existing gates still apply and the budget stop remains |
+| `release_stopped_lease` | `type`, `owner`, `resource` | Exactly one matching lease exists and its current-process ownership/liveness has independently been confirmed stopped; no live lease, unknown spending or unresolved effects | Only that exact lease is absent; no task becomes DONE or replayed |
+
+Duplicate targets and all other operations/fields reject. No plan may contain shell,
+SQL, provider changes, budget changes, DONE transitions, stop removal or automatic
+replay. A stopped lease is established by a trusted observer, never a saved PID,
+expired timestamp or a boolean assertion supplied in the plan. Uncertain accounting
+requires a separate approved recovery contract and cannot use these operations.
+
+The immutable schema-1 plan contains `plan_id`, `incident_id`, `author`, UTC
+`created_at`/`expires_at`, complete `preconditions`, typed `operations`, complete
+predicted `postconditions`, and `plan_sha256` over every other field using canonical
+JSON. The precondition snapshot contains execution identity, actual Git HEAD,
+journal sequence/hash, verified evidence/checkpoint/accounting digests, unknown
+spending and unresolved-effect flags, preserved stop reason, task rows and current
+lease observations. Predicted postconditions preserve every unmodified field.
+Changed Git, evidence, checkpoint, journal, accounting, ownership or stop invalidates
+validation. This is exact-state validation, not a waiver of completion gates.
+
+Host integration supplies four independent callable dependencies; plan documents
+and approval files cannot install them. `observe()` must freshly inspect the real
+execution/Git/evidence/checkpoint/accounting and actual lease ownership without
+mutation, refusing unavailable or unverifiable observations. The fixture observer
+used by tests is not a deployed observation authority. `verify_review(token,
+binding)` and `verify_operator(token, binding)` must independently authenticate an
+external decision and return actor, decision ID, exact plan digest, exact observed
+snapshot digest and expiry. The binding includes immutable plan/incident identity,
+plan digest and snapshot digest. Both decision expiries and plan expiry must remain
+valid. Author, reviewer and operator must be distinct; operator/reviewer decision
+IDs must also differ. A token's own APPROVED/PASS claim has no authority. Missing
+observation/reviewer/operator adapters fail closed. The current CLI installs none,
+so it cannot authorize a plan using files alone. Actual approval authority remains
+unqualified until separately admitted integration is available.
+
+The Python API can propose from a trusted observation, validate with freshly
+observed matching state and independent decisions, and return a dry-run report.
+`inspect_execution.py recovery-plan --plan <relative-path>` reads a proposal within
+the selected audit directory and performs only this default-deny dry-run. It has no
+apply option. Existing copy/inspection actions retain their separate semantics.
+Dry-run never writes operational databases, original evidence or diagnostics. A
+refusal returns a fixed reason code and plan/author hashes for attribution, never
+untrusted exception text, approval tokens or raw observation data. An operator may
+separately retain that returned diagnostic on explicitly approved private storage;
+this is not automatic evidence repair and is not implemented as an output write.
+
+### WA-013 canonical creator provenance amendment
+
+A document author name is a claim, not identity evidence. Host integration must
+also provide `verify_author(author_token, binding)`, independently of the proposal
+and its token contents. This fourth required trust dependency authenticates the
+canonical creator and provenance of this exact immutable plan. Its verified record
+has actor, attestation/decision ID, exact plan digest, exact observed snapshot digest
+and expiry, with the same binding and validity rules as the two approval records.
+The actor must equal the plan's claimed author. Authenticated author, reviewer and
+operator must all be distinct, and the three record IDs must differ. Renaming the
+claimed author and recomputing a plan digest cannot change authenticated provenance.
+
+Missing, forged, foreign or expired creator attestation blocks validation, including
+when reviewer/operator evidence otherwise passes. The host installs the verifier;
+no plan field, token, signed-looking file or CLI option supplies that authority.
+Creator attestation is rechecked for expiry at the validation return boundary.
+The CLI has none of the four trusted adapters and remains default-deny. Test
+attestations are fixture-only; no deployed creator identity infrastructure is
+claimed. A future executor must obtain fresh canonical provenance along with all
+other state/approval checks before an independently authorized application.
+
+## 8. WA-014 disposable typed application saga (T0010-013)
+
+Application is available only through a separately trusted host integration; the
+standalone CLI supplies no identity/approval/observation adapters and cannot apply
+from files alone. Its default is the T0010-012 dry-run. The accepted two operations
+and all four host trust boundaries remain unchanged. No accounting correction,
+stop clearing, command execution, merge, task DONE or model replay is introduced.
+
+Exclusive ownership is a durable singleton in `state.sqlite`, bound to immutable
+plan ID/digest and a fresh apply owner. Plan and per-step records are persistent
+SQLite rows, not in-memory flags. A different plan ID cannot bypass pending
+ownership. Normal task writers and new model reservations/finalization refuse while
+ownership is active. Safety stop writers and terminal usage remain allowed; their
+new facts cause observation drift and recovery stays blocked. Budget serialization
+precedes task serialization, matching existing finalization order. Only the apply
+owner may perform its typed task/lease CAS mutations.
+
+Initial validation authenticates canonical author, reviewer and operator, exact
+preconditions and expiry before any apply metadata write. Under budget/task
+serialization the executor rechecks fresh state, actual SQL task/lease rows and
+accounting uncertainty before persisting ownership. The durable phases are:
+
+1. Claim ownership and record the immutable plan/verified decisions in state SQLite.
+2. Publish causal apply intent plus registered immutable plan/provenance evidence.
+3. For each typed operation, persist a step intent, publish its causal intent,
+   revalidate fresh observations/expiry, perform exact SQL CAS with its applied
+   marker in one state transaction, publish the task lifecycle/step outcome, then
+   mark that step complete. No operation is inferred from a missing receipt.
+4. Compare full predicted postconditions and preserved accounting/stop facts,
+   publish completion, then record completed receipt and release ownership.
+
+This is a saga across SQLite/history/artifact durability boundaries. A failure after
+claim preserves ownership and all prior facts, reports reconciliation required and
+never retries automatically, including when an effect may have committed without
+its outcome. Failures before claim cause no operational mutation. Completed
+identical duplicate requests may return the saved receipt after rechecking trusted
+provenance/approvals and current poststate, without repeating effects. Conflicting
+reuse of plan identity or interrupted duplicates refuse; a fresh plan cannot steal
+ownership. Owner replacement/resumption requires a future explicit reconciliation
+contract, not timestamps, saved PID assertions or automatic recovery.
+
+A plan binds the approved journal prefix. During its own saga only the exact causal
+appends emitted by that executor may advance the expected head; unrelated events,
+prefix hashes or execution identity changes block. Original evidence/checkpoint/
+accounting bindings remain fixed; an observer must bind the originally verified
+collections rather than silently redefine them to include new recovery artifacts.
+Expected task/lease deltas are exactly the plan operations. Per-step snapshots and
+actual SQL CAS both apply. The final head is retained with the saved receipt.
+
+Recovery inspection cross-checks plan/step/provenance rows against retained causal
+intent/outcome/completion and artifacts, exposes interrupted sagas and never treats
+unknown event types as completed repairs. History retains the original task owner
+for `task.retry_enabled`, preserving the prior owned claim. No source ref or budget
+is altered. Fault tests inject exceptions at named before/after durability phases;
+this qualifies interruption handling, not process-kill or filesystem power-loss
+coverage. Current liveness and approval adapters remain fixture-only, not a deployed
+production authority or permission to run actual recovery.
+
+## 9. WA-016 bounded audit snapshot, restore and retention contract
+
+Only audit data is copied; execution never resumes. Schema-2 manifests are required;
+legacy schema-1/unknown versions reject explicitly, without silently upgrading files.
+A complete manifest binds exact permitted inventory, payload hashes, database schema
+fingerprints, execution identity, journal head, source-scope hash, snapshot recovery
+requirements and the nonresumable audit-only boundary. Notification/recovery tables
+are retained inside their existing three databases and causally validated.
+
+The coordinator lock is necessary but insufficient. Backup also obtains SQLite
+`BEGIN IMMEDIATE` writer fences in budget -> state -> trace order for every existing
+database, with a bounded acquisition deadline. Notifications are fenced at trace;
+safety/terminal writes wait rather than being discarded. The fence connections do
+not modify data. Separate read-only connections take SQLite backup snapshots; backup
+is never called from a source connection holding its own write transaction. Backup
+progress has a deadline and busy retry interval. Registered artifact staging or
+inconsistent projections reject; committed immutable artifact hashes and exact
+inventory are checked before/after copying. Uncontrolled external files are not
+claimed atomically frozen; detected mutations refuse publication. There is no
+pretend transaction spanning three databases and the filesystem.
+
+Capacity is admitted before creating the destination, using snapshot page counts,
+permitted artifact sizes, conservative copy/manifest overhead and a free-space
+reserve. Disk-full/busy/checksum/inventory failures preserve originals and never
+report successful publication. New target directories/files are private. Protected
+and secret names are excluded before metadata; required secret evidence causes
+refusal rather than silent omission. Symlink references reject. No real secrets,
+keys, models or external storage are looked up or provisioned by these checks.
+
+A new destination first contains `manifest.partial.json`, which is itself the
+partial marker. Payload files/databases are copied and durably flushed, then the
+complete candidate manifest is durably written under that partial filename. Its
+payload is verified before publication. The final single atomic rename moves that
+partial filename to `manifest.json`, followed by directory fsync; this simultaneously
+publishes the manifest and removes the partial marker. Before rename, the directory
+is never a verified/restorable archive. A failure after rename may have a valid
+published copy: preserve it, report publication uncertainty, inspect rather than
+delete or blindly retry. No failed destination or user data is automatically cleaned
+up. Exception injection does not establish power-loss durability guarantees.
+
+Structurally consistent stopped/blocked/leased/UNKNOWN audit state can be copied,
+with `recovery_required` and preserved unresolved facts; it remains nonresumable.
+Missing/staged/inconsistent evidence or pending recovery projections that fail
+existing verification refuse this strict backup. Originals remain for a separately
+authorized forensic-preservation plan; this command does not claim a forensic
+export. Corrupt notification projections reject, and missing-source/ambiguous or
+unacknowledged notification facts remain explicit and protected from retention.
+
+Restore verifies schema/version, exact inventory/hashes, database integrity and
+identity before creating a new isolated destination. It copies rather than repairs
+facts and never overwrites an existing/active execution. Restored audit verification
+is not environment/Git/application/accounting reconciliation or resume permission.
+Source and destination preserve all notification/recovery history and stop state.
+
+Retention is preview-only over explicitly supplied archive paths. Keep unverified,
+unsettled, recovery-required, unacknowledged or uncertain notification evidence; no
+actual deletion interface is implemented. Even a proposed candidate is not deletion
+authority. Independently retained off-host checkpoints, encrypted private backups,
+key custody/rotation, source/worktree/application-volume protection and real storage
+failure qualification remain operator prerequisites, not deployed features.

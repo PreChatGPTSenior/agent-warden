@@ -101,19 +101,25 @@ class EvidenceResourcesTest(unittest.TestCase):
         path=run/'test-0-actual-environment.json'
         class Process:
             pid=987654;returncode=None;done=False
-            def poll(self):return 0 if self.done else None
+            def poll(self):return 0
             def wait(self,timeout=None):
                 self.done=True;self.returncode=0
                 json_write(str(path)+'.completed',{**ctx,'schema':1,'state':'COMPLETED','status':'READY',
                     'generation':'generation','checks':[{'name':c,'status':'READY'} for caps in owner.expected.values() for c in caps]})
                 return 0
         process=Process()
+        class Handle:
+            supervisor=process
+            def wait(self):
+                process.wait()
+                return {'status':'EXITED','returncode':0,'stdout':'fixture JVM complete','stderr':''}
+            def close(self):return self.wait()
         def launch(*args,**kwargs):
-            manifest={**self.manifest,**ctx,'state':'COMPLETED'};json_write(path,manifest);return process
+            manifest={**self.manifest,**ctx,'state':'COMPLETED'};json_write(path,manifest);return Handle()
         def response(url,timeout=None):
             value=self.fetch(url);value['run_id']=run.name;return io.StringIO(json.dumps(value))
         env={'STONE_TEST_CANDIDATE':'candidate','STONE_TEST_RUN_ID':run.name,'STONE_TEST_ENVIRONMENT_MANIFEST':str(path)}
-        with patch.object(gates.subprocess,'Popen',side_effect=launch),patch.object(test_environment.urllib.request,'urlopen',side_effect=response), \
+        with patch.object(gates,'start_process',side_effect=launch),patch.object(test_environment.urllib.request,'urlopen',side_effect=response), \
                 patch.object(gates,'probe',side_effect=[[{'component':n,'status':'READY'} for n in self.expected],Blocked('dependency lost')] if lose_dependency else None,return_value=[{'component':n,'status':'READY'} for n in self.expected]), \
                 patch.object(gates.os,'killpg'):
             return gates.monitored(['fixture-jvm'],run,env,{},task,run,'test-0')
@@ -168,13 +174,13 @@ class EvidenceResourcesTest(unittest.TestCase):
         from execution.core import State,sha
         from execution.history import History
         directory=self.run/'audit'/'.execution';directory.mkdir(parents=True)
+        history=History(directory/'trace.sqlite')
         own=directory/'runs'/'owner-A'/'attempt-1'/'candidate';own.mkdir(parents=True)
         other=directory/'runs'/'owner-B'/'attempt-1'/'candidate';other.mkdir(parents=True)
         target=other if foreign else own
         data=target/'raw.txt';data.write_text('fixture')
         report=gates.report(target,'static',self.task,'candidate',[data])
         State(directory/'state.sqlite').set(self.task['id'],'CLAIMED','owner-A')
-        history=History(directory/'trace.sqlite')
         history.append('task.claimed',trace='owner-A',task=self.task['id'],payload={'owner':'owner-A','packet':self.task})
         history.append('cycle.started',trace='owner-A',task=self.task['id'],payload={'cycle':'runs/owner-A/attempt-1/candidate','candidate':'candidate'})
         artifact=target/'static.json'

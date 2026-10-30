@@ -100,13 +100,14 @@ class ReviewEvidenceTest(unittest.TestCase):
                 stdout=io.StringIO(json.dumps({'type':'turn.started'})+'\n'+json.dumps({'type':'turn.completed','usage':{'input_tokens':7,'output_tokens':3}})+'\n')
                 def wait(self,timeout=None):return 0
             return Process()
-        with patch.object(runtime,'ROOT',self.run.parent),patch.object(runtime,'launch',side_effect=launch):
+        from workflow_assurance_fixtures import fake_executor_start
+        with patch.object(runtime,'ROOT',self.run.parent),patch('execution.processes.start',side_effect=fake_executor_start(launch)):
             result,receipt,_,usage=runtime.invoke(selection,self.task['id'],'code_review',self.run,self.run,
                 'Fixture compatibility probe',5,kind='preflight',env={},budget=budget)
         self.assertEqual('COMPATIBILITY_ONLY',json.loads(receipt.read_text())['result_assurance'])
         self.assertEqual([],usage.summary(True)['observed_models'])
         self.assertNotEqual(str(runtime.ROOT/'templates/agent-result.schema.json'),calls[0][calls[0].index('--output-schema')+1])
-        with patch.object(runtime,'launch') as no_launch:
+        with patch('execution.processes.start') as no_launch:
             with self.assertRaises(Blocked):runtime.invoke(selection,self.task['id'],'code_review',self.run,self.run,
                 'Missing obligations',5,env={},budget=budget)
             no_launch.assert_not_called()

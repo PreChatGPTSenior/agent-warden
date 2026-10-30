@@ -12,6 +12,7 @@ import tempfile
 import time
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 from execution.core import ROOT, Blocked, json_write, sha, stable, tasks
@@ -31,7 +32,9 @@ class AgentModelTest(unittest.TestCase):
         self.selection = resolve(self.policy, 'gpt', 'T0002-002', 'developer')
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
+        from execution.history import History
+        History(self.root/'.execution/trace.sqlite')
         self.budget = Budgets(self.root / '.execution/budgets.sqlite', {
             'schema': 1, 'unit': 'input_plus_output_tokens', 'pools': {
                 pool: {'limit_tokens': 1000, 'invocation_allowance_tokens': 100}
@@ -211,7 +214,7 @@ class AgentModelTest(unittest.TestCase):
             def wait(inner, timeout=None): return inner.returncode
             def poll(inner): return inner.returncode
 
-        with patch.object(runtime, 'ROOT', self.root), patch.object(runtime, 'launch', FakeProcess):
+        with patch.object(runtime, 'ROOT', self.root), patch('execution.processes.start', side_effect=fake_executor_start(FakeProcess)):
             result, receipt, _, _ = invoke(selection, 'T0002-002', 'developer', self.root, self.root / 'run',
                                             'fixture', 10, iteration='attempt-1', env={}, budget=self.budget)
         value = json.loads(receipt.read_text())
@@ -221,7 +224,7 @@ class AgentModelTest(unittest.TestCase):
         self.assertGreaterEqual(value['elapsed_seconds'], 0)
         totals = usage_totals(self.root / '.execution/usage.jsonl')
         self.assertEqual(1, totals['groups'][0]['calls'])
-        with patch.object(runtime, 'ROOT', self.root), patch.object(runtime, 'launch', side_effect=OSError('fixture')):
+        with patch.object(runtime, 'ROOT', self.root), patch('execution.processes.start', side_effect=OSError('fixture')):
             with self.assertRaises(OSError):
                 invoke(selection, 'T0002-002', 'developer', self.root, self.root / 'failure', 'fixture', 10, env={}, budget=self.budget)
         rows = [json.loads(line) for line in (self.root / '.execution/usage.jsonl').read_text().splitlines()]

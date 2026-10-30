@@ -4,7 +4,8 @@ Current user-authorized supervised subscription execution is defined in [subscri
 
 Follow-up status: the user authorized T0010-001–003 offline preparation and tests. Their initial results are in [the batch report](batch-001-003-report.md), with subsequently authorized corrections and scoped PR publication in [the review report](review-001-003.md); independent review and live launch remain pending. Other packets below are still future work.
 
-Repository: `/Users/viktoryia/IdeaProjects/stone-shelter-spec-parallel`.
+Repository for the current batch: `/Users/viktoryia/IdeaProjects/agent-warden`.
+The imported source path is historical; do not operate in sibling repositories.
 Paths below are relative to that repository. A path marked **new** is a proposed future file, not an existing implementation. Each task also permits updating only its own status/evidence references in this change's documentation after execution. No task permits writing runtime secrets, live state, budget limits/rates, sibling projects or the human-only directory.
 
 Acceptance requirements and scenarios are authoritative in [spec.md](specs/workflow-assurance/spec.md); the tests below describe how to demonstrate them. Dependencies are authoritative in [tasks.md](tasks.md). The coordinator must bind an exact test method list at dispatch; the listed modules are the maximum focused regression scope, not permission to run unrelated suites.
@@ -124,6 +125,105 @@ Review-driven focused test binding for T0010-008: retain the ten ProcessExecutio
 
 **Review/return:** before/after call-site inventory and causal timeline. Reviewer checks actual coverage rather than accepting that creation of a helper migrated every caller.
 
+### T0010-009 coordinator compatibility amendment (Agent Warden, 2026-10-26)
+
+The common executor replaces runtime.launch as the model fixture injection seam.
+Before editing, permit fixture-only adaptation in tools/tests/test_agent_models.py,
+test_agent_budgets.py, test_agent_workflow.py and test_maintenance_dispatch.py,
+plus a shared fake-process helper in workflow_assurance_fixtures.py if needed.
+Preserve all assertions, production locks and install_offline_guards behavior.
+This is necessary compatibility verification for T0010-009, not deferred T0010-019.
+
+Bind these additional exact cases (use the actual existing class names):
+- test_mocked_cli_receipt_and_ledger_include_usage_and_failure
+- test_streamed_limit_cancels_fake_process_and_preserves_receipt
+- test_other_pool_stop_cancels_silent_active_process
+- test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done
+- test_stop_during_merge_preserves_git_side_effect_without_done
+- test_two_role_handoff_uses_existing_metered_runtime
+- test_zero_budget_blocks_before_process
+- test_direct_api_is_locked_without_fixture_qualification_patch
+
+Missing new APIs are not accepted behavioral RED proof. Capture a regression on
+existing pre-fix core.command behavior, instrumenting the common executor so the
+failure demonstrates a real bypass, and retain the matching corrected positive run.
+
+T0010-009 journal-consumer amendment: permit tools/execution/audit_paths.py
+and tools/execution/history.py changes only to safely admit, correlate and verify
+the new command evidence namespace and journal lifecycle. Preserve prior artifact,
+invocation, ownership and accounting invariants. Unknown/missing/foreign/tampered
+command evidence must fail closed, and interrupted side effects must block restart.
+Do not make arbitrary new artifact trees trusted or treat output existence as success.
+Extend bound CommandJournalTest cases with these restart/tamper variants; additionally
+bind test_command_history_tampering_blocks_restart and test_command_namespace_is_safe.
+Existing fixture roots may be canonicalized before admission to avoid macOS /var
+aliases; the silent reviewer cancellation fixture may supply the already-required
+trusted review contract while preserving its original budget/cancellation assertions.
+
+T0010-009 planning compatibility amendment: permit tools/maintenance.py _head
+only to invoke the supervised common command service with explicit planning context
+and sanitized diagnostic receipts under .cache/maintenance-planning. No project
+.execution operational state or accounting may be created by plan/inspect. Clarify
+that read-only planning means no operational/application mutation, with diagnostic
+receipts retained. Add processes.py to its trusted source fingerprint and matching
+fixture list. Bind existing test_plan_has_exact_roles_and_no_runtime_side_effect,
+test_plan_inspection_does_not_create_accounting and
+test_source_and_policy_changes_invalidate_packet. Include unmocked planning command
+routing in the new journal test; mocks alone do not prove this integration.
+
+T0010-009 review-1 repair binding: independent high-effort review reproduced two
+P1 findings (post-spawn journal failure loses ownership and falsely settles NOT_STARTED;
+reconciliation follows a child symlink) and one P2 (basename-only/detach-option policy).
+Coordinator concurs. Within already approved files, add and run tests first:
+- CommandJournalTest.test_started_write_failure_cleans_owned_process
+- CommandJournalTest.test_started_write_failure_preserves_unknown_budget
+- CommandJournalTest.test_reconciliation_rejects_symlink_before_read
+- CommandJournalTest.test_policy_rejects_spoofed_binary_and_detach_variants
+
+Retain controls for genuine pre-spawn failure, known successful calls and approved
+non-detaching commands. Preserve uncertain reservations, never invent zero spend
+when a model may have started. Do not fix a protected-path read merely by moving it
+behind another dereference; rejection must precede target access. Requalify the
+existing 24 bound cases after these shared-path repairs, then freeze for review-2.
+
+T0010-009 coordinator concurrency repair: the shared journal must not classify
+another currently owned live command as an interrupted historical effect. Add
+CommandJournalTest.test_owned_live_action_allows_independent_command_but_restart_blocks.
+A narrow in-process handle/lease registry may distinguish live ownership; bind it
+to the current process, journal root and exact action/receipt identity, validate
+safe indexed evidence before any exemption, and use bounded critical sections.
+No saved PID, raw started flag, worker assertion or restored registry grants the
+exemption. Unknown/unowned/interrupted effects still block. No global lock may be
+held across command execution in a way that serializes independent workers.
+
+T0010-009 review-2 repair binding: add these exact CommandJournalTest methods,
+first RED against attempt-2, then GREEN after scoped correction:
+- test_dead_or_foreign_supervisor_cannot_claim_live_exemption
+- test_postlaunch_setup_failure_preserves_ownership_and_uncertainty
+- test_output_publication_is_serialized_with_independent_admission
+
+Close the entire post-launch setup boundary, not only journal.write: ownership
+must survive stdin/drain-thread setup failures and cleanup failure must remain
+explicitly uncertain. Only current-process live supervisor/lease and matching safe
+evidence can qualify the live-action exception; an exited supervisor or foreign
+owner cannot. Final output-artifact publication uses the same short synchronization
+boundary as admission/finalization, with no lock across process waits. Preserve
+review-1 fixes and known pre-spawn controls. Requalify the 32 bound cases; no next task.
+
+T0010-009 review-3 finalization repair binding: prior P1 repairs passed independent
+review. One P2 remains: the exact owned handle can have finished normally before
+JournalHandle publishes its outcome, causing unrelated admission to be rejected.
+Add these exact CommandJournalTest methods first RED, then GREEN:
+- test_normal_finalization_does_not_block_independent_command
+- test_pending_finalization_rejects_interrupted_or_foreign_result
+
+Recognize only current-process-owned, fully verified normal completion pending
+publication, or coordinate that bounded publication safely. Do not exempt merely
+terminated supervisors, missing/mismatched receipts, capture errors, old/PID-only
+records, foreign owners or unknown outcomes. Keep process waiting outside locks.
+No new feature or broad refactor; existing approved source scope only. Requalify the
+34 bound cases for this shared admission change, then freeze for independent review-4.
+
 ## T0010-010 — Current OpenSpec coverage
 
 **Requirement:** WA-011. **Write scope:** `tools/validate_execution.py`, **new** `tools/execution/requirements.py`, **new** `templates/requirement-evidence.schema.json`, **new** `execution/requirement-map.json`, **new** `tools/tests/test_requirement_traceability.py`.
@@ -202,6 +302,24 @@ Review-driven focused test binding for T0010-008: retain the ten ProcessExecutio
 
 **Implementation:** read-only text/JSON report with requirement/spec revision, packet, actors, action outcomes, sanitized diff/change references, commits, tests, reviews, tokens/time/cost status, stop and recovery. Display precisely which actual actions the provider emitted; no invented hidden reasoning or tool output.
 
+**Bound report contract (017 admission):** `inspect_execution.py report --task ID --attempt TRACE [--format json|text]` is read-only and requires both selectors. Schema1 JSON contains selection, integrity scope, recorded outcome (never acceptance), requirement/spec/packet provenance, sequence-ordered actor/event/rationale/candidate/commit/check/review/budget/recovery facts, correlated invocation receipts, provider-emitted actions only, safe hash-checked relative artifact links, and explicit issues/UNKNOWN fields. Text renders the same sanitized facts without terminal controls or active evidence URLs. No hidden reasoning or inferred tools. No missing token/model/cost becomes zero; reported monetary estimates remain distinct from actual cost. Clock reversal is a warning, never event reordering. A changed candidate or unresolved causal/artifact reference is an issue, never verified success. Unknown outcome is not DONE. Report verifies journal hash/identity only, not full workflow acceptance. Missing history, unsafe roots, sidecar-bearing databases, unsupported/malformed records block without creating directories, databases, journals or metadata in protected paths. Closed journal snapshots only: immutable SQLite read refuses WAL/SHM/rollback sidecars; no recovery or backup is run. Evidence is untrusted and sanitized before output using existing canonical policy plus control/active-link neutralization; unknown arbitrary private data remains a documented heuristic limitation. Artifact content is never rendered; receipts are bounded schema1 JSON and hash bound. Evidence links are display-only relative references, not clickable URLs.
+
+**Exact regression selectors:** ExecutionReportTest.test_completed_after_restart; ExecutionReportTest.test_rejected_after_restart; ExecutionReportTest.test_interrupted_after_restart; ExecutionReportTest.test_unresolved_link; ExecutionReportTest.test_changed_candidate; ExecutionReportTest.test_partial_usage_unknown_model_cost; ExecutionReportTest.test_clock_skew_sequence; ExecutionReportTest.test_missing_output; ExecutionReportTest.test_recovery_recorded_only; ExecutionReportTest.test_provider_actions_only; ExecutionReportTest.test_sanitized_json_and_text; ExecutionReportTest.test_unsafe_links_before_metadata; ExecutionReportTest.test_read_only_no_journal_mutation; ExecutionReportTest.test_missing_history_no_initialization; ExecutionReportTest.test_corrupt_history_and_schema; ExecutionReportTest.test_cli_text_json.
+
+**Permitted verification:** these16 methods via installed offline guards only, then one read-only maintenance mapping validation; no full suite or providers. RED import failure first documents absent API scaffolding; behavioral RED is then required against a minimal UNKNOWN-only API before implementation.
+
+**Corrective iteration1 contract (F1–F5):** include cross-trace accounting corrections only through matching selected task/session/role; report lifetime budget stops and recovery journal/ledger records separately as global observations with UNKNOWN attribution unless retained task/owner/plan/causal identities prove a link. Missing ledgers/coverage stay UNKNOWN, never known absence; no timing-based attribution. Auxiliary SQLite reads use the same immutable/sidecar refusal and never initialize state. Provider actions require selected invocation lifecycle plus canonical runtime namespace, known session/role and retained raw-record correlation; copied foreign records never acquire selected ownership. Normalize producer `.execution/` references to the admitted audit root only; no alternate root reads. Stage/gate owner/cycle/candidate, including nested report candidate, must agree with selected cycle before attribution as its checks/review. Malformed scalar/container identities/schemas refuse generically via Blocked before indexing. Text gives concise Who, What, Why, Requirements, Actions, Candidate/commit, Checks, Reviews, Usage, Stops, Recovery and Issues sections with honest unknowns; full event detail remains JSON.
+
+**Correction regression selectors:** ExecutionReportTest.test_producer_budget_correction_and_global_stop; ExecutionReportTest.test_producer_recovery_global_and_attributed; ExecutionReportTest.test_cross_attempt_action_ownership; ExecutionReportTest.test_producer_stage_gate_candidate_cycle; ExecutionReportTest.test_malformed_scalar_identity_controlled; ExecutionReportTest.test_operator_text_sections; ExecutionReportTest.test_immutable_auxiliary_ledgers. Run these7 RED/green then original16 plus these7 once for final affected verification.
+
+**Corrective iteration2 (last before reassessment):** missing stage/gate candidate/owner/cycle, or missing nested stage candidate, yields UNKNOWN/unresolved attribution; never default to the active cycle. Explicit matching producer identities remain positive and explicit mismatches remain false. Existing incomplete stage fixtures must assert UNKNOWN. Auxiliary immutable ledger projections whitelist supported required columns/declared types before reading only those columns; values must have supported scalar types, and recovery-plan JSON must have supported schema/operations before use. BLOB/null plan/malformed existing table produces generic Blocked without evidence echo. Missing tables/ledgers remain UNKNOWN. Scope only R2-F3/R2-F4, no new authority/refactor.
+
+**Correction2 exact selectors:** ExecutionReportTest.test_missing_stage_gate_binding_unknown; ExecutionReportTest.test_auxiliary_schema_and_values_controlled. Run these2 RED/green, then affected prior23+new2 once.
+
+**Coordinator reassessment R3-F1 (narrow final annotation fix):** preserve numeric ledger evidence and distinguish accounting_unit usd from storage_unit microusd for raw allowance/spent/adjustment integers. Token accounting uses explicit tokens storage; missing accounting unit leaves storageUNKNOWN. Calls.tokens remain tokens independently. State allowance reservation, recorded spending and accounting adjustment semantics separately from actual provider cost. JSON/text must label the same scale; no budget-logic or new authority change.
+
+**Reassessment exact selector:** ExecutionReportTest.test_budget_storage_units_are_explicit. Run oneRED before fix; final affected26 methods once. Any further blocker stops for checkpoint.
+
 **Review/return:** reviewer answers who/what/why/which task/which outcome using only the fixture report and its safe artifact links. No new dashboard framework.
 
 ## T0010-018 — Combined fault-injection workflow tests
@@ -231,3 +349,790 @@ Review-driven focused test binding for T0010-008: retain the ten ProcessExecutio
 **Return:** PR URL, commit identity, observed checks and remaining launch blockers. CI is not silently disabled; preview its scope before publication so it cannot perform an unauthorized paid/live run. Actual model smoke, real recovery, budget activation and merging remain separate decisions.
 
 T0010-007 bounded fixture amendment: the existing positive restart review fixture must publish its first.json and second.json evidence through History.write_artifact; retain all assertions. Rerun only the failed case, then freeze. No subsequent task or expensive review phase is admitted before the budget checkpoint.
+
+## T0010-009 review-4 finalization coordination amendment
+
+Attempt 4 closes only post-cache publication. The independent guarded reproduction
+still rejects a healthy owner after real lease closure and before result caching.
+Attempt 5 must cover the entire current-owner finalization boundary, without
+accepting unverified outcomes. Bounded waiting for attributable finalization must
+occur outside the admission lock, followed by complete evidence revalidation.
+Keep existing abnormal/foreign/unknown rejection checks. Scope remains the approved
+core/processes and test_command_journal files; no other task is admitted by this repair.
+
+Add exact test selectors `CommandJournalTest.test_precache_finalization_coordinates_independent_admission`
+and `CommandJournalTest.test_precache_interruption_or_stall_does_not_admit_command`
+to the prior 34-case set (36 total). First demonstrate the normal pre-cache failure.
+Include bounded stalled finalization and interrupted/capture-failed outcomes as
+negative subcases. Freeze after focused green and hand off for independent review.
+
+## T0010-010 Agent Warden exact offline dispatch
+
+Base: accepted T0010-009 commit 9ac6577. Original scope remains unchanged.
+Bind `RequirementTraceabilityTest` methods in test_requirement_traceability.py:
+`test_current_requirement_not_in_baseline`, `test_added_changed_retired_and_duplicate_scenarios`,
+`test_stale_spec_digest`, `test_unresolved_task`, `test_ownership_is_not_completion`,
+`test_maintenance_application_namespaces`, `test_complete_current_mapping`,
+`test_immutable_baseline_unchanged`, `test_unsafe_or_missing_source_rejected`,
+`test_package_validator_enforces_current_mapping`.
+These ten methods may contain subcases for every specified negative variant.
+Use installed offline guards, clean environment, disposable fixtures and exact selectors.
+
+The extracted project intentionally lacks product-baseline/specification.json.
+Do not fabricate or rewrite an immutable source to turn the inherited application
+package green. Represent current OpenSpec and its namespaces explicitly; report
+missing external legacy baseline as a clear blocked qualification when relevant.
+Current maintenance traceability must be independently testable without asserting
+application acceptance. Existing OpenSpec/application task documents are read-only
+inputs; stable source anchors and digests may be represented by the new registry.
+Report any necessary scope amendment before edits. Test-first behavioral red, minimal
+implementation, focused green, frozen hashes/handoff, independent high review, then
+coordinator acceptance. No new dependency, runtime execution or live provider.
+
+## T0010-010 review-1 check-binding repair
+
+Independent probes reproduce two P2 gaps: selector-only snapshots ignore adapter
+changes and maintenance packet labels do not bind actual check/work declarations;
+validate(all_tasks=...) can validate a different task set than reported ownership.
+Repair only the original five T0010-010 files. Add exact regression methods
+`RequirementTraceabilityTest.test_check_execution_semantics_are_bound`,
+`RequirementTraceabilityTest.test_maintenance_packet_change_or_deletion_is_stale`,
+and `RequirementTraceabilityTest.test_task_override_matches_traceability_owners`
+to the prior ten methods (13 total). Use real disposable inputs with positive
+controls; no paid/live calls or dependency additions.
+
+Bind complete check execution semantics, resolve real maintenance packet/source
+anchors and digests, and either reject inconsistent task overrides or validate
+against exactly their supplied effective task set. Task progress may change without
+invalidating ownership; changed work/check content must invalidate stale mapping.
+Do not invent a check selector or mark completion based on placeholders. Existing
+source task/packet docs remain read dependencies. If source lacks a concrete
+check packet, report it explicitly as unbound/pending without claiming validated
+check coverage. Any necessary scope change requires coordinator amendment first.
+
+## T0010-010 review-2 declaration-shape repair
+
+Two remaining P2 cases were reproduced: readiness kind invents a check token when
+its actual checks array is empty; dictionary-shaped owner.checks passes set/length
+validation despite the array schema. Original five-file scope only. Add exact
+`RequirementTraceabilityTest.test_readiness_without_checks_is_unbound` and
+`RequirementTraceabilityTest.test_malformed_check_declarations_rejected` (15 total).
+The latter includes non-array owner checks, owners and source check collections,
+non-string check identifiers and missing/malformed declaration fields. Preserve
+positive empty actual checks as UNBOUND_PENDING, not fabricated executable coverage.
+Reject malformed registry/source structures before claiming a valid map; no new
+library. Rerun the fifteen focused methods after a behavioral red demonstration,
+freeze source/evidence hashes and return for independent review.
+
+## T0010-011 Agent Warden exact offline dispatch
+
+Base:accepted96aeb83. Original011 production scope unchanged. Bind new
+BudgetReconciliationTest.test_concurrent_exposure_reservations,
+BudgetReconciliationTest.test_late_cost_adjustment,
+BudgetReconciliationTest.test_missing_final_usage_remains_reserved,
+BudgetReconciliationTest.test_duplicate_receipt_is_idempotent,
+BudgetReconciliationTest.test_stale_or_missing_rate_rejected,
+BudgetReconciliationTest.test_malformed_currency_and_cost_rejected,
+BudgetReconciliationTest.test_rounding_boundary_is_conservative,
+BudgetReconciliationTest.test_reopen_preserves_adjustment_history,
+BudgetReconciliationTest.test_unsupported_per_call_bound_blocks,
+BudgetReconciliationTest.test_expired_model_admission_blocks,
+BudgetReconciliationTest.test_adjustments_are_attributable_append_only,
+BudgetReconciliationTest.test_unapproved_adjustment_rejected.
+
+Exact compatibility:BudgetTest.test_default_zero_disables_both_providers_without_database_or_process,
+BudgetTest.test_concurrent_reservations_cannot_oversubscribe,
+BudgetTest.test_exact_limit_stops_both_pools_and_survives_restart,
+BudgetTest.test_late_overrun_is_recorded_not_clamped_to_allowance,
+BudgetTest.test_missing_usage_preserves_full_reservation_and_blocks_other_pool,
+BudgetTest.test_crash_reservation_blocks_restart_without_automatic_reset,
+BudgetTest.test_streamed_limit_cancels_fake_process_and_preserves_receipt,
+BudgetTest.test_other_pool_stop_cancels_silent_active_process,
+BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop.
+Total21 exact methods; existing offline guards/clean environment/disposable fixtures.
+Any extra required compatibility case must be bound by coordinator before execution.
+
+Attributable adjustments need explicit approval/provenance, durable idempotence and
+append-only observations. Estimates are not verified provider invoices; unknown
+usage stays reserved. A global stop is not silently cleared by a refund or late
+receipt. Missing enforceable exposure/capability cannot be described as a hard cap.
+No real invoice fetch, rate lookup, model call or numeric policy activation.
+
+Narrow mechanical dependency amendment:execution/requirement-map.json may refresh
+the semantic0010 task-source digest and T0010-011 owner checks for this approved
+packet. Preserve all other stable IDs/spec hashes/baseline links and scenario
+completion NONE. One read-only current maintenance mapping validation is authorized
+after refresh; it is not application or completion acceptance. No change to010
+validator behavior unless a concrete defect returns to its owning packet.
+
+## T0010-011 internal approval seam boundary
+
+Coordinator accepts an internal reconcile_cost approval-verifier seam only; no
+production CLI or approval producer. Default/missing verifier rejects. Untrusted
+correction data cannot select/install a verifier. Bind approval to exact session,
+pool, receipt identity, amount/currency and correction digest, with attributable
+actor/decision identity; retain provenance and reject conflicting replay. Tests may
+inject a trusted verifier. This qualifies fixture accounting only, not real approval
+authority;012–013 own approved plan validation/application. Unknown spending stays
+reserved unless exact approved evidence resolves it. A correction never clears a
+historical global stop. Requested unsupported hard bounds reject; no invented adapter
+qualification. Original011 scope and exact21 tests are unchanged.
+
+## T0010-011 review-1 retained accounting repair
+
+Independent disposable probes reproduce: P1 old budget snapshot silently loses an
+approved correction because neither retained history nor database projections bind
+adjustments; P1 corrected invocation overrun below pool limit skips the global stop;
+P2 estimate-named/billing report fields include verified corrections.
+
+Narrow dependency scope amendment:tools/execution/history.py may bind adjustment
+rows and retained causal correction evidence to existing history/restart checks.
+Use existing safe artifact namespaces if possible; request a concrete further path
+amendment before expanding. Tests belong in test_budget_reconciliation.py. Keep
+trusted approval seam fixture-only and preserve prior history/zero policy guards.
+
+Add BudgetReconciliationTest.test_adjustment_rollback_is_detected,
+BudgetReconciliationTest.test_interrupted_adjustment_publication_blocks,
+BudgetReconciliationTest.test_corrected_invocation_overrun_latches_global_stop,
+BudgetReconciliationTest.test_estimated_verified_and_exposure_fields_are_distinct.
+Add exact compatibility HistoryReconciliationTest.test_complete_local_control_is_read_only_and_honest_about_external_assurance,
+HistoryReconciliationTest.test_consistent_nonempty_database_rollback_with_newer_receipt_blocks,
+HistoryReconciliationTest.test_registered_staging_and_write_before_completion_are_interrupted.
+Total28 exact methods including prior21. Test-first behavioral failures, then repair.
+Exercise publication interruption both before and after ledger mutation, missing or
+changed retained correction evidence and reopen; no loss of prior facts or uncertain
+reservations. No unattended clearing of stops. Estimates must keep their old meaning;
+exposure and verified/reconciled costs have distinct fields and honest labels.
+Mechanical requirement-map refresh remains permitted only for approved011 bindings.
+
+## T0010-011 review-2 atomic admission and correction-order repair
+
+Remaining P1 probes: an already-checked reserve can enter its transaction while
+correction completion is unpublished; reconstructed adjustment sequence order can
+change charged exposure without invalidating retained evidence. Prior three repairs
+hold. Existing011/history scope only. Add exact
+BudgetReconciliationTest.test_reservation_rechecks_pending_correction_under_lock
+and BudgetReconciliationTest.test_changed_adjustment_sequence_is_rejected
+(total30 focused methods). First reproduce both behavior failures with disposable
+fixtures. Revalidate correction publication under the same ledger serialization
+boundary as admission, before reservation writes. Bind effective correction order
+to retained evidence; do not merely document sequence as trustworthy. Preserve
+append-only history and fail closed for unqualified old evidence. No broader work.
+Freeze after30 focused cases and mechanical map refresh; coordinator may stop before
+acceptance to preserve quota. No012 execution is authorized during this repair.
+
+## T0010-011 review-3 terminal correction eligibility (2026-10-28)
+
+Independent guarded probe reproduces P1: a RUNNING invocation estimated10 corrected
+to5 then later settled90 retains exposure5 and admits another100 against pool150.
+Coordinator resolves eligibility conservatively: only SETTLED invocations accept
+cost corrections. RESERVED/RUNNING/UNKNOWN reject, preserving existing facts and
+reserved exposure. WA-012 is clarified before implementation; approved recovery of
+unknown usage remains012–013, not implicit authority in this internal accounting seam.
+Check state under the ledger transaction before recording correction intent/evidence.
+
+Add BudgetReconciliationTest.test_active_or_unknown_correction_is_rejected and
+BudgetReconciliationTest.test_rejected_active_correction_cannot_hide_later_usage
+(total32 focused methods). Subcases cover RESERVED/RUNNING/UNKNOWN, no adjustment
+or correction journal creation on rejection, unknown allowance/stop preservation,
+late final usage and refused oversubscription, plus a positive settled correction.
+Update existing test_missing_final_usage_remains_reserved only to expect rejected
+correction, retaining reservation/stop assertions. This is the explicit clarified
+eligibility requirement, not weakening an existing negative assertion.
+
+Repair write scope:tools/execution/budgets.py and tools/tests/test_budget_reconciliation.py;
+request any further production file change before editing. Coordinator owns spec/
+packet/readiness/status docs. Narrow execution/requirement-map.json amendment may
+refresh current0010 source digest, WA-012 requirement digest and0010 task source/
+011 check binding, preserving all stable IDs, other specs and completion NONE.
+Behavioral RED first, minimal repair,32 focused offline cases, one mapping validation,
+freeze source hashes/handoff. No providers/services/production policy changes or012.
+Session quota:graceful stop at40%remaining, complete stop before35%remaining.
+
+## T0010-012–020 sequential batch binding (2026-10-28)
+
+User authorizes sequential execution until quota stop, using developer gpt-6.1-sol
+medium, independent reviewer gpt-6.1-sol high and coordinator additional review.
+Graceful stop40%remaining, full stop before35%; unknown quota blocks new dispatch.
+Preserve zero production budgets/no real provider/service/recovery calls. All code,
+tests, typed actions and review evidence must remain tied to the owning packet.
+Publication020 is authorized as a new PR, no merge. Original repositories unchanged.
+
+For each packet, a narrow execution/requirement-map.json dependency refresh is
+allowed for its approved task-source/check declarations and explicitly amended
+specification blocks only. Preserve unrelated IDs/digests/baseline links/completion
+NONE. One read-only maintenance mapping validation after each such refresh is
+allowed; no application acceptance implied. Coordinator owns task/spec/status docs.
+This prevents an approved packet edit from leaving010's mapping silently stale.
+
+## T0010-012 exact offline execution
+
+Bind RecoveryPlanTest methods: RecoveryPlanTest.test_valid_fully_bound_dry_run,
+RecoveryPlanTest.test_altered_plan_digest_rejected, RecoveryPlanTest.test_expired_foreign_or_self_asserted_approval,
+RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected, RecoveryPlanTest.test_invalid_typed_action_rejected,
+RecoveryPlanTest.test_unknown_spending_cannot_unlock, RecoveryPlanTest.test_live_lease_rejected,
+RecoveryPlanTest.test_done_without_gates_rejected, RecoveryPlanTest.test_budget_raise_rejected,
+RecoveryPlanTest.test_dry_run_preserves_operational_state, RecoveryPlanTest.test_safe_attributable_refusal,
+RecoveryPlanTest.test_independent_review_bound_to_plan. Total12 exact methods in `tools/tests/test_recovery_plans.py`.
+Use existing guards/clean environment/disposable fixtures, not actual .execution.
+
+Before implementation, define exact allowed typed operations/pre-postconditions and
+trusted observation/reviewer/operator approval interfaces within recovery-runbook.
+No arbitrary shell/SQL, no model/provider switch, no automatic clear-stop or replay.
+A plan/evidence document alone cannot install trusted observers/verifiers or grant
+approval. Default unavailable authority must block actual authorization; injected
+trusted fixture adapters do not prove deployed authority. Dry-run may validate a
+proposal but cannot call it approved without both independently bound verifications.
+Return diagnostics without altering operational state; separate diagnostic retention
+must be explicit/private and cannot repair original evidence. No apply in012.
+
+## T0010-012 review-1 creator provenance repair
+
+P1 reproduced: actual creator can change document author name and then pass as the
+verified reviewer. Add trusted host canonical author provenance bound to exact plan/
+observation and validity; default unavailable rejects. Require authenticated author
+matches claimed author and differs from verified reviewer/operator. Plan/token data
+cannot install the provenance verifier; signed-looking strings are not authority.
+Clarified WA-013 precedes implementation. Runbook must describe this trust boundary
+without claiming deployed identity infrastructure. No new framework/dependency.
+
+Add RecoveryPlanTest.test_authenticated_author_blocks_self_review and
+RecoveryPlanTest.test_author_attestation_missing_foreign_or_expired (14total).
+Use honest creator/reviewer identity positive/negative controls and preserve all
+prior12 scenarios. Source API test failures distinguish absent seam from behavioral
+spoof reproduction. Original012 write scope unchanged; spec is coordinator-owned.
+Mechanical map refresh may update0010 source/WA-013 block/taskdigest and012 check
+bindings. WA-013-S1/S2 must carry real fully qualified declared selectors (not[]);
+all completion remains NONE. Verify this in the one authorized map validation.
+Freeze after14 focused cases; no013 before independent/coordinator acceptance.
+
+## T0010-013 exact offline execution
+
+Admitted after accepted012 on312c4cb. Define the durable typed-apply contract in
+recovery-runbook before implementation. Only the two accepted012 operations may
+apply, only to disposable fixtures. Preserve stops/budgets/history; no arbitrary
+commands, paid work, merge, replay or self-approval. Exclusive durable ownership,
+CAS, per-step intent/outcome and honest interrupted/uncertain states are required.
+Do not claim cross-database atomicity. Default CLI remains dry-run/blocked when
+trusted host authority is unavailable; input files cannot install trusted adapters.
+Exercise actual disposable SQLite/history, not an in-memory-only imitation.
+
+Bind these exact new selectors in tools/tests/test_recovery_apply.py:
+RecoveryApplyTest.test_valid_plan_applies_typed_steps_with_history,
+RecoveryApplyTest.test_crash_before_and_after_each_durable_boundary,
+RecoveryApplyTest.test_duplicate_apply_never_repeats_effects,
+RecoveryApplyTest.test_concurrent_operators_cannot_both_apply,
+RecoveryApplyTest.test_state_drift_after_approval_blocks,
+RecoveryApplyTest.test_live_or_foreign_owner_cannot_release,
+RecoveryApplyTest.test_git_advance_blocks_without_merge,
+RecoveryApplyTest.test_unknown_effects_or_cost_remain_blocked,
+RecoveryApplyTest.test_partial_database_changes_require_reconciliation,
+RecoveryApplyTest.test_dry_run_default_and_apply_requires_authority,
+RecoveryApplyTest.test_budget_stop_and_history_preserved,
+RecoveryApplyTest.test_postcondition_failure_never_reports_complete,
+RecoveryApplyTest.test_expired_approval_during_steps_blocks.
+Compatibility: RecoveryPlanTest.test_valid_fully_bound_dry_run,
+RecoveryPlanTest.test_changed_git_evidence_or_checkpoint_rejected,
+RecoveryPlanTest.test_authenticated_author_blocks_self_review,
+BudgetTest.test_finalization_serializes_with_stop_writers_and_rejects_committed_stop,
+HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent.
+Total18 exact methods; existing offline guards before imports, clean environment,
+no actual execution-state access. Record injected failure boundaries honestly;
+process-kill coverage is not implied by exception injection. Scope remains the
+original013 packet plus authorized mechanical requirement-map refresh. Freeze
+source hashes/red/green/step matrix for independent review before acceptance.
+
+### T0010-013 journal and ownership clarification
+
+Approved own-journal-delta rule: compare the original approved journal prefix and
+only exact known causal appends of this application. No blanket sequence offset,
+ignoring journal hash, or accepting unrelated events. Evidence/checkpoint/accounting
+bindings remain fixed. Budget-to-state serialization must avoid deadlocks with
+existing lock order. Existing writers refuse active recovery ownership; any crash
+keeps durable ownership blocked. A duplicate completed plan may return its retained
+receipt only after trusted identities/current poststate checks, with no effect; an
+interrupted or competing plan cannot replay or replace the owner. Extend existing
+013 fault/concurrency/drift tests with these subcases; no new method selector.
+
+### T0010-013 review-1 repair binding
+
+Two guarded disposable probes confirm acceptance-blocking projection bypasses:
+(1) restoring only pre-claim state.sqlite after interrupted recovery leaves newer
+retained history that verify_evidence rejects, but budget reserve/finalization admit;
+(2) an orphan APPLIED recovery_steps row is ignored by history verification and
+normal State mutation. No lost projection or retained uncertain step may be treated
+as a fresh/unowned execution. Repair both in existing013 scope, preserving safety
+stop/terminal usage recording. Validate bidirectional plan/step/event ownership.
+
+Add exact methods before fixing production behavior:
+RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization,
+RecoveryApplyTest.test_orphan_recovery_step_blocks_verification_and_writers,
+RecoveryApplyTest.test_intermediate_publication_failures_preserve_reconciliation.
+Total21 bound methods, retaining all18 prior methods. The last method covers each
+separate durable publication boundary hidden inside the earlier named phases:
+plan intent vs artifact staging/version/publish/completion, state step-intent vs
+journal intent, mutation vs lifecycle/outcome vs state step completion, journal
+completion vs state completion/owner release. Use bounded injected failures at
+actual write interfaces as needed; keep all existing evidence and honest effects
+uncertainty. Record a per-commit coverage matrix; do not claim power-loss proof.
+Readiness remains disposable SQLite/history only on same runtimes/guards. Tests
+first, retain behavioralRED from both probes, final21 after production changes,
+maprefresh then one mapping validation, freeze for independent re-review.
+
+## T0010-014 exact offline execution
+
+Admitted after accepted013 on013edfe. Before implementation define in this packet's
+implementation handoff the exact durable source-to-notification contract, distinct
+reason taxonomy and local delivery/ack interface. Notification persistence must
+work even when normal task/history writers are blocked by recovery ownership.
+Never bypass that ownership for task/work mutation. Delivery retries have no
+model/recovery capability; acknowledgement does not clear stop or grant admission.
+Crash between durable stop and enqueue must be recoverable from retained source,
+not require replaying its underlying action. Missing source evidence remains
+uncertain. Do not claim external delivery or exactly-once effects for a failed
+callback without a deduplicating destination. No new database/dependency/sink
+without a concrete approved contract; reuse accepted SQLite/audit boundaries.
+
+Bind exact methods in new tools/tests/test_stop_notifications.py:
+StopNotificationTest.test_stop_before_enqueue_reconciles_after_restart,
+StopNotificationTest.test_enqueue_survives_reopen,
+StopNotificationTest.test_crash_before_delivery_ack_retains_pending,
+StopNotificationTest.test_duplicate_source_is_deduplicated,
+StopNotificationTest.test_failed_local_delivery_remains_visible,
+StopNotificationTest.test_manual_ack_does_not_clear_stop,
+StopNotificationTest.test_unknown_usage_remains_blocked,
+StopNotificationTest.test_distinct_stop_reasons_preserve_causality,
+StopNotificationTest.test_concurrent_delivery_has_single_owner,
+StopNotificationTest.test_cli_local_view_and_ack,
+StopNotificationTest.test_notification_during_recovery_preserves_owner,
+StopNotificationTest.test_retry_cannot_invoke_model_or_recovery.
+Compatibility: RecoveryApplyTest.test_budget_stop_and_history_preserved and
+RecoveryApplyTest.test_state_rollback_blocks_budget_admission_and_finalization.
+Total14 exactmethods; guards beforeimports, cleanenvironment, disposableSQLite
+only, no external delivery/network/provider. Tests first; original014 scope plus
+narrow maprefresh, one mappingvalidation, frozenhandoff for independentreview.
+
+### T0010-014 source integration amendment
+
+Approved notification-only tables in existing trace.sqlite and atomic stop-source
+rows in budgets.sqlite; these do not confer task/history mutation authority.
+Persist source before outbox, reconcile from retained source after interruption.
+At-least-once local delivery with causal incident ID and durable attempt/ack history;
+uncertain delivery requires explicit notification-only retry, never automatic
+owner stealing. Fixed reason codes and hashed sensitive details; diagnostics from
+invalid history remain explicitly unverified and cannot authorize work.
+
+Narrow additional write scope: tools/apply_recovery.py for real denied/interrupted
+CLI notification; tools/orchestrate.py for typed environment failure capture around
+actual readiness/setup/probe calls before stage.completed can exist. Generic
+task/gate failure must not be guessed to be environment/supervision failure from
+exception text. Existing invocation.finished INTERRUPTED/TIMED_OUT is a supported
+supervisor source; unrelated FAILED must not be relabelled. Exact source mapping
+and unintegrated callers must be reported honestly before implementation.
+
+Add StopNotificationTest.test_environment_failure_before_stage_is_notified.
+Total15 exactmethods, preserving prior14; no real environment/provider startup.
+Test uses failing fixture dependency and real notification persistence. Additional
+frameworks, new databases and external message delivery remain out of scope.
+
+### T0010-014 review-1 repair binding
+
+A guarded reviewer probe confirmed a notification-only P2: restoring the outbox
+projection to a prior FAILED attempt while retaining a newer live STARTED attempt
+allows a third retry and reports DELIVERED with the live STARTED fact unresolved.
+This is not a budget/model authority bypass, but violates exclusive delivery and
+truthful retained-history projection. Preserve all facts and reject stale pointers.
+
+Add StopNotificationTest.test_partial_outbox_rollback_cannot_hide_live_attempt,
+for total16 exact methods. Behavioral RED before code repair. Validate latest causal
+attempt/action projection and ensure every unresolved STARTED attempt is the current
+owned attempt; outbox rollback, detached pending attempts and false terminal views
+fail closed. Keep valid multi-attempt failed/unknown/resolved/retry/ack controls.
+No new source paths or capabilities. Bounded thread events with guaranteed release/
+join, existing guards/disposable SQLite only. Final16 after repair, narrowmapping
+refresh and one validation, freeze for independent re-review.
+
+## T0010-015 exact offline execution
+
+Admitted on accepted014 commit754e870. Before code define versioned manifest,
+capacity/bounded-contention policy, publication/restore semantics and retention
+preview in recovery-runbook. Keep originals intact on every failure. No automatic
+deletion/cleanup of real backups and no in-place restore. Failed/partial destinations
+must never appear complete; explicitly separate forensic preservation from verified
+restorable evidence. Account for newly retained notification and recovery tables.
+Source quiescence/consistency must cover those independent writers, not just the
+coordinator lock. If approved scope cannot enforce that, propose a narrow amendment
+before changing it. Never claim atomic snapshots of uncontrolled external files.
+
+Bind in new tools/tests/test_audit_storage.py:
+AuditStorageTest.test_capacity_admission_before_destination_creation,
+AuditStorageTest.test_enospc_preserves_source_and_never_publishes_success,
+AuditStorageTest.test_sqlite_contention_is_bounded,
+AuditStorageTest.test_partial_backup_is_not_restorable,
+AuditStorageTest.test_manifest_version_and_checksum_rejected,
+AuditStorageTest.test_manifest_inventory_is_complete,
+AuditStorageTest.test_missing_required_artifact_refuses_restore,
+AuditStorageTest.test_existing_or_active_destination_is_preserved,
+AuditStorageTest.test_private_permissions_and_secret_path_exclusion,
+AuditStorageTest.test_retention_preview_refuses_unsettled_evidence,
+AuditStorageTest.test_restore_retains_notification_and_recovery_history,
+AuditStorageTest.test_concurrent_source_mutation_cannot_publish_inconsistent_backup.
+Compatibility from tools/tests/test_agent_history.py:
+HistoryTest.test_backup_restore_retains_history_hashes_and_detects_modified_artifact,
+HistoryTest.test_backup_blocks_active_coordinator_and_never_overwrites,
+HistoryTest.test_backup_excludes_secret_files_and_restores_public_evidence_only,
+HistoryTest.test_required_secret_evidence_cannot_be_silently_dropped.
+Total16 exactmethods; existingguards/cleanenv/disposableSQLite/files and bounded
+threads only. Inject ENOSPC, never fill hostdisk; secretcanaries synthetic, forbidden
+names excluded BEFORE metadata. No real secrets/protected paths read for tests.
+No process/provider/network calls, operationalrestore or deletion. Original015
+write scope plus narrowmappingrefresh; testsfirst16/mapvalidation/frozenreview.
+
+### T0010-015 approved storage contract
+
+Use schema2 exact-inventory manifest with execution identity/journal binding and
+audit-only nonresumable scope; schema1 requires explicit separate re-export, never
+silent upgrade. Coordinator lock plus budget-to-state-to-trace SQLite write fences,
+bounded deadlines and separate readonly backup readers. Capacity admission before
+creating a destination. Validate new notification projections as part of archive
+qualification; corrupt projections reject and uncertain sources protect retention.
+
+Strict backup may preserve a structurally verified blocked audit (budget stop,
+UNKNOWN usage, retained leases) with recovery_required explicitly recorded. Missing,
+staged, inconsistent or pending-recovery projections rejected by current evidence
+verification are not silently downgraded into a verified archive; originals remain
+for separate forensic recovery. No forensic-export capability is claimed here.
+
+Publication is an explicit commit boundary after payload validation/durability;
+pre-publication failures never verify complete. A response failure after durable
+publication may leave a valid copy and must not be reported as no effect or deleted
+to retry. Preserve partial markers before publication, never advertise partial
+archives as restorable. Restore only into new isolated directory, never resumes
+execution. Retention is preview only; unverified, recovery-required, unacknowledged
+or uncertain evidence remains protected. No deletion API or deployed encryption/
+offhostcheckpoint claim. Existing16 methods include these bounded faultsubcases.
+
+### T0010-015 review-1 destination ownership repair
+
+Reviewer confirmed P1 on disposable backup AND restore: after capacity admission,
+another creator makes the final destination and a same-name artifact; nonexclusive
+_mkdir_private accepts it and copying overwrites that artifact while reporting
+COMPLETE/AUDIT_RESTORED. Original source bytes remain intact, but destination
+ownership was not acquired atomically.
+
+Add AuditStorageTest.test_concurrent_destination_creation_never_overwrites, total17
+exact methods. Reproduce both races before fixing production code. Claim final
+destination exclusively (existing parents may be reused, final directory may not),
+fail before any marker/payload write if another creator won, preserve its sentinel
+and source bytes. Validate symlink/existing target refusal before following target
+metadata, and keep valid new nested destination positive controls. No unsafe retry
+or deletion. Original015 scope unchanged; final17 plus narrow maprefresh and one
+validation, frozen independent re-review before acceptance.
+
+## T0010-016 exact offline execution
+
+Admitted on015acceptance commitf59a73a. Define the canonical redaction and scoped
+role-environment contract before code, including bounded streaming, URL/userinfo/
+query handling, exact secret values, explicit provider credential and legacy export
+quarantine. Reuse existing dependencies; no new framework/provider. Never read real
+credentials or protected directories for test construction. Preserve original legacy
+bytes/hash facts; unsafe existing evidence cannot be silently sanitized and called
+the same original. Quarantine is an explicit non-exportable classification/report,
+not deletion or an automatic history rewrite. State detection limits honestly.
+
+Bind new tools/tests/test_evidence_privacy.py:
+EvidencePrivacyTest.test_argv_and_output_use_canonical_redaction,
+EvidencePrivacyTest.test_split_secret_and_url_credentials_redacted,
+EvidencePrivacyTest.test_provider_stream_and_exception_no_secret_persistence,
+EvidencePrivacyTest.test_role_environment_omits_unrelated_credentials,
+EvidencePrivacyTest.test_selected_provider_credential_required_not_invented,
+EvidencePrivacyTest.test_notification_payload_never_contains_canary,
+EvidencePrivacyTest.test_backup_refuses_unsafe_legacy_without_rewriting_history,
+EvidencePrivacyTest.test_sanitized_artifact_hashes_match_canonical_bytes,
+EvidencePrivacyTest.test_private_permissions_fail_closed,
+EvidencePrivacyTest.test_protected_and_secret_names_precede_metadata,
+EvidencePrivacyTest.test_symlink_alias_cannot_bypass_exclusion,
+EvidencePrivacyTest.test_quarantine_preserves_original_evidence_and_explains_block.
+Compatibility: AgentModelTest.test_secret_redaction,
+ProcessExecutionTest.test_output_sanitization_across_chunks_and_truncation,
+HistoryTest.test_secret_exclusion_precedes_metadata_access,
+AuditStorageTest.test_restore_retains_notification_and_recovery_history.
+Total16 exactmethods. Existing guards before imports, clean controlled environment,
+synthetic canaries, disposable SQLite/files and only the selected existing dummy
+process test. No realmodel/provider/network, no host credential scan, no protected
+name metadata (use fake entries for forbidden-name tests). Source scope original016
+plus narrow maprefresh. Testfirst, final16 +mapcheck, freeze for independentreview.
+
+### T0010-016 approved privacy contract
+
+Shared canonical sanitizer resides in existing evidence.py and is reused by process
+and model-runtime persistence. Exact configured secrets use explicitly supplied
+values only; known key patterns and URL userinfo/query/fragment are masked with
+bounded chunk handling before capture truncation. Sanitize before hashing canonical
+artifacts; never label raw hash as sanitized-byte identity. Bound stream records and
+report truncation/incomplete evidence honestly. No dependency or framework added.
+
+Environment is an explicit role allowlist: common supplied PATH,HOME,LANG,LC_ALL,TZ,
+TMPDIR,PYTHONDONTWRITEBYTECODE plus OPENSPEC_TELEMETRY/DO_NOT_TRACK; developer and
+test_engineer may add declared toolchain/cache/endpoints actually used by this repo.
+Review roles omit build/service capabilities; browser roles receive only declared
+browser cache/endpoints. Sole provider credential is the selected explicit key;
+missing required value blocks. CODEX_HOME is not inherited. HOME is not filesystem
+or auth-file isolation. Dropped unrelated secrets remain only in memory for masking
+possible echoed values, not in child environment or persisted diagnostics.
+
+Quarantine scans bounded admitted public text and schema-aware readonly SQLite
+whitelisted tables/columns; unknown schemas/columns/BLOBs fail closed before reading
+unapproved content. Never regex raw SQLite pages or scan real credentials. New
+private destination snapshots may be compacted before manifest hashing to avoid
+retaining deleted free-page content, with original source bytes/hash preserved.
+Legacy evidence remains non-exportable on failed privacy qualification; no silent
+rewrite or deletion. Restore must not bypass export qualification or claim a raw
+legacy binary copy safe merely because logical rows passed. Report heuristic limits
+for unknown/encoded secrets and personal data, and any unqualified legacy format.
+
+016 derived-copy clarification: restore may compact SQLite only in its exclusively
+owned new destination after logical privacy qualification. Regenerate the NEW
+manifest file hashes/digest, bind the original manifest digest in existing consistency
+provenance text and return source_manifest_sha256. Preserve original source files,
+manifest, event history/identity and their hashes. This is a derived audit copy, not
+byte-identical restoration. No schema-format bump or original manifest rewrite.
+Own synthetic deleted-canary fixtures check residual-byte removal; no real binary
+credential scan or raw-page regex is permitted.
+
+016 producer-boundary clarification: external output-last-message may write raw
+NONCANONICAL output only into an explicitly owned private run/.private-staging
+file (precreated0600 in0700directory, no symlinks, bounded size/read). Preserve its
+original bytes/hash without exporting or treating it as canonical evidence. Publish
+a separate sanitized final artifact before receipt/hash generation. Exclude the
+private staging name before audit/export metadata access; retained run facts must
+still prevent empty-history recreation. This is quarantine, not a claim that raw
+plaintext never exists locally. Existing bound privacy/capture/backup methods cover
+private staging containment and canonical/export canary absence; no new selector.
+
+### T0010-016 JSON-member repair (authorized resumption)
+
+Before implementation bind these new exact regressions in test_evidence_privacy:
+EvidencePrivacyTest.test_nested_secret_json_keys_are_sanitized_before_publication,
+EvidencePrivacyTest.test_nested_escaped_json_keys_are_sanitized_in_streams,
+EvidencePrivacyTest.test_json_key_collisions_block_publication_preserving_original,
+EvidencePrivacyTest.test_json_key_collisions_block_stream_without_silent_loss.
+Run these four first for retained RED, then final affected rerun of the original16
+selectors plus these four (20 methods total), guards before imports, synthetic keys,
+owned disposable fixtures only. Stream input must retain bounded original decoded
+JSON keys until collision detection; serialized redaction must not erase distinct
+facts first. Duplicate member names also fail closed before conversion to a dict.
+Malformed object/array records must fail closed before fallback can retain escaped
+known member names; bind malformed nested escaped/truncated records to the existing
+collision-stream selector above and retain a separate RED before that repair.
+No017/provider/production/actual secrets. Narrow requirement-map source/hash and
+check binding refresh only; one existing maintenance mapping validation after fixes.
+
+### T0010-016 review2 corrections (R1–R3)
+
+Bind three additional EvidencePrivacyTest methods before implementation/execution:
+EvidencePrivacyTest.test_multiline_secret_policy_blocks_stream_before_read,
+EvidencePrivacyTest.test_legacy_duplicate_json_jsonl_and_malformed_refuse_export,
+EvidencePrivacyTest.test_runtime_journal_sanitizes_context_identity_and_changed_paths.
+First run these3 for retained RED; final authorized affected set is original20 plus
+these3 plus EvidencePrivacyTest.test_runtime_unsafe_identity_blocks_before_journal_or_launch
+(24 exact methods). Existing guards before task imports; only owned disposable
+SQLite/files and in-memory fake model process via existing fake_executor_start; no
+real provider/process except already bound harmless compatibility fixture. R1 chooses
+explicit fail-closed policy: newline/carriage-return known secrets reject before any
+stream read or emission. R2 covers duplicate escaped members, multi-record JSONL and
+malformed object/array text; preserve source and refuse backup/restore destinations.
+An unsafe legacy archive may be built only in disposable test setup with the privacy
+check mocked; actual tested restore must use real verify and real privacy classifier.
+R3 exercises actual invoke with fake process, journal identity/context/changes and
+canonical artifacts, preserving existing historical rows and hash chain semantics.
+Unsafe control identities/roots must reject before journal, reservation or launch;
+safe IDs remain unchanged while event payloads are canonicalized.
+Requirements/maps refreshed narrowly; no017, commits, production or provider calls.
+
+## T0010-018–020 admitted offline verification (2026-10-30)
+
+Readiness covers the entire T0010-018–020 batch at base `239a9f1`; coordinator
+admitted this batch after local fixture capability checks and separate GitHub
+publication readiness. No live/application qualification is authorized.
+
+T0010-018 binds these exact methods in `test_workflow_assurance.WorkflowAssuranceTest`:
+`WorkflowAssuranceTest.test_reservation_artifact_and_coordinator_sigkill_remain_blocked`,
+`WorkflowAssuranceTest.test_rejected_review_prevents_integration_and_retry_has_new_identity`,
+`WorkflowAssuranceTest.test_candidate_drift_invalidates_prior_verification`,
+`WorkflowAssuranceTest.test_offline_guards_cover_descendant_network_and_models`,
+`WorkflowAssuranceTest.test_zero_budget_stops_before_fake_provider`.
+Tests-only RED evidence is fault-harness calibration against the normal positive
+control, not a claimed production defect. The positive control must finish normally;
+the crash case must interrupt at the actual persisted boundary.
+
+T0010-019 runs one guarded aggregate of these exact classes, with guards installed
+before imports and a disposable HOME, global Git configuration disabled:
+`test_maintenance_dispatch.MaintenanceTest`,
+`test_maintenance_dispatch.OfflineBoundaryTest`,
+`test_agent_history.HistoryTest`, `test_agent_workflow.WorkflowTest`,
+`test_agent_budgets.BudgetTest`, `test_agent_supervision.SupervisionTest`,
+`test_agent_models.AgentModelTest`, `test_agent_money.MoneyTest`,
+`test_candidate_checks.CandidateChecksTest`,
+`test_evidence_resources.EvidenceResourcesTest`,
+`test_review_evidence.ReviewEvidenceTest`,
+`test_history_reconciliation.HistoryReconciliationTest`,
+`test_process_execution.ProcessExecutionTest`, `test_command_journal.CommandJournalTest`,
+`test_requirement_traceability.RequirementTraceabilityTest`,
+`test_budget_reconciliation.BudgetReconciliationTest`,
+`test_recovery_plans.RecoveryPlanTest`, `test_recovery_apply.RecoveryApplyTest`,
+`test_stop_notifications.StopNotificationTest`, `test_audit_storage.AuditStorageTest`,
+`test_evidence_privacy.EvidencePrivacyTest`, `test_execution_report.ExecutionReportTest`,
+`test_workflow_assurance.WorkflowAssuranceTest`.
+
+Exact commands from the repository root (the private runner contains only this
+explicit selector list and guard/bootstrap setup):
+
+```sh
+env -i PATH=/usr/local/bin:/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools:tools/tests python3 .cache/t0010-subscription-run/018/attempt-1/019-offline.py
+env -i PATH=/usr/local/bin:/usr/bin:/bin OPENSPEC_TELEMETRY=0 node_modules/.bin/openspec validate --all --strict
+env -i PATH=/usr/local/bin:/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools python3 tools/validate_execution.py --traceability-only --namespace maintenance
+```
+
+Additional scoped package checks are read-only JSON parsing of templates and
+execution policy declarations, `validate_models`/`validate_budgets`, zero pool
+limits with absent prices, protected-aware `execution.core.identity`, and
+`git diff --check -- . ':!engineering-log' ':!engineering-log/**'`.
+The inherited full npm/application package check is excluded: its external immutable
+application baseline is absent. No application-stack, real provider, paid model,
+actual recovery or independent destination qualification is claimed.
+
+T0010-018 compatibility selection amendment: after final focused execution began,
+the coordinator explicitly admitted the five existing methods of the modified
+workflow fixture: `WorkflowTest.test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done`,
+`WorkflowTest.test_reviewer_rejection_records_reason_and_prevents_tests_merge_and_done`,
+`WorkflowTest.test_stop_after_intent_blocks_merge_and_done`,
+`WorkflowTest.test_stop_during_merge_preserves_git_side_effect_without_done`,
+`WorkflowTest.test_gate_evidence_and_backups_survive_relocation_but_reject_loss_or_tampering`.
+This checks the actual private-result input envelope and controlled child environment
+compatibility; it is not the T0010-019 aggregate. The final focused run has an
+externally enforced 600-second wall deadline; expiry is failure, never success.
+
+## T0010-018 review-1 correction — parent sendmsg denial
+
+R018-1 returns the guard for a missing parent `socket.sendmsg` audit event.
+Scope remains the authorized guard and existing guard test; no production changes.
+Add synthetic `sys.audit` sendto/sendmsg negative controls (no sockets created,
+no bytes sent), demonstrate RED before the deny-set fix, then deny sendmsg while
+preserving descendant checks. Readiness rechecks the frozen candidate/dependencies
+and current quota; existing verified local capabilities suffice for these four
+bounded tests. Bind the following exact selectors before execution:
+
+- `WorkflowAssuranceTest.test_offline_guards_cover_descendant_network_and_models`
+- `OfflineBoundaryTest.test_guard_installation_is_idempotent_across_module_aliases`
+- `OfflineBoundaryTest.test_host_network_and_real_model_process_are_denied`
+- `OfflineBoundaryTest.test_child_network_denied_by_operating_system`
+
+Use clean environment, disposable HOME, installed guards before imports, and an
+explicit 60-second wall limit. Preserve attempt-1 proof at its original hashes;
+do not claim its ten methods were rerun on the corrected candidate. Attempt-2
+contains fresh RED/green/source hashes and the correction handoff; final affected
+aggregate qualification remains T0010-019 after independent corrective review.
+
+## T0010-006 owning fixture compatibility return before final qualification
+
+Coordinator authorizes only `tools/tests/test_maintenance_dispatch.py` fake_launch
+reviewing-branch compatibility with the already accepted private result contract.
+Read the actual `.private-staging/<session>.json` output session and sibling parent
+role/session input envelope; consume that envelope's trusted review_contract and
+continue writing to the exact raw argv path. Preserve all assertions and argv.
+No production changes, compatibility exemption or obsolete-path shim is allowed.
+
+Readiness covers this owning T0010-002/006 return within the admitted 018–020 batch:
+accepted guard/dependency identities remain unchanged, pinned local runtime and
+sandbox capabilities apply, and fresh quota is below the 70% used boundary.
+Before the fix, run exactly
+`MaintenanceTest.test_two_role_handoff_uses_existing_metered_runtime` RED.
+After the minimal fix, run that method plus
+`MaintenanceTest.test_reviewer_mutation_invalidates_result` GREEN, with installed
+guards, clean environment/disposable HOME and a 120-second wall limit. Preserve
+all failed evidence and freeze source identities for independent review. Do not
+run the T0010-019 aggregate or edit production code under this return.
+
+## T0010-002 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_maintenance_dispatch.MaintenanceTest.test_changed_check_artifact_blocks_review`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-004 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_candidate_checks.CandidateChecksTest.test_empty_and_truncated_runtime_pins_block`
+- `test_candidate_checks.CandidateChecksTest.test_invalid_candidate_build_and_container_configs_never_static_scope_pass`
+- `test_candidate_checks.CandidateChecksTest.test_mixed_valid_configuration_runs_all_families_on_candidate`
+- `test_candidate_checks.CandidateChecksTest.test_package_validation_uses_candidate_data_and_trusted_runner`
+- `test_candidate_checks.CandidateChecksTest.test_root_package_dependency_change_preserves_trusted_scripts`
+- `test_candidate_checks.CandidateChecksTest.test_root_package_enforcement_scripts_cannot_become_noops`
+- `test_candidate_checks.CandidateChecksTest.test_runtime_version_mismatch_blocks_using_candidate_pins`
+- `test_candidate_checks.CandidateChecksTest.test_static_resource_positive_control_does_not_claim_yaml_validation`
+- `test_candidate_checks.CandidateChecksTest.test_toolchain_uses_candidate_runtime_lock`
+- `test_candidate_checks.CandidateChecksTest.test_unsupported_spring_yaml_blocks_even_when_maven_succeeds`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-005 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_evidence_resources.EvidenceResourcesTest.test_journal_owner_cycle_positive_and_foreign_context_negative`
+- `test_evidence_resources.EvidenceResourcesTest.test_journal_rejects_foreign_owner_artifact_before_read`
+- `test_evidence_resources.EvidenceResourcesTest.test_monitored_dependency_loss_preserves_interrupted_state`
+- `test_evidence_resources.EvidenceResourcesTest.test_monitored_fixture_hashes_complete_jvm_lifecycle`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-006 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_review_evidence.ReviewEvidenceTest.test_runtime_compatibility_probe_is_nonreview_and_usage_model_stays_unknown`
+- `test_review_evidence.ReviewEvidenceTest.test_clean_no_findings_control_preserves_emitted_approval`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-007 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_history.HistoryTest.test_gate_report_and_raw_artifact_are_both_verified_after_backup_restore`
+- `test_history_reconciliation.HistoryReconciliationTest.test_claim_only_or_foreign_owner_cannot_explain_terminal_state`
+- `test_history_reconciliation.HistoryReconciliationTest.test_journaled_blocked_and_retry_rows_are_consistent`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-008 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_supervision.SupervisionTest.test_sigkill_of_coordinator_ends_invocation_but_keeps_unresolved_accounting`
+- `test_process_execution.ProcessExecutionTest.test_output_backpressure_is_bounded`
+- `test_process_execution.ProcessExecutionTest.test_normal_exit`
+- `test_agent_supervision.SupervisionTest.test_normal_exit_preserves_output_and_exit_status`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-011 owning offline fixture return after aggregate
+
+Coordinator admitted fixture-only compatibility and explicit positive controls after the preserved final aggregate RED. Readiness covers the entire listed owner return: accepted guards and disposable local capabilities, quota 60% used below 70%. Preserve business assertions and real supervisor/persistence boundaries. No production fix is authorized. Exact focused selectors, bound before edits:
+
+- `test_agent_money.MoneyTest.test_missing_and_expired_price_block_before_reservation`
+- `test_agent_money.MoneyTest.test_token_history_cannot_silently_reset_when_switching_to_usd`
+- `test_agent_money.MoneyTest.test_unknown_usage_holds_dollars_and_does_not_become_free`
+- `test_agent_money.MoneyTest.test_usd_exact_limit_and_overrun_stop_both_pools`
+- `test_agent_money.MoneyTest.test_usd_settlement_keeps_tokens_price_snapshot_and_unknown_invoice`
+- `test_agent_money.MoneyTest.test_concurrent_usd_reservations_are_independent_between_pools`
+
+Use clean environment, installed offline guards, disposable HOME and a 180-second wall limit. No full aggregate rerun; independent review precedes any affected-class qualification.
+
+## T0010-013 documentation-only strict validation return
+
+Coordinator admits verbatim relocation of detailed constraints in WA-012/014/015/017 into existing scenario requirement-wide notes, retaining every ID and SHALL clause. Owning tasks T0010-011/013/014/016; scope is the current spec and narrow source/block-digest map refresh. Root runs strict validation and mapping after freeze; no warning suppression or requirement weakening.

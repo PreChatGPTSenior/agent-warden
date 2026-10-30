@@ -231,3 +231,118 @@ def validate_review(run,result,contract,reviewer_session):
     if any(observed[reference]!=digest for reference,digest in contract['artifacts'].items()):invalid('Reviewer evidence differs from trusted obligations')
     return {'status':'VALID_EVIDENCE','semantic_decision':result['status'],
             'assurance':'Structure, identity and mandatory evidence verified; semantic decision remains the reviewer\'s'}
+
+# Canonical privacy boundary. Explicit values only: no ambient credential lookup.
+import os
+import json
+import re
+from urllib.parse import urlsplit,urlunsplit
+
+_SECRET_ENV=re.compile(r'TOKEN|SECRET|PASSWORD|PASSWD|CREDENTIAL|API_KEY|ACCESS_KEY|PRIVATE_KEY',re.I)
+_KEY_PATTERN=re.compile(r'\bsk-(?:or-v1-)?[A-Za-z0-9_-]{12,}')
+_URL_PATTERN=re.compile(r'https?://[^\s"\'<>]+',re.I)
+
+
+def secret_values(env=None,configured=()):
+    values=set(configured)
+    if env is not None:
+        if not isinstance(env,dict) or not all(isinstance(k,str) and isinstance(v,str) for k,v in env.items()):raise Blocked('Explicit string redaction environment required')
+        values.update(value for name,value in env.items() if value and _SECRET_ENV.search(name))
+    if any(not isinstance(value,str) or not value or len(value.encode())>4096 for value in values) or len(values)>128:raise Blocked('Redaction policy exceeds bounded limits')
+    return sorted(values,key=len,reverse=True)
+
+
+def canonical_text(text,*,env=None,sensitive_values=()):
+    if not isinstance(text,str):raise Blocked('Canonical text must be a string')
+    for value in secret_values(env,sensitive_values):text=text.replace(value,'[REDACTED]')
+    text=_KEY_PATTERN.sub('[REDACTED]',text)
+    def url(match):
+        try:
+            parts=urlsplit(match.group(0))
+            if not (parts.username or parts.password or parts.query or parts.fragment):return match.group(0)
+            host=parts.hostname
+            if not host:return '[REDACTED_URL]'
+            netloc=('['+host+']' if ':' in host else host)+((':'+str(parts.port)) if parts.port else '')
+            return urlunsplit((parts.scheme,netloc,parts.path,'[REDACTED]' if parts.query else '','[REDACTED]' if parts.fragment else ''))
+        except ValueError:return '[REDACTED_URL]'
+    return _URL_PATTERN.sub(url,text)
+
+
+def canonical_value(value,*,env=None,sensitive_values=()):
+    if isinstance(value,str):return canonical_text(value,env=env,sensitive_values=sensitive_values)
+    if isinstance(value,list):return [canonical_value(item,env=env,sensitive_values=sensitive_values) for item in value]
+    if isinstance(value,dict):
+        result={}
+        for key,item in value.items():
+            if not isinstance(key,str):raise Blocked('Canonical JSON member name must be a string')
+            name=canonical_text(key,env=env,sensitive_values=sensitive_values)
+            if name in result:raise Blocked('Canonical JSON member name collision')
+            result[name]=('[REDACTED]' if re.fullmatch(r'password|passwd|secret|api_key|access_token|authorization|credential',key,re.I) and isinstance(item,str) else canonical_value(item,env=env,sensitive_values=sensitive_values))
+        return result
+    return value
+
+
+def unique_json_object(pairs):
+    """Reject duplicate decoded names before the JSON decoder can discard facts."""
+    result={}
+    for key,value in pairs:
+        if key in result:raise Blocked('Duplicate JSON member name')
+        result[key]=value
+    return result
+
+
+class CanonicalStream:
+    """Exact matching across chunks, then bounded URL/key-token classification."""
+    def __init__(self,values=()):
+        values=[value.decode() if isinstance(value,bytes) else value for value in values]
+        self.values=[value.encode() for value in secret_values(configured=values)]
+        self.pending=b'';self.token=bytearray();self.discarding=False
+    @property
+    def pending_bytes(self):return len(self.pending)+len(self.token)
+    def _exact(self,chunk,final):
+        self.pending+=chunk;output=bytearray()
+        while self.pending:
+            partial=any(value.startswith(self.pending) and len(value)>len(self.pending) for value in self.values)
+            if partial and not final:break
+            match=next((value for value in self.values if self.pending.startswith(value)),None)
+            if match is not None:output.extend(b'[REDACTED]');self.pending=self.pending[len(match):]
+            elif partial:output.extend(b'[REDACTED]');self.pending=b''
+            else:output.append(self.pending[0]);self.pending=self.pending[1:]
+        return bytes(output)
+    def feed(self,chunk,*,final=False):
+        if not isinstance(chunk,bytes):raise Blocked('Canonical stream requires bytes')
+        output=bytearray()
+        for offset in range(0,len(chunk),4096):
+            output.extend(self._tokens(self._exact(chunk[offset:offset+4096],False)))
+        if final:
+            output.extend(self._tokens(self._exact(b'',True)))
+            if self.token:output.extend(canonical_text(self.token.decode('utf-8','replace')).encode());self.token.clear()
+            self.discarding=False
+        return bytes(output)
+    def _tokens(self,chunk):
+        output=bytearray()
+        for byte in chunk:
+            if byte in b' \t\r\n\"\'<>':
+                if self.token:output.extend(canonical_text(self.token.decode('utf-8','replace')).encode());self.token.clear()
+                output.append(byte);self.discarding=False
+            elif not self.discarding:
+                self.token.append(byte)
+                if len(self.token)>8192:output.extend(b'[REDACTED_OVERSIZE_TOKEN]');self.token.clear();self.discarding=True
+        return bytes(output)
+
+
+def write_private_artifact(root,reference,value,*,env=None,sensitive_values=()):
+    """New canonical artifact only; preserve existing bytes and their old identity."""
+    path=evidence_path(root,reference);path.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+    if path.parent.stat().st_mode&0o077:raise Blocked('Private evidence directory required')
+    canonical=canonical_value(value,env=env,sensitive_values=sensitive_values)
+    raw=(json.dumps(canonical,indent=2)+'\n').encode() if not isinstance(canonical,bytes) else canonical_text(canonical.decode(),env=env,sensitive_values=sensitive_values).encode()
+    descriptor=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(descriptor,'wb') as stream:
+        os.fchmod(stream.fileno(),0o600)
+        if os.fstat(stream.fileno()).st_mode&0o777!=0o600:raise Blocked('Private evidence permissions unavailable')
+        stream.write(raw);stream.flush();os.fsync(stream.fileno())
+    directory=os.open(path.parent,os.O_RDONLY)
+    try:os.fsync(directory)
+    finally:os.close(directory)
+    return {'reference':reference,'sha256':sha(path),'canonical':True}

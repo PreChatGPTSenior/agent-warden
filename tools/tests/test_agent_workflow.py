@@ -13,9 +13,10 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from workflow_assurance_fixtures import fake_executor_start
 
 sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-from execution.core import Blocked, State, command, json_write, sha, stable
+from execution.core import Blocked, State, command, json_write, sha, stable, command_scope
 from execution.budgets import Budgets
 from execution.gates import report
 from execution.history import History, recovery_status, require_recovered, timeline, verify_evidence
@@ -26,11 +27,13 @@ import orchestrate as engine
 
 
 class WorkflowTest(unittest.TestCase):
-    def exercise(self, reject_review=False, budget_stop_at=None):
+    def exercise(self, reject_review=False, budget_stop_at=None, *, reject_after_tests=False, retry_rejected=False, drift_at_integration=False):
         temporary = tempfile.TemporaryDirectory(); self.addCleanup(temporary.cleanup)
         root = Path(temporary.name).resolve() / 'repository'; root.mkdir()
+        History(root/'.execution/trace.sqlite')
         def git(argv, cwd=None, **kwargs):
-            result = command(argv, cwd=root if cwd is None else cwd, **kwargs)
+            with command_scope(root/'.execution/commands',actor='fixture-coordinator',task='T0002-002',parent_action='fixture-setup',candidate='fixture-baseline'), patch('execution.core._command_policy'):
+                result = command(argv, cwd=root if cwd is None else cwd, **kwargs)
             if budget_stop_at == 'during_merge' and argv[:2] == ['git', 'merge']:
                 with budget.transaction() as db: budget.stop(db, 'Concurrent stop during merge')
             return result
@@ -48,7 +51,7 @@ class WorkflowTest(unittest.TestCase):
                 'kind': 'implementation', 'depends_on': [], 'exclusive_resources': ['fixture'],
                 'requirements': ['R003'], 'acceptance': ['A01'], 'write_paths': ['feature.txt'],
                 'environment': [], 'checks': [{'adapter': 'fixture'}], 'browser_required': True,
-                'max_attempts': 1, 'timeout_seconds': 5}
+                'max_attempts': 2 if retry_rejected else 1, 'timeout_seconds': 5}
         models = load([task['id']]); receipts = {}
         # Synthetic admission exists ONLY in this isolated test; live preflight is never called.
         evidence = root / '.execution/model-preflight/fixture-admission.json'; History(root/'.execution/trace.sqlite').write_artifact('model-preflight/fixture-admission.json', {'mode': 'OFFLINE_FIXTURE'})
@@ -72,15 +75,16 @@ class WorkflowTest(unittest.TestCase):
         class FakeModel:
             def __init__(inner, argv, **kwargs):
                 output = Path(argv[argv.index('--output-last-message') + 1])
-                role = output.name.split('-')[0]; calls.append(role)
+                input_path = next(output.parent.parent.glob('*-' + output.stem + '.input.json'))
+                role = input_path.name.removesuffix('-' + output.stem + '.input.json'); calls.append(role)
                 workspace = Path(kwargs['cwd'])
                 if role == 'developer': (workspace / 'feature.txt').write_text('after')
-                rejected = reject_review and role == 'code_review'
+                rejected = (reject_review and role == 'code_review') or (reject_after_tests and role == 'browser_review' and (not retry_rejected or calls.count('browser_review') == 1))
                 value = {'status': 'CHANGES_REQUESTED' if rejected else 'APPROVED',
                          'summary': 'Fixture reviewer found missing coverage' if rejected else 'Fixture evidence satisfies assigned contribution',
                          'findings': ['Fixture missing coverage'] if rejected else [], 'evidence': ['R003', 'A01']}
                 if role != 'developer':
-                    contract=json.loads(output.with_name(output.name.replace('.result.json','.input.json')).read_text())['context']['review_contract']
+                    contract=json.loads(input_path.read_text())['context']['review_contract']
                     value.update(schema=2,kind='review',**{key:contract[key] for key in
                         ('task','candidate','attempt','run_id','role','contract_sha256','requirements','acceptance')})
                     value['evidence']=[{'reference':reference,'sha256':digest} for reference,digest in contract['artifacts'].items()]
@@ -104,7 +108,10 @@ class WorkflowTest(unittest.TestCase):
             raw = run / (stage_name + '-fixture.json'); json_write(raw, {'mode': 'OFFLINE_FIXTURE'})
             return report(run, stage_name, task, candidate, [raw], **extra)
         def static(task, tree, run, env, candidate, names, *, trusted_root=None, stack=None): return fixture_report('static', task, run, candidate)
-        def tests(task, tree, run, env, stack, candidate): return fixture_report('tests', task, run, candidate, tests=1)
+        def tests(task, tree, run, env, stack, candidate):
+            result = fixture_report('tests', task, run, candidate, tests=1)
+            if drift_at_integration and run.name == 'integration': (tree / 'feature.txt').write_text('drift after tests')
+            return result
         def browser(task, tree, run, env, stack, candidate):
             from execution.evidence import context, monitor_artifacts, complete_monitor
             for name in monitor_artifacts('browser'):
@@ -117,8 +124,7 @@ class WorkflowTest(unittest.TestCase):
             for target, name, value in [(engine, 'ROOT', root), (runtime, 'ROOT', root),
                 (engine, 'MODEL_POLICY', models), (engine, 'MODEL_PRESET', 'gpt'), (engine, 'MODEL_RECEIPTS', receipts),
                 (engine, 'MODEL_ENV', {}), (engine, 'BUDGET', budget)]: stack.enter_context(patch.object(target, name, value))
-            stack.enter_context(patch('subprocess.Popen', side_effect=popen))
-            stack.enter_context(patch.object(runtime, 'launch', side_effect=FakeModel))
+            stack.enter_context(patch('execution.processes.start', side_effect=fake_executor_start(FakeModel)))
             stack.enter_context(patch.object(engine, 'audit', side_effect=audit))
             stack.enter_context(patch('socket.socket.connect', side_effect=AssertionError('Network forbidden')))
             stack.enter_context(patch.object(engine, 'command', side_effect=git))
@@ -130,10 +136,10 @@ class WorkflowTest(unittest.TestCase):
             stack.enter_context(patch.object(engine, 'static_gate', side_effect=static))
             selected = stack.enter_context(patch.object(engine, 'selected_tests', side_effect=tests))
             stack.enter_context(patch.object(engine, 'browser', side_effect=browser))
-            if reject_review or budget_stop_at:
-                with self.assertRaises(Blocked): engine.work(task, state, coordinator, {})
+            if reject_review or budget_stop_at or (reject_after_tests and not retry_rejected) or drift_at_integration:
+                with self.assertRaises(Blocked): engine.work(task, state, coordinator, dict(os.environ))
                 if reject_review: selected.assert_not_called()
-            else: engine.work(task, state, coordinator, {})
+            else: engine.work(task, state, coordinator, dict(os.environ))
         return root, state, calls, coordinator
 
     def test_full_fake_workflow_links_requirement_tools_changes_reviews_commit_and_done(self):
@@ -141,7 +147,7 @@ class WorkflowTest(unittest.TestCase):
         self.assertEqual('DONE', state.status()['T0002-002']['status'])
         self.assertEqual(['developer'] + list(ROLES[1:]) * 2, calls)
         events = timeline(root / '.execution/trace.sqlite', 'T0002-002')
-        self.assertEqual(['R003'], events[0]['payload']['packet']['requirements'])
+        self.assertEqual(['R003'], next(event for event in events if event['event']=='task.claimed')['payload']['packet']['requirements'])
         invocations = [e for e in events if e['event'] == 'invocation.finished']
         self.assertEqual(11, len({e['session'] for e in invocations}))
         self.assertEqual('feature.txt', invocations[0]['payload']['changes'][0]['path'])

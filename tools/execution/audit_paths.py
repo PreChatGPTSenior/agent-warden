@@ -5,10 +5,10 @@ from pathlib import Path
 from .core import safe
 
 DATABASES = ('state.sqlite', 'budgets.sqlite', 'trace.sqlite')
-TREES = ('runs', 'model-preflight', 'batches', 'versions')
+TREES = ('runs', 'model-preflight', 'batches', 'versions', 'commands')
 LEAVES = ('usage.jsonl', 'policy.json', 'result.json', 'budget-stop.json', 'execution-identity.json')
 PROTECTED_NAMES = {'engineering-log', '.git'}
-SECRET_NAMES = {'secrets', '.secrets', 'credentials', '.credentials', '.ssh',
+SECRET_NAMES = {'.private-staging','secrets', '.secrets', 'credentials', '.credentials', '.ssh',
                 'credentials.json', 'credentials.toml', 'auth.json', 'auth.toml',
                 'id_rsa', 'id_dsa', 'id_ecdsa', 'id_ed25519'}
 

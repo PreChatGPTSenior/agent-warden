@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Plan or execute an explicitly selected local ticket batch through independent agents."""
 from __future__ import annotations
-import argparse,concurrent.futures,contextlib,fcntl,json,os,sqlite3,subprocess,sys,threading,time,uuid
+import argparse,concurrent.futures,contextlib,fcntl,json,os,sqlite3,sys,threading,time,uuid
 from pathlib import Path
-from execution.core import ROOT,Blocked,State,check_scope,command,decide_gate,identity,json_read,json_write,select_tasks,sha,tasks
+from execution.core import ROOT,Blocked,State,check_scope,command,decide_gate,identity,json_read,json_write,select_tasks,sha,tasks,scoped_commands,command_scope,command_result
 from execution.environment import configure,probe,runtime_env,start,stop,toolchain
 from execution.gates import browser,report,selected_tests,static_gate,verify_artifacts
 from execution.model_policy import load as load_models,resolve as resolve_model,selections as model_selections
@@ -19,6 +19,16 @@ MODEL_PRESET=None
 MODEL_RECEIPTS={}
 MODEL_ENV=None
 BUDGET=None
+
+def environment_call(phase,context,operation,*args,**kwargs):
+ """Classify actual environment failures before stage persistence; no text guessing."""
+ try:return operation(*args,**kwargs)
+ except BaseException as error:
+  from execution.notifications import Notifications
+  try:Notifications(ROOT/'.execution').record('ENVIRONMENT_FAILURE',{'phase':phase,'context':context},
+       evidence={'error_type':type(error).__name__},task=context.get('task'))
+  except Exception:raise Blocked('Environment failure; notification persistence unavailable; preserve retained state') from error
+  raise
 
 def registered_write(path,value):
  return History(ROOT/'.execution/trace.sqlite').write_artifact(str(Path(path).relative_to(ROOT/'.execution')),value)
@@ -99,6 +109,10 @@ def prepare_dependencies(tree,env):
  command(['npm','ci','--ignore-scripts','--no-audit','--no-fund','--cache',str(ROOT/'.cache/npm')],cwd=tree/'stone-shelter-ui',env=env,timeout=600)
 
 def cycle(task,tree,run,env,stack,base):
+ with command_scope(ROOT/'.execution/commands',actor='coordinator',task=task['id'],parent_action=str(run.relative_to(ROOT/'.execution')),candidate=identity(tree)):
+  return _cycle(task,tree,run,env,stack,base)
+
+def _cycle(task,tree,run,env,stack,base):
  audit('cycle.started',task,run,{'base_commit':base,'cycle':str(run.relative_to(ROOT/'.execution')),'candidate':identity(tree)})
  try:
   result=verify_cycle(task,tree,run,env,stack,base)
@@ -112,8 +126,8 @@ def cycle(task,tree,run,env,stack,base):
 def verify_cycle(task,tree,run,env,stack,base):
  budget_guard()
  run.mkdir(parents=True,exist_ok=True);candidate=identity(tree)
- if 'docker' in task['environment']:start(stack,candidate,env=env)
- checks=probe(stack,task,env,include_tools=True,candidate_root=tree)
+ if 'docker' in task['environment']:environment_call('verification-start',{'task':task['id'],'run':str(run.relative_to(ROOT/'.execution'))},start,stack,candidate,env=env)
+ checks=environment_call('probe',{'task':task['id'],'run':str(run.relative_to(ROOT/'.execution'))},probe,stack,task,env,include_tools=True,candidate_root=tree)
  p=run/'environment-raw.json';json_write(p,{'schema':1,'task':task['id'],'attempt':run.parent.name,'run_id':run.name,'state':'COMPLETED',
        'covered_task_ids':[task['id']],'candidate':candidate,'checks':checks,'status':'READY'})
  reports={'environment':stage(run,task,'environment',report(run,'environment',task,candidate,[p]))}
@@ -136,15 +150,20 @@ def verify_cycle(task,tree,run,env,stack,base):
  budget_guard();verify_artifacts(reports,run=run,task=task,candidate=candidate,review_contracts=getattr(LOCAL,'review_contracts',{}),review_results=getattr(LOCAL,'review_results',{}));result=decide_gate(task,candidate,reports);json_write(run/'gate.json',result)
  return result
 
+@scoped_commands
 def work(task,state,coordinator,env):
  owner=uuid.uuid4().hex;state.claim(task,owner);run=ROOT/'.execution/runs'/owner;run.mkdir(parents=True)
+ with command_scope(ROOT/'.execution/commands',actor='coordinator',task=task['id'],parent_action=owner,candidate='NOT_YET_OBSERVED'):
+  return _work(task,state,coordinator,env,owner,run)
+
+def _work(task,state,coordinator,env,owner,run):
  tree=ROOT/'.execution/worktrees'/(task['id']+'-'+owner[:8]);stack=None
  try:
   audit('task.claimed',task,run,{'packet':task,'worktree':str(tree),'owner':owner})
   budget_guard(model_selections(MODEL_POLICY,MODEL_PRESET,[task]) if MODEL_POLICY else [])
   base=command(['git','rev-parse','HEAD'],cwd=coordinator).strip()
   if task['kind']=='readiness':
-   checks=toolchain(env)
+   checks=environment_call('readiness-toolchain',{'task':task['id'],'owner':owner},toolchain,env)
    p=run/'readiness.json';registered_write(p,{'status':'READY','covered_task_ids':[task['id']],'checks':checks,'meaning':'Feature prerequisite checked; each actual frontier is rechecked as a whole before developers run'})
    arrive(task,json_read(p))
    with BUDGET.finalization() if BUDGET else contextlib.nullcontext():
@@ -153,17 +172,17 @@ def work(task,state,coordinator,env):
    return
   command(['git','worktree','add','-b','codex/'+task['id'].lower()+'-'+owner[:8],str(tree),base],timeout=60)
   audit('worktree.created',task,run,{'base_commit':base,'worktree':str(tree)})
-  stack=configure(tree,run,owner,env)
-  prepare_dependencies(tree,env)
+  stack=environment_call('worker-configure',{'task':task['id'],'owner':owner},configure,tree,run,owner,env)
+  environment_call('prepare-dependencies',{'task':task['id'],'owner':owner},prepare_dependencies,tree,env)
   # Required prerequisites are checked before application edits.
-  if 'docker' in task['environment']:start(stack,identity(tree),env=env)
-  checks=probe(stack,task,env,include_tools=True,candidate_root=tree)
+  if 'docker' in task['environment']:environment_call('pre-implementation-start',{'task':task['id'],'owner':owner},start,stack,identity(tree),env=env)
+  checks=environment_call('probe',{'task':task['id'],'run':str(run.relative_to(ROOT/'.execution'))},probe,stack,task,env,include_tools=True,candidate_root=tree)
   registered_write(run/'pre-implementation.json',{'covered_task_ids':[task['id']],'status':'READY','checks':checks})
   state.set(task['id'],'DEVELOPING',owner,base)
   arrive(task,json_read(run/'pre-implementation.json'))
   feedback=None
   for attempt in range(task['max_attempts']):
-   probe(stack,task,env,include_tools=True,candidate_root=tree)
+   environment_call('attempt-probe',{'task':task['id'],'owner':owner,'attempt':attempt},probe,stack,task,env,include_tools=True,candidate_root=tree)
    attempt_run=run/('attempt-'+str(attempt+1));attempt_run.mkdir()
    out,LOCAL.developer_session=actor('developer',task,tree,attempt_run,{'base_commit':base,'run_directory':str(run),'readiness':str(run/'pre-implementation.json'),'stack_urls':{k:stack[k] for k in ['api','ui']},'output_test_path':'quality/e2e/'+task['id']+'/*.spec.ts','previous_failure':feedback})
    check_scope(task,changed(tree,base))
@@ -184,14 +203,15 @@ def work(task,state,coordinator,env):
    if latest!=base:
     try:command(['git','rebase',latest],cwd=tree,timeout=120)
     except Blocked:
-     subprocess.run(['git','rebase','--abort'],cwd=tree,capture_output=True)
+     command_result(['git','rebase','--abort'],cwd=tree,env=env,timeout=60)
      raise Blocked('Integration conflict: preserve task branch and repair after review; no automatic semantic resolution')
    # Reverify integrated content even when no textual conflict occurred.
    cycle(task,tree,run/'integration',env,stack,latest)
    head=command(['git','rev-parse','HEAD'],cwd=tree).strip()
    budget_guard();audit('integration.intent',task,run,{'previous_head':latest,'candidate_commit':head})
    budget_guard()
-   command(['git','merge','--ff-only',head],cwd=coordinator,timeout=60)
+   with command_scope(ROOT/'.execution/commands',actor='coordinator',task=task['id'],parent_action=owner,candidate=head):
+    command(['git','merge','--ff-only',head],cwd=coordinator,env=env,timeout=60)
    # Git cannot share a transaction with accounting. A stop during merge leaves
    # the intent unresolved and actual Git state preserved, never a false DONE.
    with BUDGET.finalization() if BUDGET else contextlib.nullcontext():
@@ -210,7 +230,7 @@ def work(task,state,coordinator,env):
 def run(selected,workers,preset=None):
  global MODEL_POLICY,MODEL_PRESET,MODEL_RECEIPTS,MODEL_ENV,BUDGET
  # Run is opt-in; preparation never invokes it. No blanket sandbox bypass is used.
- env=runtime_env();toolchain(env)
+ env=environment_call('startup-runtime',{'batch':'coordinator-startup'},runtime_env);environment_call('startup-toolchain',{'batch':'coordinator-startup'},toolchain,env)
  require_recovered(ROOT/'.execution')
  MODEL_ENV=env
  MODEL_POLICY=load_models([t['id'] for t in tasks()]);MODEL_PRESET=preset or MODEL_POLICY['default_preset']
@@ -301,6 +321,7 @@ def work_batch(task,state,coordinator,env,barrier,receipts,batch_id=None):
   barrier.abort();raise
  finally:LOCAL.batch_id=None
 
+@scoped_commands
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['plan','status','doctor','run','retry','models','model-preflight','usage','budgets']);p.add_argument('--tasks',nargs='+',default=['all']);p.add_argument('--execute',action='store_true');p.add_argument('--workers',type=int,default=2);p.add_argument('--model-preset');args=p.parse_args()
  try:

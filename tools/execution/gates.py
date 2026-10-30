@@ -1,8 +1,8 @@
 """Deterministic admission: actual analyzers, selected tests, monitored services and browser evidence."""
 from __future__ import annotations
-import json,os,signal,subprocess,sys,time,xml.etree.ElementTree as ET
+import json,os,sys,time,xml.etree.ElementTree as ET
 from pathlib import Path
-from .core import ROOT,Blocked,identity,json_read,json_write,sha,command
+from .core import ROOT,Blocked,identity,json_read,json_write,sha,command,command_result,start_process
 from .environment import probe,runtime_env,toolchain
 from .check_selection import select_checks
 from .test_environment import handshake,expected_resources
@@ -68,7 +68,7 @@ def monitored(argv,cwd,env,stack,task,run,name,timeout=1800):
   before=probe(stack,task,env)
   json_write(run/(name+'-environment-before.json'),{**ctx,'state':'COMPLETED','checks':before})
   with log.open('w') as stream:
-   process=subprocess.Popen(argv,cwd=cwd,env=env,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
+   process=start_process(argv,cwd=cwd,env=env,timeout=timeout)
    while True:
     if time.monotonic()>deadline:raise Blocked('Test timeout: '+name)
     if manifest and not evidence_path(run,name+'-actual-environment.json.completed').is_file():
@@ -76,10 +76,10 @@ def monitored(argv,cwd,env,stack,task,run,name,timeout=1800):
      if observed:test_checks=observed
     observations.append({'at':time.time(),'checks':probe(stack,task,env),'actual_test_resources':test_checks})
     json_write(run/(name+'-environment-during.json'),{**ctx,'state':'COMPLETED','observations':observations})
-    if process.poll() is not None:break
-    try:process.wait(timeout=10)
-    except subprocess.TimeoutExpired:pass
-   code=process.returncode;after=probe(stack,task,env)
+    if process.supervisor is None or process.supervisor.poll() is not None:break
+    time.sleep(min(1,timeout))
+   outcome=process.wait();stream.write(outcome['stdout']+outcome['stderr']);stream.flush()
+   code=outcome['returncode'] if outcome['status']=='EXITED' else 125;after=probe(stack,task,env)
    if manifest:
     if not test_checks:raise Blocked('The test JVM did not complete the required readiness handshake')
     final=json_read(evidence_path(run,name+'-actual-environment.json.completed'))
@@ -96,11 +96,9 @@ def monitored(argv,cwd,env,stack,task,run,name,timeout=1800):
    path=run/(name+'-environment-'+phase+'.json');body=json_read(path);body['generation']=generation;json_write(path,body)
   complete_monitor(run,name,task,candidate,bool(manifest),generation)
  except BaseException:
-  if process is not None and process.poll() is None:
-   os.killpg(process.pid,signal.SIGTERM)
-   try:process.wait(timeout=5)
-   except subprocess.TimeoutExpired:os.killpg(process.pid,signal.SIGKILL);process.wait()
-  failure={'schema':1,**ctx,'state':'INTERRUPTED','status':'BLOCKED_ENVIRONMENT','observations':observations,'observed_process_exit':process.returncode if process else None}
+  if process is not None:
+   process.close()
+  failure={'schema':1,**ctx,'state':'INTERRUPTED','status':'BLOCKED_ENVIRONMENT','observations':observations,'observed_process_exit':process.wait()['returncode'] if process else None}
   json_write(status_path,failure);json_write(run/(name+'-environment-failure.json'),failure)
   raise
  return log
@@ -119,9 +117,9 @@ def static_gate(task,tree,run,env,candidate,changed,*,trusted_root=ROOT,stack=No
  java='java' in checks;react='react' in checks
  raw=[plan_path]
  def configuration_check(label,argv,cwd):
-  result=subprocess.run(argv,cwd=cwd,env=env,capture_output=True,text=True,timeout=300)
-  log=run/(label+'.log');log.write_text(result.stdout+result.stderr);raw.append(log)
-  if result.returncode:raise Blocked('Candidate configuration check failed: '+label)
+  result=command_result(argv,cwd=cwd,env=env,timeout=300)
+  log=run/(label+'.log');log.write_text(result['stdout']+result['stderr']);raw.append(log)
+  if result['status']!='EXITED' or result['returncode']:raise Blocked('Candidate configuration check failed: '+label)
  if 'runtime' in checks:
   p=run/'candidate-toolchain.json';json_write(p,toolchain(env,candidate_root=tree));raw.append(p)
  if 'package' in checks:
@@ -151,9 +149,9 @@ def static_gate(task,tree,run,env,candidate,changed,*,trusted_root=ROOT,stack=No
   raw += retain_static_artifacts(run,sources,expected)
  if react:
   for label,argv in [('typecheck',['npm','exec','--','tsc','--noEmit']),('build',['npm','run','build'])]:
-   r=subprocess.run(argv,cwd=tree/'stone-shelter-ui',env=env,capture_output=True,text=True,timeout=300)
-   log=run/(label+'.log');log.write_text(r.stdout+r.stderr);raw.append(log)
-   if r.returncode:raise Blocked('Frontend '+label+' failed')
+   r=command_result(argv,cwd=tree/'stone-shelter-ui',env=env,timeout=300)
+   log=run/(label+'.log');log.write_text(r['stdout']+r['stderr']);raw.append(log)
+   if r['status']!='EXITED' or r['returncode']:raise Blocked('Frontend '+label+' failed')
  if not checks and len(raw)==1:
   p=run/'static-scope.json';json_write(p,{'status':'PASS','reason':'No mapped executable input changed; candidate-bound documentation scope only','changed':changed});raw.append(p)
  if identity(tree)!=candidate:raise Blocked('Source changed during static checks')
