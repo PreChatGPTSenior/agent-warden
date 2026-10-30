@@ -74,8 +74,8 @@ and subscription quota. These measurements are not interchangeable. Mark absent
 measurements UNKNOWN; never estimate subscription remaining from token counts.
 Record available usage and elapsed time per task and iteration with provenance.
 
-The current session policy is to stop at 40% subscription remaining. The earlier
-35% full-stop allowance is superseded. Check available quota before dispatch and
+The current session policy is to stop at 30% subscription remaining. The earlier
+40% stop boundary is superseded for the newly authorized batch. Check available quota before dispatch and
 between iterations. Unknown or stale quota blocks new dispatch until verified.
 At the graceful-stop threshold, start no new task or correction cycle; preserve
 an honest checkpoint without treating unfinished work as accepted. Monitoring is
@@ -87,12 +87,14 @@ it must not bypass production runtime budget gates. Do not connect OpenRouter.
 
 ## Current task boundary
 
-T0010-016 was accepted for the documented offline fixture scope on 2026-10-30
-following regression-first repair, complete independent review, a corrective
-follow-up and coordinator verification. See
-[the acceptance record](../openspec/changes/0010-workflow-assurance/agent-warden-016-acceptance.md).
-T0010-017 remains unstarted and requires separate authorization. The latest user
-instruction requires stopping at40% remaining, as recorded in the usage policy.
+T0010-017 was accepted for the documented offline fixture scope on 2026-10-30
+following tests-first implementation, complete independent review, bounded
+corrections, explicit coordinator reassessment of the final unit-label issue,
+and coordinator verification. See
+[the acceptance record](../openspec/changes/0010-workflow-assurance/agent-warden-017-acceptance.md).
+T0010-017 changes are included in its authorized commit. The user authorized
+T0010-018–020 next, subject to refreshed batch readiness.
+The latest user instruction requires stopping at30% remaining.
 
 ## Future tooling task, not implemented here
 

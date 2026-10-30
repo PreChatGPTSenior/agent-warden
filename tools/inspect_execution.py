@@ -11,9 +11,11 @@ from execution.audit_backup import backup, checked, restore, verify
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('timeline', 'recovery', 'verify-history', 'backup', 'verify-backup', 'restore-audit','recovery-plan','notifications','notification-sync','notification-deliver','notification-ack','notification-diagnose'))
+    parser.add_argument('action', choices=('report', 'timeline', 'recovery', 'verify-history', 'backup', 'verify-backup', 'restore-audit','recovery-plan','notifications','notification-sync','notification-deliver','notification-ack','notification-diagnose'))
     parser.add_argument('--audit-dir', default=str(ROOT / '.execution'))
     parser.add_argument('--task')
+    parser.add_argument('--attempt', help='Exact retained trace/attempt selector for report')
+    parser.add_argument('--format', choices=('json', 'text'), default='json')
     parser.add_argument('--destination')
     parser.add_argument('--incident')
     parser.add_argument('--actor')
@@ -23,6 +25,11 @@ def main():
     parser.add_argument('--require-independent-checkpoint',action='store_true',help='Fail closed unless a separately qualified independent reader is configured; no destination is qualified by this CLI')
     args = parser.parse_args()
     try:
+        if args.action == 'report':
+            from execution.execution_report import build_report, render_text
+            result = build_report(args.audit_dir, args.task, args.attempt)
+            print(render_text(result) if args.format == 'text' else json.dumps(result, indent=2, allow_nan=False))
+            return 0
         directory = checked(args.audit_dir)
         if args.action.startswith('notification'):
             from execution.notifications import Notifications,_actor
@@ -70,7 +77,7 @@ def main():
         print(json.dumps(result, indent=2))
         return 2 if result.get('status') in ('RECOVERY_REQUIRED','BLOCKED') else 0
     except (Blocked, ValueError, OSError, KeyError, sqlite3.Error) as error:
-        print(json.dumps({'status': 'BLOCKED', 'reason': str(error)})); return 2
+        print(json.dumps({'status': 'BLOCKED', 'reason': 'Report evidence unavailable or invalid' if args.action == 'report' else str(error)})); return 2
 
 
 if __name__ == '__main__': raise SystemExit(main())

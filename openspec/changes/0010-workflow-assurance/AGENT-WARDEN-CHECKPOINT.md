@@ -1,43 +1,42 @@
 # Agent Warden checkpoint — 2026-10-30
 
-**T0010-016 ACCEPTED for scoped offline WA-017. STOPPED at the requested task boundary.**
-T0010-017 has not started. This checkpoint is included in the explicitly authorized
-T0010-016 commit; no push.
+**T0010-017 ACCEPTED for scoped offline WA-018. STOPPED at the user task boundary.**
+T0010-018 is not started. This checkpoint is included in the authorized T0010-017 commit; no push yet.
 
 Workspace: `/Users/viktoryia/IdeaProjects/agent-warden`.
-Branch: `codex/t0010-workflow-assurance`; HEAD before work: `8937f94`.
-Previous committed accepted implementation: `f59a73a` (T0010-015).
-The T0010-016 repair, acceptance and documentation updates are included in the
-commit containing this checkpoint. Tests and agents were not rerun for this commit.
+Branch: `codex/t0010-workflow-assurance`; last accepted commit: `e81d192` (016).
+The017 implementation, documentation and acceptance are included in this commit.
 
 ## Completed
 
-Regression-first repair of decoded JSON-key leakage and collision/duplicate loss;
-full independent review then regression-first fixes for multiline stream policies,
-legacy JSON/JSONL export and raw runtime journal payloads. Final24 bound offline
-tests PASS4.691s; maintenance mapping PASS (not application qualification).
-Independent high reviewer approved attempt3; coordinator accepted after inspecting
-source/evidence and verifying frozen hashes. No unresolved review blocker for016.
+Read-only text/JSON operator report with recorded task/requirement/actor/action/
+candidate/check/review/outcome links; explicit unknown cost/model/attribution and
+global budget/recovery coverage. Closed snapshot/sidecar refusal, safe links and
+controlled malformed-evidence failures. USD policy versus microusd storage explicit.
+Full independent review and targeted repairs completed. Final26 bound tests
+PASS1.493s; maintenance mappingPASS (declarations only, not application acceptance).
+Coordinator accepted after inspecting source, examples, evidence and frozen hashes.
 
-[Acceptance, hashes and limitations](agent-warden-016-acceptance.md).
-Private proof: `.cache/t0010-subscription-run/016/attempt-3/`, particularly
-`handoff.md`, `commands.md`, `green.log`, `source-hashes.json`, `review-3.md`.
-Full preceding review: attempt2/review-2.md. Earlier evidence is preserved.
+[Acceptance and limits](agent-warden-017-acceptance.md).
+Private final proof: `.cache/t0010-subscription-run/017/attempt-4/`:
+`handoff.md`, `commands.md`, `green-final.log`, `source-hashes.json`, `review-4.md`,
+`operator-report.txt` and `operator-report.json`. Earlier attempts1–3 preserved.
+No unresolved blocking017 review finding remains in the documented offline scope.
 
-## Limits and next action
+## Next boundary
 
-Latest observed quota:45% used /55% remaining; reread before any new dispatch.
-The latest user boundary is STOP at40% remaining; do not use the historical35%
-full-stop allowance. Production Codex/OpenRouter pools remain0.00, prices empty;
-no real provider or OpenRouter requests. Native token/cost totals UNKNOWN.
+Latest observed quota51% used/49% remaining. Refresh before any new dispatch;
+STOP at40% remaining. Production Codex/OpenRouter pools0.00/pricesempty.
+Native token/cost totals UNKNOWN. No OpenRouter or real model/provider calls.
 
-T0010-017–020 remain unstarted. Await separate authorization before another task,
-commit, or publication. If017 is authorized, refresh quota and task-specific
-readiness first; do not rerun successful016 tests unless affected inputs change.
+Await separate authorization for commit/publication or018. T0010-018–020 remain
+unstarted. If018 is requested, refresh quota and its explicit readiness first;
+017 readiness does not authorize or qualify018. Do not rerun unchanged successful
+017 tests without affected inputs or a concrete verification reason.
 
-Raw staging plaintext, HOME isolation, unknown encodings/PII, hostile filesystem,
-live providers and missing immutable application baseline remain explicit limits.
-Stone Shelter and protected human-only paths were not accessed or modified.
+Report is chain-only evidence, not acceptance/recovery authority; live sidecars
+block. Heuristic privacy, hostile filesystem, live providers and missing immutable
+application baseline remain limitations. No Stone Shelter/protected-path access.
 
-[Historical stop record](checkpoint-history-2026-10-28.md) preserves the superseded
-unaccepted016/quota stop without rewriting the original evidence.
+[Previous016 checkpoint](checkpoint-history-2026-10-30-016.md) is historical;
+[earlier quota stop](checkpoint-history-2026-10-28.md) remains preserved.

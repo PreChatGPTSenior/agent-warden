@@ -173,3 +173,19 @@ READY; application services/provider runtime NOT REQUIRED and NOT QUALIFIED.
 Final24 methodsPASS4.691s; review3 approved; coordinator accepted scopedWA-017.
 Quota initial42%used/58%remaining, latest45%used/55%remaining. Stop at40% remaining
 per latest user instruction. No017 dispatch or production provider operation.
+
+## 2026-10-30 T0010-001 refreshed for T0010-017 only
+
+Base e81d192; Python3.14.8/SQLite3.54.1, Node24.21.0/npm11.19.0/OpenSpec1.14.3 observed; sandbox-exec/ps present. Owned disposable SQLite commit/reopen PASS; installed offline network denial PASS;31.46GB free. Production Codex/OpenRouter pools0.00/pricesempty. Fresh quota46%used/54%remaining; stop60%used/40%remaining, unknown blocks. No application services, JDK, models or provider connectivity required or started. READY for017 sixteen bound offline methods and read-only mapping check only; live execution/recovery/backup not admitted. Private proof `.cache/t0010-subscription-run/017/attempt-1/readiness.json`.
+
+## 2026-10-30 T0010-017 correction1 readiness
+
+Fresh quota48%used/52%remaining; Python3.14.8/SQLite3.54.1, owned SQLite commit/reopen and installed offline denial PASS;32.55GBfree; productionpools0.00/pricesempty. No services/dependencies beyond previous admission required. READY for7 added producer-shaped regressions then affected23 final methods; auxiliary ledgers owned/disposable only. Readiness proof attempt-2/readiness.json; stop60%used40%remaining.
+
+## 2026-10-30 T0010-017 correction2 affected readiness
+
+No changed environment prerequisites: same pinned Python/SQLite, installed offline guards, owned disposable fixtures and zero policies. Fresh quota49%used51%remaining. READY for2 new regressions plus affected25 final methods only. No services/providers required or started. Stop60%used40%remaining. attempt-3/readiness.json records bounded recheck.
+
+## 2026-10-30 T0010-017 narrow monetary annotation reassessment
+
+No changed prerequisites: existing offline Python/SQLite owned fixtures and zero policies; freshquota50%used50%remaining. READY for1 monetary-storage-label regression and affected26 final methods only; no services/providers/config change. Stop60%used40%remaining; attempt-4/readiness.json.

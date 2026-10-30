@@ -18,7 +18,7 @@
     {
       "namespace": "maintenance",
       "reference": "openspec/changes/0010-workflow-assurance/tasks.md",
-      "sha256": "63ffc47dc1c8c378d7bb8729f830a4f3f20f32a776ad88c46208e211a377f148"
+      "sha256": "1554d560645833b728de62f3f18bc02ddbbd1258057ce54e1eb7bad04c418aaf"
     },
     {
       "namespace": "maintenance",
@@ -7507,7 +7507,34 @@
       "owners": [
         {
           "task": "T0010-017",
-          "checks": []
+          "checks": [
+            "ExecutionReportTest.test_auxiliary_schema_and_values_controlled",
+            "ExecutionReportTest.test_budget_storage_units_are_explicit",
+            "ExecutionReportTest.test_changed_candidate",
+            "ExecutionReportTest.test_cli_text_json",
+            "ExecutionReportTest.test_clock_skew_sequence",
+            "ExecutionReportTest.test_completed_after_restart",
+            "ExecutionReportTest.test_corrupt_history_and_schema",
+            "ExecutionReportTest.test_cross_attempt_action_ownership",
+            "ExecutionReportTest.test_immutable_auxiliary_ledgers",
+            "ExecutionReportTest.test_interrupted_after_restart",
+            "ExecutionReportTest.test_malformed_scalar_identity_controlled",
+            "ExecutionReportTest.test_missing_history_no_initialization",
+            "ExecutionReportTest.test_missing_output",
+            "ExecutionReportTest.test_missing_stage_gate_binding_unknown",
+            "ExecutionReportTest.test_operator_text_sections",
+            "ExecutionReportTest.test_partial_usage_unknown_model_cost",
+            "ExecutionReportTest.test_producer_budget_correction_and_global_stop",
+            "ExecutionReportTest.test_producer_recovery_global_and_attributed",
+            "ExecutionReportTest.test_producer_stage_gate_candidate_cycle",
+            "ExecutionReportTest.test_provider_actions_only",
+            "ExecutionReportTest.test_read_only_no_journal_mutation",
+            "ExecutionReportTest.test_recovery_recorded_only",
+            "ExecutionReportTest.test_rejected_after_restart",
+            "ExecutionReportTest.test_sanitized_json_and_text",
+            "ExecutionReportTest.test_unresolved_link",
+            "ExecutionReportTest.test_unsafe_links_before_metadata"
+          ]
         }
       ],
       "evidence": []
