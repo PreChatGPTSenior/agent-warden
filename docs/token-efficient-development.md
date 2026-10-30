@@ -88,7 +88,7 @@ it must not bypass production runtime budget gates. Do not connect OpenRouter.
 ## Current task boundary
 
 T0010-018–019 were accepted for offline scope on2026-10-30 after independent review
-and coordinator qualification. T0010-020 PR publication is authorized and in progress.
+and coordinator qualification. T0010-020 completed: [PR #1](https://github.com/PreChatGPTSenior/agent-warden/pull/1) is open.
 No merge or live worker run is authorized. Stop at30% subscription remaining.
 See [qualification](execution/0010-qualification.md) for evidence and live blockers.
 
