@@ -272,8 +272,23 @@ def canonical_value(value,*,env=None,sensitive_values=()):
     if isinstance(value,str):return canonical_text(value,env=env,sensitive_values=sensitive_values)
     if isinstance(value,list):return [canonical_value(item,env=env,sensitive_values=sensitive_values) for item in value]
     if isinstance(value,dict):
-        return {key:('[REDACTED]' if isinstance(key,str) and re.fullmatch(r'password|passwd|secret|api_key|access_token|authorization|credential',key,re.I) and isinstance(item,str) and item!='[REDACTED]' else canonical_value(item,env=env,sensitive_values=sensitive_values)) for key,item in value.items()}
+        result={}
+        for key,item in value.items():
+            if not isinstance(key,str):raise Blocked('Canonical JSON member name must be a string')
+            name=canonical_text(key,env=env,sensitive_values=sensitive_values)
+            if name in result:raise Blocked('Canonical JSON member name collision')
+            result[name]=('[REDACTED]' if re.fullmatch(r'password|passwd|secret|api_key|access_token|authorization|credential',key,re.I) and isinstance(item,str) else canonical_value(item,env=env,sensitive_values=sensitive_values))
+        return result
     return value
+
+
+def unique_json_object(pairs):
+    """Reject duplicate decoded names before the JSON decoder can discard facts."""
+    result={}
+    for key,value in pairs:
+        if key in result:raise Blocked('Duplicate JSON member name')
+        result[key]=value
+    return result
 
 
 class CanonicalStream:

@@ -61,29 +61,32 @@ def role_environment(env,selection,role):
 
 
 def canonical_lines(source,env,selection,*,max_record_bytes=32768,max_capture_bytes=1048576):
-    from .evidence import CanonicalStream,secret_values,canonical_value
+    from .evidence import CanonicalStream,secret_values,canonical_value,unique_json_object
     key=selection['provider_config'].get('api_key_env');values=secret_values(env,[env[key]] if key and env.get(key) else [])
-    sanitizer=CanonicalStream(values);pending='';captured=0
+    if any('\n' in value or '\r' in value for value in values):raise Blocked('Multiline stream redaction policy unsupported')
+    pending=b'';captured=0
+    def render(record):
+        if len(record)>max_record_bytes:raise Blocked('Canonical record limit reached')
+        try:value=json.loads(record,object_pairs_hook=unique_json_object)
+        except json.JSONDecodeError:
+            if record.lstrip().startswith((b'{',b'[')):raise Blocked('Malformed structured canonical record') from None
+            return CanonicalStream(values).feed(record,final=True).decode('utf-8','replace')
+        return json.dumps(canonical_value(value,env=env,sensitive_values=values))
     try:
         while True:
             chunk=source.read(4096)
-            rendered=sanitizer.feed(chunk.encode() if isinstance(chunk,str) else chunk or b'',final=not chunk).decode('utf-8','replace')
-            pending+=rendered
-            if len(pending.encode())>max_record_bytes:raise Blocked('Canonical record limit reached')
-            while '\n' in pending:
-                line,pending=pending.split('\n',1)
-                try:line=json.dumps(canonical_value(json.loads(line),env=env,sensitive_values=values))
-                except (ValueError,TypeError):pass
-                line+='\n';captured+=len(line.encode())
+            pending+=chunk.encode() if isinstance(chunk,str) else chunk or b''
+            while b'\n' in pending:
+                record,pending=pending.split(b'\n',1)
+                line=render(record)+'\n';captured+=len(line.encode())
                 if captured>max_capture_bytes:raise Blocked('Canonical capture limit reached')
                 yield line
+            if len(pending)>max_record_bytes:raise Blocked('Canonical record limit reached')
             if not chunk:
                 if pending:
-                    try:pending=json.dumps(canonical_value(json.loads(pending),env=env,sensitive_values=values))
-                    except (ValueError,TypeError):pass
-                    captured+=len(pending.encode())
+                    line=render(pending);captured+=len(line.encode())
                     if captured>max_capture_bytes:raise Blocked('Canonical capture limit reached')
-                    yield pending
+                    yield line
                 return
     except Exception:raise Blocked('Canonical stream unavailable or bounded limit reached') from None
 
@@ -168,7 +171,11 @@ def terminate(handle):
 def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
            kind='agent', iteration='1', env=None, budget=None, trace_context=None):
     """Run once; preserve metrics on failure, timeout and interruption. No retry/fallback."""
+    from .evidence import write_private_artifact,canonical_value,canonical_text,secret_values
     redaction_env=dict(env or {})
+    key=selection['provider_config'].get('api_key_env')
+    values=secret_values(redaction_env,[redaction_env[key]] if key and redaction_env.get(key) else [])
+    if any('\n' in value or '\r' in value for value in values):raise Blocked('Multiline stream redaction policy unsupported')
     env = role_environment(env,selection,role)
     key_name = selection['provider_config'].get('api_key_env')
     if key_name and not env.get(key_name, '').strip():
@@ -181,9 +188,11 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     contract=trace_context.get('review_contract')
     if reviewing and not contract:raise ReviewEvidenceError('Missing trusted review obligations before invocation')
     trace = trace_context.get('attempt_id', session)
+    for identity in (task_id,role,kind,str(iteration),trace,trace_context.get('candidate'),str(workspace),str(folder)):
+        if identity is not None and (not isinstance(identity,str) or canonical_text(identity,sensitive_values=values)!=identity):raise Blocked('Unsafe invocation identity or root')
     history = History(ROOT / '.execution/trace.sqlite')
     def emit(event, payload):
-        return history.append(event, trace=trace, task=task_id, session=session, role=role, payload=payload)
+        return history.append(canonical_text(event,sensitive_values=values),trace=trace,task=task_id,session=session,role=role,payload=canonical_value(payload,sensitive_values=values))
     def reference(path):
         try: return str(Path(path).relative_to(ROOT))
         except ValueError: return str(path)
@@ -224,8 +233,7 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
     prepare_private_result(folder,session)
     before = source_manifest()
     input_path = folder / (role + '-' + session + '.input.json')
-    from .evidence import write_private_artifact,canonical_value
-    write_private_artifact(folder,input_path.name,{'context':trace_context,'selection':selection,'prompt':redact(prompt,redaction_env,selection)},env=redaction_env)
+    write_private_artifact(folder,input_path.name,{'context':trace_context,'selection':selection,'prompt':redact(prompt,redaction_env,selection)},env=redaction_env,sensitive_values=values)
     emit('invocation.started', {'kind': kind, 'iteration': str(iteration), 'context': trace_context,
                                'selection': selection, 'reservation': reservation,
                                'input_artifact': reference(input_path), 'input_sha256': sha(input_path)})
@@ -331,7 +339,7 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                    for path in sorted(set(before) | set(after)) if before.get(path) != after.get(path)]
         changes_path = folder / (role + '-' + session + '.changes.json')
         write_private_artifact(folder,changes_path.name,{'session':session,'task':task_id,'role':role,
-            'scope':'Observed before/after hashes inside assigned write paths','changes':changes},env=redaction_env)
+            'scope':'Observed before/after hashes inside assigned write paths','changes':changes},env=redaction_env,sensitive_values=values)
         record = {'schema': 1, 'session': session, 'kind': kind, 'task': task_id,
                   'role': role, 'iteration': str(iteration), 'selection': selection,
                   'private_result_provenance':private_result_provenance,
@@ -348,8 +356,8 @@ def invoke(selection, task_id, role, workspace, folder, prompt, timeout,
                                     for path in (input_path, changes_path, log, errors, output)+((result_schema,) if not reviewing else ()) if path.is_file()}
         if handle is not None:
             handle.publish_output_artifacts({reference(path):sha(path) for path in (log, errors) if path.is_file()})
-        record=canonical_value(record,env=redaction_env)
-        write_private_artifact(folder,receipt.name,record,env=redaction_env)
+        record=canonical_value(record,env=redaction_env,sensitive_values=values)
+        write_private_artifact(folder,receipt.name,record,env=redaction_env,sensitive_values=values)
         append_ledger(ROOT / '.execution/usage.jsonl', record)
         decision = None
         try:
@@ -528,7 +536,7 @@ def prepare_private_result(folder,session):
 
 def publish_private_result(raw,output,env,selection,*,limit=1048576):
     """Preserve private original bytes/hash; publish separately sanitized JSON."""
-    from .evidence import write_private_artifact
+    from .evidence import write_private_artifact,unique_json_object
     import hashlib
     if raw.parent.is_symlink():raise Blocked('Private staging alias refused')
     descriptor=os.open(raw,os.O_RDONLY|os.O_NOFOLLOW)
@@ -537,7 +545,7 @@ def publish_private_result(raw,output,env,selection,*,limit=1048576):
         if metadata.st_mode&0o777!=0o600 or metadata.st_size>limit:raise Blocked('Untrusted result size/permissions unavailable')
         data=stream.read(limit+1)
     if len(data)>limit:raise Blocked('Untrusted result exceeds bound')
-    try:value=json.loads(data)
+    try:value=json.loads(data,object_pairs_hook=unique_json_object)
     except (ValueError,UnicodeError):raise Blocked('Untrusted structured result invalid') from None
     key=selection['provider_config'].get('api_key_env')
     result=write_private_artifact(output.parent,output.name,value,env=env,sensitive_values=[env[key]] if key and env.get(key) else [])

@@ -74,8 +74,8 @@ and subscription quota. These measurements are not interchangeable. Mark absent
 measurements UNKNOWN; never estimate subscription remaining from token counts.
 Record available usage and elapsed time per task and iteration with provenance.
 
-The current session policy is graceful stop at 40% subscription remaining and
-complete stop before 35% remaining. Check available quota before dispatch and
+The current session policy is to stop at 40% subscription remaining. The earlier
+35% full-stop allowance is superseded. Check available quota before dispatch and
 between iterations. Unknown or stale quota blocks new dispatch until verified.
 At the graceful-stop threshold, start no new task or correction cycle; preserve
 an honest checkpoint without treating unfinished work as accepted. Monitoring is
@@ -85,17 +85,14 @@ Keep configured Codex and OpenRouter monetary budgets at zero unless separately
 authorized. Subscription-based native role work requires explicit authorization;
 it must not bypass production runtime budget gates. Do not connect OpenRouter.
 
-## Current resumption boundary: T0010-016
+## Current task boundary
 
-T0010-016 remains NOT ACCEPTED. On separately authorized resumption:
-
-1. Add regression coverage for secret leakage through JSON object keys,
-   including nested/escaped keys and collisions after redaction.
-2. Fix the behavior without silently losing evidence when keys collide.
-3. Run the affected authorized tests and refresh the frozen evidence.
-4. Complete independent review of the whole T0010-016 candidate: the previous
-   review was partial, so reviewing only the corrective diff is insufficient.
-5. Obtain coordinator acceptance before advancing to T0010-017.
+T0010-016 was accepted for the documented offline fixture scope on 2026-10-30
+following regression-first repair, complete independent review, a corrective
+follow-up and coordinator verification. See
+[the acceptance record](../openspec/changes/0010-workflow-assurance/agent-warden-016-acceptance.md).
+T0010-017 remains unstarted and requires separate authorization. The latest user
+instruction requires stopping at40% remaining, as recorded in the usage policy.
 
 ## Future tooling task, not implemented here
 

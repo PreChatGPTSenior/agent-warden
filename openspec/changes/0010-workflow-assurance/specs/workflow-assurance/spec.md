@@ -189,6 +189,10 @@ Canonical logs, reports, notifications and backups SHALL redact known secrets at
 
 Canonical sanitized artifacts SHALL be hashed after sanitization. Role environments SHALL be explicitly allowlisted without ambient credential fallback. Legacy export qualification SHALL include schema-aware SQLite evidence as well as admitted text files; unknown formats SHALL remain blocked without rewriting original history.
 
+Canonical JSON SHALL sanitize decoded member names, including nested/escaped known secrets, before publication or streaming. Duplicate names or distinct names colliding after sanitization SHALL block that artifact/record without silently merging audit facts; private originals and their identities SHALL remain preserved. Malformed object/array records SHALL fail closed rather than publish a text fallback containing escaped known secrets.
+
+Runtime streams SHALL reject configured secret values containing newline or carriage return before reading or emitting any record. Runtime journal event identities, context and payload SHALL be canonicalized at their producer with the complete explicit secret policy before hashing and append, preserving prior historical rows. Unsafe invocation control identities or roots SHALL reject before journal creation, budget reservation or launch. Legacy structured export classification SHALL reject duplicate member names, inspect every JSONL record and refuse malformed object/array content without changing source bytes or publishing a destination.
+
 #### Scenario: WA-017-S1 Secret canaries and protected paths
 - **WHEN** fixture commands/errors contain synthetic secrets or references to a forbidden path
 - **THEN** canonical retained/exported evidence contains no canary values and forbidden metadata access never occurs; limitations of heuristic redaction remain explicit.

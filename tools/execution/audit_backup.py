@@ -329,17 +329,27 @@ _PRIVACY_COLUMNS={
 
 def quarantine_report(directory,*,sensitive_values=()):
     """Classification only: preserve original bytes/hash, unknown schemas refuse."""
-    from .evidence import canonical_text,canonical_value,secret_values
+    from .evidence import canonical_text,canonical_value,secret_values,unique_json_object
     from .notifications import TABLES
     import json
     directory=checked(directory);values=secret_values(configured=sensitive_values);findings=[]
     schemas={name:dict(tables) for name,tables in _PRIVACY_COLUMNS.items()};schemas['trace.sqlite'].update(TABLES)
-    def unsafe(text):
+    def unsafe(text,*,structured=False,jsonl=False):
         if canonical_text(text,sensitive_values=values)!=text:return True
-        try:
-            value=json.loads(text)
-            return canonical_value(value,sensitive_values=values)!=value
-        except (ValueError,TypeError):return False
+        def record_unsafe(record,required=False):
+            try:value=json.loads(record,object_pairs_hook=unique_json_object)
+            except json.JSONDecodeError:return required or record.lstrip().startswith(('{','['))
+            except (Blocked,TypeError):return True
+            try:return canonical_value(value,sensitive_values=values)!=value
+            except Blocked:return True
+        if jsonl:return any(record_unsafe(line,True) for line in text.splitlines() if line.strip())
+        try:value=json.loads(text,object_pairs_hook=unique_json_object)
+        except json.JSONDecodeError:
+            if structured:return True
+            return any(record_unsafe(line) for line in text.splitlines() if line.strip())
+        except (Blocked,TypeError):return True
+        try:return canonical_value(value,sensitive_values=values)!=value
+        except Blocked:return True
     files=_inventory(directory)
     if safe(directory,'manifest.json').is_file():files['manifest.json']=sha(directory/'manifest.json')
     for reference,digest in files.items():
@@ -373,7 +383,7 @@ def quarantine_report(directory,*,sensitive_values=()):
                     try:text=path.read_bytes().decode('utf-8')
                     except UnicodeError:reason='UNQUALIFIED_BINARY_ARTIFACT'
                     else:
-                        if unsafe(text):reason='UNSAFE_LEGACY_TEXT'
+                        if unsafe(text,structured=path.suffix.lower()=='.json',jsonl=path.suffix.lower()=='.jsonl'):reason='UNSAFE_LEGACY_TEXT'
         except (sqlite3.Error,OSError,ValueError):reason='UNQUALIFIED_EVIDENCE'
         if reason:findings.append({'reference':reference,'sha256':digest,'reason':reason})
     return {'status':'QUARANTINED_NON_EXPORTABLE' if findings else 'EXPORTABLE_AFTER_NEW_DATABASE_COMPACTION','findings':findings,

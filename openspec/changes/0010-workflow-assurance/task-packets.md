@@ -891,3 +891,43 @@ private staging name before audit/export metadata access; retained run facts mus
 still prevent empty-history recreation. This is quarantine, not a claim that raw
 plaintext never exists locally. Existing bound privacy/capture/backup methods cover
 private staging containment and canonical/export canary absence; no new selector.
+
+### T0010-016 JSON-member repair (authorized resumption)
+
+Before implementation bind these new exact regressions in test_evidence_privacy:
+EvidencePrivacyTest.test_nested_secret_json_keys_are_sanitized_before_publication,
+EvidencePrivacyTest.test_nested_escaped_json_keys_are_sanitized_in_streams,
+EvidencePrivacyTest.test_json_key_collisions_block_publication_preserving_original,
+EvidencePrivacyTest.test_json_key_collisions_block_stream_without_silent_loss.
+Run these four first for retained RED, then final affected rerun of the original16
+selectors plus these four (20 methods total), guards before imports, synthetic keys,
+owned disposable fixtures only. Stream input must retain bounded original decoded
+JSON keys until collision detection; serialized redaction must not erase distinct
+facts first. Duplicate member names also fail closed before conversion to a dict.
+Malformed object/array records must fail closed before fallback can retain escaped
+known member names; bind malformed nested escaped/truncated records to the existing
+collision-stream selector above and retain a separate RED before that repair.
+No017/provider/production/actual secrets. Narrow requirement-map source/hash and
+check binding refresh only; one existing maintenance mapping validation after fixes.
+
+### T0010-016 review2 corrections (R1–R3)
+
+Bind three additional EvidencePrivacyTest methods before implementation/execution:
+EvidencePrivacyTest.test_multiline_secret_policy_blocks_stream_before_read,
+EvidencePrivacyTest.test_legacy_duplicate_json_jsonl_and_malformed_refuse_export,
+EvidencePrivacyTest.test_runtime_journal_sanitizes_context_identity_and_changed_paths.
+First run these3 for retained RED; final authorized affected set is original20 plus
+these3 plus EvidencePrivacyTest.test_runtime_unsafe_identity_blocks_before_journal_or_launch
+(24 exact methods). Existing guards before task imports; only owned disposable
+SQLite/files and in-memory fake model process via existing fake_executor_start; no
+real provider/process except already bound harmless compatibility fixture. R1 chooses
+explicit fail-closed policy: newline/carriage-return known secrets reject before any
+stream read or emission. R2 covers duplicate escaped members, multi-record JSONL and
+malformed object/array text; preserve source and refuse backup/restore destinations.
+An unsafe legacy archive may be built only in disposable test setup with the privacy
+check mocked; actual tested restore must use real verify and real privacy classifier.
+R3 exercises actual invoke with fake process, journal identity/context/changes and
+canonical artifacts, preserving existing historical rows and hash chain semantics.
+Unsafe control identities/roots must reject before journal, reservation or launch;
+safe IDs remain unchanged while event payloads are canonicalized.
+Requirements/maps refreshed narrowly; no017, commits, production or provider calls.
